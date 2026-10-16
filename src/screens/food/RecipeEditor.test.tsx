@@ -43,6 +43,8 @@ describe('receta con varias raciones al registrar', () => {
     expect(html).toContain('Pastel de banano')
     expect(html).toContain('value="1"') // 440 g ÷ 8 raciones = 55 g = 1 huevo
     expect(html).toContain('<strong>79<!-- --> kcal</strong>') // 1 huevo (55 g) = 143 kcal/100 g x 0,55
+    expect(html).not.toContain('⅛') // con 8 raciones se usan raciones, no fracciones
+    expect(html).toContain('Raciones (reescala todo lo que comiste)')
   })
 })
 

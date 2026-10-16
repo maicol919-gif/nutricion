@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.16 · 2026-10-19
+- **Registrar por fracción:** una receta con 1 ración se trata como "el total". Al registrarla aparecen botones ⅛ · ¼ · ⅓ · ½ · 1 · 1,5 · 2 (y el campo libre) para decir qué parte comiste, sin tener que decidir en cuántas raciones se corta.
+- El editor de recetas explica que, si no sabes cuántas raciones salen, dejes 1.
+
 ## 1.15 · 2026-10-19
 - **Editar y duplicar recetas** (Alimentación → Recetas → abrir una receta). Al guardar como nueva o duplicar, avisa de las recetas parecidas que ya tienes para evitar tener varias casi iguales. Editar no cambia tus registros anteriores.
 - **Método de cocción** en cada receta (horno, sartén, microondas, olla, plancha, sin cocinar) y **peso total de lo preparado** (opcional).

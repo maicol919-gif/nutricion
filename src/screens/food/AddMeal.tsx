@@ -169,6 +169,11 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
   const recipeObj = recipeId ? data.recipes.find((r) => r.id === recipeId) : undefined
   const recipeItems = recipeObj ? data.itemsByRecipe.get(recipeObj.id) ?? [] : []
+  /** Una receta de 1 ración se registra por fracción del total (⅛, ¼, ½…) o por plato (1, 1,5, 2). */
+  const wholeRecipe = !!recipeObj && recipeObj.servings === 1
+  const quantityChips: [string, string][] = wholeRecipe
+    ? [['0.125', '⅛'], ['0.25', '¼'], ['0.333', '⅓'], ['0.5', '½'], ['1', '1'], ['1.5', '1,5'], ['2', '2']]
+    : [['0.5', '0,5'], ['1', '1'], ['1.5', '1,5'], ['2', '2']]
   const byWeight = recipeObj && base.length > 0 && qtyMode === 'peso' ? servingsForWeight(parseAmount(eatenG), recipeObj, recipeItems) : null
 
   /** Por peso: lo que pesó tu parte, comparado con el peso total de la receta, da las raciones equivalentes. */
@@ -471,10 +476,12 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                 </div>
                 {qtyMode === 'raciones' ? (
                   <>
-                    <p className="muted">Raciones (reescala todo lo que comiste)</p>
+                    <p className="muted">
+                      {wholeRecipe ? 'Qué parte comiste (1 = todo): estímalo a ojo, por ejemplo un cuarto o la mitad.' : 'Raciones (reescala todo lo que comiste)'}
+                    </p>
                     <div className="chips">
-                      {['0.5', '1', '1.5', '2'].map((s) => (
-                        <button key={s} className={`chip ${mult === s ? 'on' : ''}`} onClick={() => applyMult(s)}>{s.replace('.', ',')}</button>
+                      {quantityChips.map(([value, label]) => (
+                        <button key={value} className={`chip ${parseAmount(mult) === Number(value) ? 'on' : ''}`} onClick={() => applyMult(value)}>{label}</button>
                       ))}
                       <input style={{ width: 86 }} inputMode="decimal" value={mult} onChange={(e) => applyMult(e.target.value)} aria-label="Otra cantidad de raciones" placeholder="otra" />
                     </div>

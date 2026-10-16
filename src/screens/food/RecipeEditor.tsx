@@ -115,6 +115,8 @@ export default function RecipeEditor({ data, recipe = null, copy = false, onSave
             <label style={{ flex: 1 }}>Minutos (opcional)<input inputMode="numeric" value={minutes} onChange={(e) => setMinutes(e.target.value)} placeholder="10" /></label>
           </div>
 
+          <p className="muted">Si no sabes cuántas raciones salen, deja <strong>1</strong>: la receta es "el total", y al registrar dices qué parte te comiste (¼, ½…).</p>
+
           <IngredientEditor rows={rows} setRows={setRows} data={data} hint="Cantidades de toda la receta, en cosas que puedas contar (3 huevos, 4 cucharadas de harina…). Lo que suma menos de unas 20 kcal puedes omitirlo." />
 
           <p>

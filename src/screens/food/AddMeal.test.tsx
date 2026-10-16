@@ -32,6 +32,8 @@ describe('AddMeal (render)', () => {
     expect(html).toContain('Huevo entero')
     expect(html).toContain('value="3"')
     expect(html).toContain('Guardar como mi receta')
+    expect(html).toContain('⅛') // receta de 1 ración: se puede registrar por fracción
+    expect(html).toContain('Qué parte comiste')
     expect(html).toContain('<strong>409<!-- --> kcal</strong>')
     expect(html).toContain('36,7')
   })
