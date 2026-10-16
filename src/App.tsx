@@ -11,7 +11,7 @@ import UpdateBanner from './UpdateBanner'
 type Tab = 'food' | 'body' | 'settings'
 
 const TABS: [Tab, string][] = [
-  ['food', 'Comida'],
+  ['food', 'Diario'],
   ['body', 'Cuerpo'],
   ['settings', 'Ajustes'],
 ]

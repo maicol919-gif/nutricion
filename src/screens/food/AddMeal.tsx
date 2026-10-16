@@ -181,6 +181,13 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   }
 
   const macros = useMemo(() => roundMacros(rowsMacros(rows, data.foodById)), [rows, data.foodById])
+
+  /** Cierra la ventana; si hay ingredientes sin guardar, pregunta antes de descartarlos. */
+  function close() {
+    const unsaved = composing && rows.length > 0 && !saving
+    if (unsaved && !window.confirm('Todavía no has registrado esta comida. ¿Descartar lo que escribiste?')) return
+    onClose()
+  }
   const validRows = useMemo(() => toStoredItems(rows, data.foodById), [rows, data.foodById])
   const estimatedKcal = useMemo(() => Math.round(rowsEstimatedKcal(rows, data.foodById)), [rows, data.foodById])
 
@@ -224,7 +231,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     setSaving(true)
     try {
       const path = await uploadMealPhoto(file)
-      const { error } = await supabase.from('meal_log').insert({ date, meal, label: 'Comida sin completar', kcal: 0, protein: 0, status: 'pending', photo_path: path })
+      const { error } = await supabase.from('meal_log').insert({ date, meal, label: 'Sin completar', kcal: 0, protein: 0, status: 'pending', photo_path: path })
       if (error) throw error
       onSaved()
     } catch (e) {
@@ -253,7 +260,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   async function save() {
     setErr(null)
     if (validRows.length === 0) return setErr('Añade al menos un ingrediente con cantidad.')
-    const name = label.trim() || (validRows.length === 1 ? validRows[0].name : 'Comida')
+    const name = label.trim() || (validRows.length === 1 ? validRows[0].name : 'Plato')
     if (saveRecipe && !recipeName.trim()) return setErr('Ponle un nombre a tu receta.')
     setSaving(true)
     try {
@@ -300,7 +307,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
       <div className="overlay-inner">
         <div className="row between">
           <h2>{editEntry ? (editEntry.status === 'pending' ? 'Completar comida' : 'Editar comida') : 'Añadir comida'}</h2>
-          <button onClick={onClose}>Cerrar</button>
+          <button onClick={close}>Cerrar</button>
         </div>
 
         <div className="chips">

@@ -11,7 +11,7 @@ export const ZERO: Macros = { kcal: 0, protein: 0, carbs: 0, fat: 0 }
 
 export const MEALS: { key: MealKey; label: string }[] = [
   { key: 'desayuno', label: 'Desayuno' },
-  { key: 'comida', label: 'Comida' },
+  { key: 'comida', label: 'Almuerzo' },
   { key: 'merienda', label: 'Merienda' },
   { key: 'cena', label: 'Cena' },
 ]
@@ -62,7 +62,7 @@ export function householdLabel(f: Pick<Food, 'unit_g' | 'unit_label' | 'unit_plu
   return `${txt} ${n === 1 ? f.unit_label : (f.unit_plural ?? f.unit_label)}`
 }
 
-/** Comida sugerida según la hora. */
+/** Momento del día sugerido según la hora (la clave interna "comida" se muestra como Almuerzo). */
 export function mealForHour(hour: number): MealKey {
   if (hour < 11) return 'desayuno'
   if (hour < 16) return 'comida'

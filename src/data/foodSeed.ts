@@ -1,6 +1,6 @@
 /**
  * Alimentos y recetas iniciales. Valores por 100 g de tablas de composición habituales (BEDCA / USDA);
- * las marcas varían, así que se pueden corregir con la etiqueta en Comida → Alimentos.
+ * las marcas varían, así que se pueden corregir con la etiqueta en Diario → Alimentos.
  */
 
 export interface SeedFood {
@@ -222,7 +222,7 @@ export const SEED_RECIPES: SeedRecipe[] = [
 /**
  * Alimentos genéricos y de panadería (versión 2 de los iniciales). Son valores típicos de tablas BEDCA / USDA para
  * productos sin etiqueta: siempre se marcan como estimados. El peso de la unidad es el típico y se puede corregir
- * pesando una pieza una sola vez (Comida → Alimentos → tocar el alimento).
+ * pesando una pieza una sola vez (Diario → Alimentos → tocar el alimento).
  */
 const g = (f: SeedFood): SeedFood => ({ ...f, estimated: true })
 

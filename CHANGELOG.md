@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.6 · 2026-10-18
+- Nombres más claros: la pestaña **Comida** pasa a llamarse **Diario** y el momento del día **Comida** pasa a llamarse **Almuerzo** (en España "comida" es el almuerzo y se confundía con la comida en general).
+- Al cerrar la ventana de Añadir comida con ingredientes sin registrar, pregunta antes de descartarlos.
+
 ## 1.5 · 2026-10-18
 - Cada ingrediente muestra sus calorías al registrar, para ver qué pesa en el día y qué no.
 - Consejo en pantalla: lo que suma menos de ~20 kcal (ajo, especias, sal, limón) no hace falta apuntarlo.
