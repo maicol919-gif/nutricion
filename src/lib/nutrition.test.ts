@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { foodMacros, formatServings, householdLabel, kcalState, labelToPer100, mealForHour, proteinState, recipeMacros, remaining, roundMacros, sumMacros } from './nutrition'
+import { MEALS, foodMacros, formatServings, householdLabel, kcalState, labelToPer100, mealForHour, proteinState, recipeMacros, remaining, roundMacros, sumMacros } from './nutrition'
 
 const huevo = { kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, unit_g: 55, unit_label: 'huevo', unit_plural: 'huevos' }
 const arroz = { kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' }
@@ -77,12 +77,18 @@ describe('metas del día', () => {
 })
 
 describe('comida sugerida y raciones', () => {
-  it('según la hora', () => {
+  it('según la hora (Extras nunca se sugiere)', () => {
     expect(mealForHour(8)).toBe('desayuno')
     expect(mealForHour(11)).toBe('comida')
     expect(mealForHour(15)).toBe('comida')
-    expect(mealForHour(17)).toBe('merienda')
+    expect(mealForHour(17)).toBe('comida')
+    expect(mealForHour(18)).toBe('cena')
     expect(mealForHour(21)).toBe('cena')
+    for (let h = 0; h < 24; h++) expect(mealForHour(h)).not.toBe('merienda')
+  })
+
+  it('el orden y los nombres de los momentos del día', () => {
+    expect(MEALS.map((m) => m.label)).toEqual(['Desayuno', 'Comida', 'Cena', 'Extras'])
   })
 
   it('formato de raciones', () => {

@@ -4,7 +4,7 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 
 ## Qué hace
 
-- **Diario → Mi día:** barras de proteína y calorías contra tus metas, lo que te falta, y las comidas agrupadas (desayuno, almuerzo, merienda, cena). Navegación por días para completar olvidos.
+- **Diario → Mi día:** barras de proteína y calorías contra tus metas, lo que te falta, y las comidas agrupadas (desayuno, comida, cena y extras). Navegación por días para completar olvidos.
 - **Recetas como plantillas:** al registrar una comida ves cada ingrediente con su cantidad (gramos o medida casera: cucharadas, huevos, latas). Puedes cambiarla, quitar o añadir ingredientes y reescalar las raciones. Se puede guardar como receta propia.
 - **Repetir** una comida reciente con las mismas cantidades.
 - **Foto ahora, detalles después:** la foto crea una comida "por completar" que no cuenta en los totales hasta que indicas qué llevaba. Las fotos son privadas. La app no estima calorías desde la foto (las apps que lo hacen subestiman las cantidades).

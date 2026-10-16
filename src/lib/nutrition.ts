@@ -9,11 +9,12 @@ export interface Macros {
 
 export const ZERO: Macros = { kcal: 0, protein: 0, carbs: 0, fat: 0 }
 
+// La clave interna 'merienda' se conserva por compatibilidad con lo ya registrado; en pantalla es "Extras" y va al final.
 export const MEALS: { key: MealKey; label: string }[] = [
   { key: 'desayuno', label: 'Desayuno' },
-  { key: 'comida', label: 'Almuerzo' },
-  { key: 'merienda', label: 'Merienda' },
+  { key: 'comida', label: 'Comida' },
   { key: 'cena', label: 'Cena' },
+  { key: 'merienda', label: 'Extras' },
 ]
 
 type PerHundred = Pick<Food, 'kcal' | 'protein' | 'carbs' | 'fat'>
@@ -62,11 +63,10 @@ export function householdLabel(f: Pick<Food, 'unit_g' | 'unit_label' | 'unit_plu
   return `${txt} ${n === 1 ? f.unit_label : (f.unit_plural ?? f.unit_label)}`
 }
 
-/** Momento del día sugerido según la hora (la clave interna "comida" se muestra como Almuerzo). */
+/** Momento del día sugerido según la hora. Extras (snacks, cafés, dulces) nunca se sugiere: se elige a mano. */
 export function mealForHour(hour: number): MealKey {
   if (hour < 11) return 'desayuno'
-  if (hour < 16) return 'comida'
-  if (hour < 19) return 'merienda'
+  if (hour < 18) return 'comida'
   return 'cena'
 }
 

@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.7 · 2026-10-18
+- Los momentos del día quedan: **Desayuno · Comida · Cena · Extras**. "Comida" vuelve a llamarse así (no Almuerzo) y **Extras** sustituye a Merienda, va al final y nunca se sugiere por hora: es para snacks, cafés y dulces a cualquier momento. Lo ya registrado como merienda aparece en Extras.
+- La hora sugerida al abrir Añadir comida: antes de las 11 Desayuno, hasta las 18 Comida, después Cena.
+
 ## 1.6 · 2026-10-18
 - Nombres más claros: la pestaña **Comida** pasa a llamarse **Diario** y el momento del día **Comida** pasa a llamarse **Almuerzo** (en España "comida" es el almuerzo y se confundía con la comida en general).
 - Al cerrar la ventana de Añadir comida con ingredientes sin registrar, pregunta antes de descartarlos.
