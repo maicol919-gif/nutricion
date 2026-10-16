@@ -3,10 +3,10 @@ import { supabase } from '../../lib/supabase'
 import { uploadMealPhoto } from '../../lib/photo'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food, MealEntry, MealKey, Recipe } from '../../types'
-import { MEALS, recipeMacros, roundMacros } from '../../lib/nutrition'
-import { parseAmount, rowFromGrams, rowGrams, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
+import { MEALS, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
+import { parseAmount, rowFromGrams, rowGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
 
-type Mode = 'recetas' | 'alimentos' | 'rapido'
+type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
 
 interface Props {
   date: string
@@ -81,6 +81,15 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const [qProtein, setQProtein] = useState('')
   const [qCarbs, setQCarbs] = useState('')
   const [qFat, setQFat] = useState('')
+  const [qEstimated, setQEstimated] = useState(true)
+  const [lName, setLName] = useState('')
+  const [lBasis, setLBasis] = useState<'100g' | 'unit'>('100g')
+  const [lUnitG, setLUnitG] = useState('')
+  const [lUnitName, setLUnitName] = useState('')
+  const [lKcal, setLKcal] = useState('')
+  const [lProtein, setLProtein] = useState('')
+  const [lCarbs, setLCarbs] = useState('')
+  const [lFat, setLFat] = useState('')
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -172,6 +181,42 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
   const macros = useMemo(() => roundMacros(rowsMacros(rows, data.foodById)), [rows, data.foodById])
   const validRows = useMemo(() => toStoredItems(rows, data.foodById), [rows, data.foodById])
+  const estimatedKcal = useMemo(() => Math.round(rowsEstimatedKcal(rows, data.foodById)), [rows, data.foodById])
+
+  async function saveLabelFood() {
+    setErr(null)
+    const name = lName.trim()
+    if (!name) return setErr('Escribe el nombre del producto.')
+    const unitGrams = lBasis === 'unit' ? parseAmount(lUnitG) : undefined
+    const per100 = labelToPer100({ basis: lBasis, unitGrams, kcal: parseAmount(lKcal), protein: parseAmount(lProtein || '0'), carbs: parseAmount(lCarbs || '0'), fat: parseAmount(lFat || '0') })
+    if (!lKcal.trim() || !per100) return setErr(lBasis === 'unit' && !(unitGrams && unitGrams > 0) ? 'Escribe cuánto pesa una unidad (en gramos).' : 'Revisa las calorías y los demás valores.')
+    const unitName = lUnitName.trim() || 'unidad'
+    setSaving(true)
+    const { data: row, error } = await supabase
+      .from('foods')
+      .insert({
+        name,
+        kcal: Math.round(per100.kcal * 10) / 10,
+        protein: Math.round(per100.protein * 10) / 10,
+        carbs: Math.round(per100.carbs * 10) / 10,
+        fat: Math.round(per100.fat * 10) / 10,
+        unit_g: unitGrams ?? null,
+        unit_label: unitGrams ? unitName : null,
+        unit_plural: unitGrams ? (unitName === 'unidad' ? 'unidades' : unitName) : null,
+        estimated: false,
+      })
+      .select('id')
+      .single()
+    setSaving(false)
+    if (error) return setErr(error.code === '23505' ? 'Ya existe un alimento con ese nombre: búscalo en Alimentos.' : error.message)
+    await data.reload()
+    startFrom({
+      rows: [unitGrams ? { key: newKey(row.id), food_id: row.id, amount: '1', unit: 'u' } : { key: newKey(row.id), food_id: row.id, amount: '100', unit: 'g' }],
+      base: [],
+      label: name,
+      recipeId: null,
+    })
+  }
 
   async function capturePending(file: File) {
     setErr(null)
@@ -197,6 +242,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     setSaving(true)
     const { error } = await supabase.from('meal_log').insert({
       date, meal, label: qLabel.trim(), kcal: Math.round(kcal), protein, carbs: parseAmount(qCarbs || '0') || 0, fat: parseAmount(qFat || '0') || 0, note: note.trim() || null,
+      kcal_estimated: qEstimated ? Math.round(kcal) : 0,
     })
     setSaving(false)
     if (error) return setErr(error.message)
@@ -231,6 +277,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
         servings: null,
         grams: null,
         ...macros,
+        kcal_estimated: Math.min(macros.kcal, estimatedKcal),
         items: validRows,
         photo_path: photoPath,
         status: 'done',
@@ -271,12 +318,12 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
             {err && <p className="err">{err}</p>}
 
             <div className="subtabs">
-              {([['recetas', 'Recetas'], ['alimentos', 'Alimentos'], ['rapido', 'Rápido']] as [Mode, string][]).map(([k, lbl]) => (
+              {([['recetas', 'Recetas'], ['alimentos', 'Alimentos'], ['etiqueta', 'Etiqueta'], ['rapido', 'Rápido']] as [Mode, string][]).map(([k, lbl]) => (
                 <button key={k} className={mode === k ? 'active' : ''} onClick={() => setMode(k)}>{lbl}</button>
               ))}
             </div>
 
-            {mode !== 'rapido' && (
+            {(mode === 'recetas' || mode === 'alimentos') && (
               <>
                 <input placeholder="Buscar" value={query} onChange={(e) => setQuery(e.target.value)} />
                 {!q && recent.length > 0 && (
@@ -313,11 +360,40 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
               <>
                 {foods.map((f) => (
                   <button key={f.id} className="exrow" onClick={() => pickFood(f)}>
-                    <span><strong>{f.name}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
+                    <span><strong>{f.name}{f.estimated ? ' · estimado' : ''}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
                   </button>
                 ))}
-                {foods.length === 0 && <p className="muted">Ningún alimento coincide. Prueba en "Rápido" o créalo en Comida → Alimentos.</p>}
+                {foods.length === 0 && <p className="muted">Ningún alimento coincide. Prueba en "Etiqueta" (si tiene etiqueta) o en "Rápido".</p>}
               </>
+            )}
+
+            {mode === 'etiqueta' && (
+              <section className="card">
+                <p className="muted">Copia los valores de la etiqueta una sola vez: queda guardado para repetirlo.</p>
+                <label>Producto<input value={lName} onChange={(e) => setLName(e.target.value)} placeholder="ej. Galletas de avena" /></label>
+                <label>La etiqueta indica los valores
+                  <select value={lBasis} onChange={(e) => setLBasis(e.target.value as '100g' | 'unit')}>
+                    <option value="100g">por 100 g</option>
+                    <option value="unit">por unidad (galleta, barrita, lata…)</option>
+                  </select>
+                </label>
+                {lBasis === 'unit' && (
+                  <div className="row">
+                    <label style={{ flex: 1 }}>Peso de 1 unidad (g)<input inputMode="decimal" value={lUnitG} onChange={(e) => setLUnitG(e.target.value)} /></label>
+                    <label style={{ flex: 1 }}>Se llama<input placeholder="galleta" value={lUnitName} onChange={(e) => setLUnitName(e.target.value)} /></label>
+                  </div>
+                )}
+                <div className="row">
+                  <label style={{ flex: 1 }}>Calorías<input inputMode="decimal" value={lKcal} onChange={(e) => setLKcal(e.target.value)} /></label>
+                  <label style={{ flex: 1 }}>Proteína (g)<input inputMode="decimal" value={lProtein} onChange={(e) => setLProtein(e.target.value)} /></label>
+                </div>
+                <div className="row">
+                  <label style={{ flex: 1 }}>Carbohidratos (g)<input inputMode="decimal" placeholder="opcional" value={lCarbs} onChange={(e) => setLCarbs(e.target.value)} /></label>
+                  <label style={{ flex: 1 }}>Grasa (g)<input inputMode="decimal" placeholder="opcional" value={lFat} onChange={(e) => setLFat(e.target.value)} /></label>
+                </div>
+                {err && <p className="err">{err}</p>}
+                <button className="primary" disabled={saving} onClick={saveLabelFood}>Guardar y usar</button>
+              </section>
             )}
 
             {mode === 'rapido' && (
@@ -333,6 +409,11 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                   <label style={{ flex: 1 }}>Grasa (g)<input inputMode="decimal" placeholder="opcional" value={qFat} onChange={(e) => setQFat(e.target.value)} /></label>
                 </div>
                 <label>Nota (opcional)<input value={note} onChange={(e) => setNote(e.target.value)} /></label>
+                <label className="check-row">
+                  <input type="checkbox" checked={qEstimated} onChange={(e) => setQEstimated(e.target.checked)} />
+                  <span>Son valores estimados (no los pesé ni los leí en una etiqueta)</span>
+                </label>
+                {err && <p className="err">{err}</p>}
                 <button className="primary" disabled={saving} onClick={saveQuick}>Registrar</button>
               </section>
             )}
@@ -362,7 +443,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
               if (!f) return null
               return (
                 <div key={r.key} className="ing">
-                  <span className="ing-name">{f.name}</span>
+                  <span className="ing-name">{f.name}{f.estimated && <em className="est"> · estimado</em>}</span>
                   <input inputMode="decimal" value={r.amount} onChange={(e) => updateRow(r.key, { amount: e.target.value })} aria-label={`Cantidad de ${f.name}`} />
                   <select value={r.unit === 'u' && f.unit_g ? 'u' : 'g'} onChange={(e) => changeUnit(r, e.target.value as 'g' | 'u')} aria-label={`Unidad de ${f.name}`}>
                     <option value="g">g</option>
@@ -391,6 +472,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
             <p>
               <strong>{macros.kcal} kcal</strong> · <strong>{fmt(macros.protein, 1)} g proteína</strong>
               <span className="muted"> · {fmt(macros.carbs, 1)} g carb · {fmt(macros.fat, 1)} g grasa</span>
+              {estimatedKcal > 0 && <span className="muted est"> · ≈ {estimatedKcal} kcal estimadas</span>}
             </p>
 
             <label className="filebtn secondary">

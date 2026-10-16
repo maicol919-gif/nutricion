@@ -9,6 +9,8 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 - **Repetir** una comida reciente con las mismas cantidades.
 - **Foto ahora, detalles después:** la foto crea una comida "por completar" que no cuenta en los totales hasta que indicas qué llevaba. Las fotos son privadas. La app no estima calorías desde la foto (las apps que lo hacen subestiman las cantidades).
 - **Recetas y alimentos:** 16 recetas rápidas de Mercadona y 40 alimentos con valores por 100 g, editables con la etiqueta de tu marca. Cada registro guarda su propia copia de los valores.
+- **Genéricos y etiqueta:** alimentos sin etiqueta (bollería, restaurante, bebidas) con peso típico por unidad y marca de estimado; productos con etiqueta se guardan una vez. Cada día indica cuántas kcal son estimadas.
+- **Día sin registrar:** marca un día como no registrado, sin penalización.
 - **Cuerpo:** peso y cintura con media de 7 días, variación semanal, cintura/altura (meta < 0,5) y veredicto del ritmo de pérdida. Metas diarias editables.
 
 ## Base de datos compartida

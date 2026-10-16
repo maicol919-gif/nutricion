@@ -54,6 +54,21 @@ export default function Food() {
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
   const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null } | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
+  const [dayMarked, setDayMarked] = useState(false)
+
+  const loadMark = useCallback(async () => {
+    const { data: m } = await supabase.from('day_marks').select('date').eq('date', date).maybeSingle()
+    setDayMarked(!!m)
+  }, [date])
+
+  async function toggleMark() {
+    const { error: e } = dayMarked
+      ? await supabase.from('day_marks').delete().eq('date', date)
+      : await supabase.from('day_marks').upsert({ date, kind: 'sin_registro' })
+    if (e) return setMsg(e.message)
+    setMsg(null)
+    setDayMarked(!dayMarked)
+  }
 
   const loadEntries = useCallback(async () => {
     const { data: rows, error: e } = await supabase.from('meal_log').select('*').eq('date', date).order('created_at')
@@ -66,6 +81,7 @@ export default function Food() {
       protein: Number(r.protein),
       carbs: Number(r.carbs),
       fat: Number(r.fat),
+      kcal_estimated: Number(r.kcal_estimated ?? 0),
     })) as MealEntry[]
     setEntries(list)
     const paths = list.map((x) => x.photo_path).filter((p): p is string => !!p)
@@ -83,10 +99,14 @@ export default function Food() {
   useEffect(() => {
     void loadRecents()
   }, [loadRecents])
+  useEffect(() => {
+    void loadMark()
+  }, [loadMark])
 
   const done = useMemo(() => entries.filter((e) => e.status !== 'pending'), [entries])
   const pending = useMemo(() => entries.filter((e) => e.status === 'pending'), [entries])
   const total = useMemo(() => sumMacros(done), [done])
+  const estimated = useMemo(() => Math.min(total.kcal, done.reduce((s, e) => s + e.kcal_estimated, 0)), [done, total.kcal])
   const target = { kcal: settings.kcal_target, protein: settings.protein_target }
   const left = remaining(target, total)
 
@@ -100,6 +120,10 @@ export default function Food() {
   async function onSaved() {
     setAdding(null)
     setMsg(null)
+    if (dayMarked) {
+      await supabase.from('day_marks').delete().eq('date', date)
+      setDayMarked(false)
+    }
     await Promise.all([loadEntries(), loadRecents()])
   }
 
@@ -134,7 +158,18 @@ export default function Food() {
               {left.kcal > 0 ? ` y te quedan ${fmt(left.kcal)} kcal.` : total.kcal > target.kcal * 1.05 ? ` · ${fmt(total.kcal - target.kcal)} kcal por encima de la meta.` : '.'}
             </p>
             <p className="muted">Carbohidratos {fmt(total.carbs)} g · Grasa {fmt(total.fat)} g</p>
+            {estimated > 0 && (
+              <p className="muted est">De tus {fmt(total.kcal)} kcal, ≈ {fmt(estimated)} son estimadas ({fmt((estimated / Math.max(1, total.kcal)) * 100)} %).</p>
+            )}
           </section>
+
+          {dayMarked && (
+            <section className="card warn">
+              <h3>Día sin registrar</h3>
+              <p className="muted">Este día no cuenta como fallo ni entra en tus promedios. Si registras una comida, la marca se quita sola.</p>
+              <button onClick={toggleMark}>Quitar la marca</button>
+            </section>
+          )}
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Añadir comida</button>
 
@@ -185,7 +220,12 @@ export default function Food() {
               </section>
             )
           })}
-          {entries.length === 0 && <p className="muted">Aún no registras nada {isToday ? 'hoy' : 'este día'}.</p>}
+          {entries.length === 0 && !dayMarked && (
+            <>
+              <p className="muted">Aún no registras nada {isToday ? 'hoy' : 'este día'}.</p>
+              <button className="link" onClick={toggleMark}>{isToday ? 'Hoy no voy a registrar' : 'No registré este día'}</button>
+            </>
+          )}
         </>
       )}
 

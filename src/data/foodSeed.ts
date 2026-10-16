@@ -12,6 +12,7 @@ export interface SeedFood {
   unit_g?: number
   unit_label?: string
   unit_plural?: string
+  estimated?: boolean
 }
 
 export interface SeedRecipe {
@@ -37,8 +38,8 @@ export const SEED_FOODS: SeedFood[] = [
   { name: 'Queso cottage', kcal: 98, protein: 11, carbs: 3.4, fat: 4.3, unit_g: 25, unit_label: 'cucharada', unit_plural: 'cucharadas' },
   { name: 'Mozzarella', kcal: 250, protein: 18, carbs: 2, fat: 19 },
   { name: 'Queso curado', kcal: 400, protein: 26, carbs: 1, fat: 33, unit_g: 7, unit_label: 'cucharada rallada', unit_plural: 'cucharadas ralladas' },
-  { name: 'Yogur griego natural (entero)', kcal: 125, protein: 5.5, carbs: 4, fat: 9, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' },
-  { name: 'Yogur griego 0 % grasa', kcal: 57, protein: 10, carbs: 4, fat: 0.2, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' },
+  { name: 'Yogur griego natural (entero)', kcal: 125, protein: 5.5, carbs: 4, fat: 9, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas', estimated: true },
+  { name: 'Yogur griego 0 % grasa', kcal: 57, protein: 10, carbs: 4, fat: 0.2, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas', estimated: true },
   { name: 'Skyr natural', kcal: 63, protein: 11, carbs: 4, fat: 0.2 },
   { name: 'Kéfir natural', kcal: 60, protein: 3.5, carbs: 4.5, fat: 3.2 },
   // Carbohidratos
@@ -51,7 +52,7 @@ export const SEED_FOODS: SeedFood[] = [
   { name: 'Avena en hojuelas', kcal: 380, protein: 13, carbs: 60, fat: 7, unit_g: 8, unit_label: 'cucharada', unit_plural: 'cucharadas' },
   { name: 'Harina de trigo', kcal: 340, protein: 10, carbs: 72, fat: 1, unit_g: 10, unit_label: 'cucharada', unit_plural: 'cucharadas' },
   { name: 'Garbanzos cocidos (bote)', kcal: 130, protein: 7.5, carbs: 18, fat: 2.5 },
-  { name: 'Tortitas de maíz con chocolate negro', kcal: 480, protein: 7, carbs: 68, fat: 19, unit_g: 10, unit_label: 'tortita', unit_plural: 'tortitas' },
+  { name: 'Tortitas de maíz con chocolate negro', kcal: 480, protein: 7, carbs: 68, fat: 19, unit_g: 10, unit_label: 'tortita', unit_plural: 'tortitas', estimated: true },
   // Verduras y fruta
   { name: 'Verdura variada (congelada o microondas)', kcal: 35, protein: 2, carbs: 6, fat: 0.4 },
   { name: 'Tomate', kcal: 18, protein: 0.9, carbs: 3.9, fat: 0.2 },
@@ -216,4 +217,54 @@ export const SEED_RECIPES: SeedRecipe[] = [
     steps: ['Prepara las patatas y el brócoli (microondas o vapor).', 'Cocina el salmón a la plancha con el aceite, 3-4 minutos por lado.', 'Termina con limón y eneldo.'],
     items: [['Salmón crudo', 150], ['Patata cocida', 200], ['Brócoli', 150], ['Aceite de oliva', 5]],
   },
+]
+
+/**
+ * Alimentos genéricos y de panadería (versión 2 de los iniciales). Son valores típicos de tablas BEDCA / USDA para
+ * productos sin etiqueta: siempre se marcan como estimados. El peso de la unidad es el típico y se puede corregir
+ * pesando una pieza una sola vez (Comida → Alimentos → tocar el alimento).
+ */
+const g = (f: SeedFood): SeedFood => ({ ...f, estimated: true })
+
+export const SEED_FOODS_V2: SeedFood[] = [
+  // Bollería y dulces
+  g({ name: 'Croissant de mantequilla', kcal: 406, protein: 8.2, carbs: 45.8, fat: 21, unit_g: 60, unit_label: 'croissant', unit_plural: 'croissants' }),
+  g({ name: 'Napolitana de chocolate', kcal: 420, protein: 7, carbs: 46, fat: 23, unit_g: 80, unit_label: 'napolitana', unit_plural: 'napolitanas' }),
+  g({ name: 'Donut o rosquilla glaseada', kcal: 400, protein: 5, carbs: 50, fat: 20, unit_g: 60, unit_label: 'unidad', unit_plural: 'unidades' }),
+  g({ name: 'Magdalena', kcal: 420, protein: 6, carbs: 55, fat: 20, unit_g: 40, unit_label: 'magdalena', unit_plural: 'magdalenas' }),
+  g({ name: 'Churros', kcal: 400, protein: 4, carbs: 45, fat: 22, unit_g: 40, unit_label: 'churro', unit_plural: 'churros' }),
+  g({ name: 'Galleta tipo María', kcal: 440, protein: 7, carbs: 74, fat: 12, unit_g: 6, unit_label: 'galleta', unit_plural: 'galletas' }),
+  g({ name: 'Galleta con chocolate', kcal: 480, protein: 6, carbs: 68, fat: 21, unit_g: 12, unit_label: 'galleta', unit_plural: 'galletas' }),
+  g({ name: 'Bizcocho casero', kcal: 380, protein: 6, carbs: 52, fat: 17, unit_g: 80, unit_label: 'porción', unit_plural: 'porciones' }),
+  g({ name: 'Tarta con crema o nata', kcal: 330, protein: 4, carbs: 35, fat: 19, unit_g: 100, unit_label: 'porción', unit_plural: 'porciones' }),
+  g({ name: 'Tarta de queso', kcal: 321, protein: 5.5, carbs: 25.5, fat: 22.5, unit_g: 100, unit_label: 'porción', unit_plural: 'porciones' }),
+  g({ name: 'Brownie', kcal: 466, protein: 6, carbs: 55, fat: 25, unit_g: 60, unit_label: 'porción', unit_plural: 'porciones' }),
+  g({ name: 'Flan de huevo', kcal: 140, protein: 4.5, carbs: 22, fat: 4, unit_g: 100, unit_label: 'flan', unit_plural: 'flanes' }),
+  g({ name: 'Helado cremoso', kcal: 207, protein: 3.5, carbs: 24, fat: 11, unit_g: 60, unit_label: 'bola', unit_plural: 'bolas' }),
+  g({ name: 'Chocolate negro', kcal: 598, protein: 7.8, carbs: 46, fat: 42.6, unit_g: 10, unit_label: 'onza', unit_plural: 'onzas' }),
+  g({ name: 'Chocolate con leche', kcal: 535, protein: 7.7, carbs: 59, fat: 30, unit_g: 10, unit_label: 'onza', unit_plural: 'onzas' }),
+  // Pan y desayuno
+  g({ name: 'Pan blanco', kcal: 265, protein: 9, carbs: 50, fat: 3, unit_g: 30, unit_label: 'rebanada', unit_plural: 'rebanadas' }),
+  g({ name: 'Cereales de desayuno (mix)', kcal: 380, protein: 9, carbs: 70, fat: 7, unit_g: 30, unit_label: 'puñado', unit_plural: 'puñados' }),
+  // Comida preparada y de restaurante
+  g({ name: 'Pizza', kcal: 266, protein: 11, carbs: 33, fat: 10, unit_g: 120, unit_label: 'porción', unit_plural: 'porciones' }),
+  g({ name: 'Hamburguesa con pan', kcal: 260, protein: 13, carbs: 22, fat: 13, unit_g: 200, unit_label: 'hamburguesa', unit_plural: 'hamburguesas' }),
+  g({ name: 'Patatas fritas de bolsa', kcal: 540, protein: 6.5, carbs: 52, fat: 34, unit_g: 30, unit_label: 'puñado', unit_plural: 'puñados' }),
+  g({ name: 'Patatas fritas de restaurante', kcal: 312, protein: 3.4, carbs: 41, fat: 15, unit_g: 150, unit_label: 'ración', unit_plural: 'raciones' }),
+  g({ name: 'Croquetas', kcal: 250, protein: 8, carbs: 22, fat: 14, unit_g: 25, unit_label: 'croqueta', unit_plural: 'croquetas' }),
+  g({ name: 'Empanada o empanadilla', kcal: 290, protein: 7, carbs: 30, fat: 15, unit_g: 100, unit_label: 'unidad', unit_plural: 'unidades' }),
+  g({ name: 'Tortilla de patata', kcal: 190, protein: 6, carbs: 12, fat: 13, unit_g: 150, unit_label: 'porción', unit_plural: 'porciones' }),
+  g({ name: 'Paella o arroz de restaurante', kcal: 150, protein: 6, carbs: 20, fat: 5, unit_g: 350, unit_label: 'plato', unit_plural: 'platos' }),
+  g({ name: 'Pasta con salsa de restaurante', kcal: 160, protein: 6, carbs: 25, fat: 4, unit_g: 350, unit_label: 'plato', unit_plural: 'platos' }),
+  // Salsas y azúcar
+  g({ name: 'Mayonesa', kcal: 680, protein: 1, carbs: 1, fat: 75, unit_g: 15, unit_label: 'cucharada', unit_plural: 'cucharadas' }),
+  g({ name: 'Salsa César para ensaladas', kcal: 430, protein: 2, carbs: 5, fat: 45, unit_g: 15, unit_label: 'cucharada', unit_plural: 'cucharadas' }),
+  g({ name: 'Azúcar', kcal: 400, protein: 0, carbs: 100, fat: 0, unit_g: 5, unit_label: 'cucharadita', unit_plural: 'cucharaditas' }),
+  // Bebidas (por 100 g, aproximadamente 100 ml)
+  g({ name: 'Cerveza', kcal: 43, protein: 0.5, carbs: 3.6, fat: 0, unit_g: 200, unit_label: 'caña', unit_plural: 'cañas' }),
+  g({ name: 'Vino tinto', kcal: 85, protein: 0.1, carbs: 2.6, fat: 0, unit_g: 150, unit_label: 'copa', unit_plural: 'copas' }),
+  g({ name: 'Refresco de cola', kcal: 42, protein: 0, carbs: 10.6, fat: 0, unit_g: 330, unit_label: 'lata', unit_plural: 'latas' }),
+  g({ name: 'Zumo de naranja', kcal: 45, protein: 0.7, carbs: 10, fat: 0.2, unit_g: 200, unit_label: 'vaso', unit_plural: 'vasos' }),
+  g({ name: 'Leche semidesnatada', kcal: 46, protein: 3.4, carbs: 4.8, fat: 1.6, unit_g: 200, unit_label: 'taza', unit_plural: 'tazas' }),
+  g({ name: 'Café con leche', kcal: 25, protein: 1.7, carbs: 2.3, fat: 1.2, unit_g: 200, unit_label: 'taza', unit_plural: 'tazas' }),
 ]

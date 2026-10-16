@@ -98,3 +98,23 @@ export function formatServings(n: number): string {
   const txt = Number.isInteger(n) ? String(n) : String(Math.round(n * 100) / 100).replace('.', ',')
   return `${txt} ${n === 1 ? 'ración' : 'raciones'}`
 }
+
+export interface LabelValues {
+  /** la etiqueta indica los valores por 100 g o por unidad (galleta, croissant, lata…) */
+  basis: '100g' | 'unit'
+  /** peso de la unidad en gramos (obligatorio si basis = 'unit') */
+  unitGrams?: number
+  kcal: number
+  protein: number
+  carbs: number
+  fat: number
+}
+
+/** Pasa los valores de una etiqueta a "por 100 g", que es como se guardan los alimentos. null si no se puede. */
+export function labelToPer100(l: LabelValues): Macros | null {
+  if (![l.kcal, l.protein, l.carbs, l.fat].every((n) => Number.isFinite(n) && n >= 0)) return null
+  if (l.basis === '100g') return { kcal: l.kcal, protein: l.protein, carbs: l.carbs, fat: l.fat }
+  if (!l.unitGrams || !(l.unitGrams > 0)) return null
+  const k = 100 / l.unitGrams
+  return { kcal: l.kcal * k, protein: l.protein * k, carbs: l.carbs * k, fat: l.fat * k }
+}

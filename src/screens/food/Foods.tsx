@@ -16,9 +16,10 @@ interface Form {
   unit_g: string
   unit_label: string
   unit_plural: string
+  estimated: boolean
 }
 
-const EMPTY: Form = { id: null, name: '', kcal: '', protein: '', carbs: '', fat: '', unit_g: '', unit_label: '', unit_plural: '' }
+const EMPTY: Form = { id: null, name: '', kcal: '', protein: '', carbs: '', fat: '', unit_g: '', unit_label: '', unit_plural: '', estimated: false }
 
 function toForm(f: Food): Form {
   return {
@@ -31,6 +32,7 @@ function toForm(f: Food): Form {
     unit_g: f.unit_g == null ? '' : String(f.unit_g),
     unit_label: f.unit_label ?? '',
     unit_plural: f.unit_plural ?? '',
+    estimated: f.estimated,
   }
 }
 
@@ -62,6 +64,7 @@ export default function Foods({ data }: { data: FoodData }) {
       unit_g: unitG,
       unit_label: unitG != null ? form.unit_label.trim() : null,
       unit_plural: unitG != null ? form.unit_plural.trim() || form.unit_label.trim() : null,
+      estimated: form.estimated,
     }
     const { error } = form.id ? await supabase.from('foods').update(row).eq('id', form.id) : await supabase.from('foods').insert(row)
     if (error) return setMsg(error.code === '23505' ? 'Ya existe un alimento con ese nombre.' : error.message)
@@ -79,7 +82,7 @@ export default function Foods({ data }: { data: FoodData }) {
     await data.reload()
   }
 
-  const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => (f ? { ...f, [k]: e.target.value } : f))
+  const set = (k: Exclude<keyof Form, 'estimated'>) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => (f ? { ...f, [k]: e.target.value } : f))
 
   if (form) {
     return (
@@ -102,6 +105,11 @@ export default function Foods({ data }: { data: FoodData }) {
           <label style={{ flex: 1 }}>Nombre<input placeholder="cucharada" value={form.unit_label} onChange={set('unit_label')} /></label>
           <label style={{ flex: 1 }}>Plural<input placeholder="cucharadas" value={form.unit_plural} onChange={set('unit_plural')} /></label>
         </div>
+        <p className="muted">Consejo: pesa una pieza una sola vez y pon aquí sus gramos; desde entonces registrar "1 unidad" usa tu peso real.</p>
+        <label className="check-row">
+          <input type="checkbox" checked={form.estimated} onChange={(e) => setForm((f) => (f ? { ...f, estimated: e.target.checked } : f))} />
+          <span>Valor estimado (no viene de la etiqueta de tu producto)</span>
+        </label>
         <button className="primary" onClick={save}>Guardar</button>
         <div className="row between">
           <button className="link" onClick={() => { setForm(null); setMsg(null) }}>Cancelar</button>
@@ -122,7 +130,7 @@ export default function Foods({ data }: { data: FoodData }) {
       {list.map((f) => (
         <button key={f.id} className="exrow" onClick={() => { setMsg(null); setForm(toForm(f)) }}>
           <span>
-            <strong>{f.name}</strong>
+            <strong>{f.name}{f.estimated ? ' · estimado' : ''}</strong>
             <small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} P · {fmt(f.carbs, 1)} C · {fmt(f.fat, 1)} G{f.unit_g ? ` · 1 ${f.unit_label} = ${fmt(f.unit_g)} g` : ''}</small>
           </span>
         </button>

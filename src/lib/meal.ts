@@ -72,3 +72,12 @@ export function itemsSummary(items: StoredItem[] | null | undefined, max = 3): s
   const names = items.slice(0, max).map((i) => i.name.replace(/\s*\(.*\)\s*$/, ''))
   return names.join(', ') + (items.length > max ? `, +${items.length - max}` : '')
 }
+
+/** Calorías de la comida que vienen de alimentos marcados como estimados. */
+export function rowsEstimatedKcal(rows: MealRow[], foods: Map<string, Food>): number {
+  return rows.reduce((sum, r) => {
+    const f = foods.get(r.food_id)
+    const g = rowGrams(r, f)
+    return f && f.estimated && g > 0 ? sum + foodMacros(f, g).kcal : sum
+  }, 0)
+}

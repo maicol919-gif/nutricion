@@ -8,6 +8,8 @@ export interface Food {
   unit_g: number | null
   unit_label: string | null
   unit_plural: string | null
+  /** valor aproximado (genérico, sin etiqueta o dependiente de la marca) */
+  estimated: boolean
 }
 
 export type MealKey = 'desayuno' | 'comida' | 'merienda' | 'cena'
@@ -46,6 +48,8 @@ export interface MealEntry {
   note: string | null
   items: { food_id: string; name: string; grams: number }[] | null
   photo_path: string | null
+  /** kcal de esta comida que vienen de valores estimados */
+  kcal_estimated: number
   status: 'done' | 'pending'
   created_at: string
 }

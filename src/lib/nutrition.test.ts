@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { foodMacros, formatServings, householdLabel, kcalState, mealForHour, proteinState, recipeMacros, remaining, roundMacros, sumMacros } from './nutrition'
+import { foodMacros, formatServings, householdLabel, kcalState, labelToPer100, mealForHour, proteinState, recipeMacros, remaining, roundMacros, sumMacros } from './nutrition'
 
 const huevo = { kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, unit_g: 55, unit_label: 'huevo', unit_plural: 'huevos' }
 const arroz = { kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' }
@@ -89,5 +89,28 @@ describe('comida sugerida y raciones', () => {
     expect(formatServings(1)).toBe('1 ración')
     expect(formatServings(1.5)).toBe('1,5 raciones')
     expect(formatServings(0.25)).toBe('0,25 raciones')
+  })
+})
+
+describe('etiqueta a valores por 100 g', () => {
+  it('por 100 g se guarda tal cual', () => {
+    expect(labelToPer100({ basis: '100g', kcal: 503, protein: 7.9, carbs: 48, fat: 31 })).toEqual({ kcal: 503, protein: 7.9, carbs: 48, fat: 31 })
+  })
+
+  it('por unidad se reescala con el peso de la unidad', () => {
+    const m = labelToPer100({ basis: 'unit', unitGrams: 50, kcal: 200, protein: 4, carbs: 20, fat: 12 })!
+    expect(m.kcal).toBe(400)
+    expect(m.protein).toBe(8)
+    expect(m.fat).toBe(24)
+  })
+
+  it('por unidad sin peso de la unidad no es válido', () => {
+    expect(labelToPer100({ basis: 'unit', kcal: 200, protein: 4, carbs: 20, fat: 12 })).toBeNull()
+    expect(labelToPer100({ basis: 'unit', unitGrams: 0, kcal: 200, protein: 4, carbs: 20, fat: 12 })).toBeNull()
+  })
+
+  it('valores negativos o vacíos no son válidos', () => {
+    expect(labelToPer100({ basis: '100g', kcal: -1, protein: 0, carbs: 0, fat: 0 })).toBeNull()
+    expect(labelToPer100({ basis: '100g', kcal: NaN, protein: 0, carbs: 0, fat: 0 })).toBeNull()
   })
 })

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { itemsSummary, parseAmount, rowFromGrams, rowGrams, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from './meal'
+import { itemsSummary, parseAmount, rowFromGrams, rowGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from './meal'
 import type { Food } from '../types'
 
-const huevo: Food = { id: 'h', name: 'Huevo entero', kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, unit_g: 55, unit_label: 'huevo', unit_plural: 'huevos' }
-const arroz: Food = { id: 'a', name: 'Arroz cocido', kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' }
-const aceite: Food = { id: 'o', name: 'Aceite de oliva', kcal: 884, protein: 0, carbs: 0, fat: 100, unit_g: null, unit_label: null, unit_plural: null }
+const huevo: Food = { id: 'h', name: 'Huevo entero', kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, unit_g: 55, unit_label: 'huevo', unit_plural: 'huevos', estimated: false }
+const arroz: Food = { id: 'a', name: 'Arroz cocido', kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas', estimated: false }
+const aceite: Food = { id: 'o', name: 'Aceite de oliva', kcal: 884, protein: 0, carbs: 0, fat: 100, unit_g: null, unit_label: null, unit_plural: null, estimated: true }
 const foods = new Map([huevo, arroz, aceite].map((f) => [f.id, f]))
 
 const row = (food_id: string, amount: string, unit: 'g' | 'u'): MealRow => ({ key: food_id, food_id, amount, unit })
@@ -87,5 +87,17 @@ describe('resumen', () => {
     ]
     expect(itemsSummary(items)).toBe('Huevo entero, Atún en aceite de oliva, Arroz cocido, +1')
     expect(itemsSummary(null)).toBe('')
+  })
+})
+
+describe('calorías estimadas', () => {
+  it('solo cuentan los alimentos marcados como estimados', () => {
+    // aceite (estimado) 10 g = 88,4 kcal; huevo y arroz no
+    const rows = [row('h', '3', 'u'), row('a', '100', 'g'), row('o', '10', 'g')]
+    expect(rowsEstimatedKcal(rows, foods)).toBeCloseTo(88.4, 5)
+  })
+
+  it('sin alimentos estimados son 0', () => {
+    expect(rowsEstimatedKcal([row('h', '2', 'u')], foods)).toBe(0)
   })
 })

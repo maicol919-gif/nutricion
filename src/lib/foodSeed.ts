@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { SEED_FOODS, SEED_RECIPES } from '../data/foodSeed'
+import { SEED_FOODS, SEED_FOODS_V2, SEED_RECIPES } from '../data/foodSeed'
 
 let running: Promise<void> | null = null
 
@@ -16,6 +16,7 @@ async function run(): Promise<void> {
       unit_g: f.unit_g ?? null,
       unit_label: f.unit_label ?? null,
       unit_plural: f.unit_plural ?? null,
+      estimated: f.estimated ?? false,
     }))
     const { error } = await supabase.from('foods').insert(rows)
     if (error) throw error
@@ -23,7 +24,38 @@ async function run(): Promise<void> {
 
   const recipeCount = await supabase.from('recipes').select('id', { count: 'exact', head: true })
   if (recipeCount.error) throw recipeCount.error
-  if (recipeCount.count) return
+  if (!recipeCount.count) await seedRecipes()
+  await topUpFoods()
+}
+
+/** Alimentos genéricos nuevos: se añaden una sola vez (sin repetir los que ya existen) y se anota la versión. */
+async function topUpFoods(): Promise<void> {
+  const st = await supabase.from('settings').select('food_seed_version').maybeSingle()
+  if (st.error) throw st.error
+  if (Number(st.data?.food_seed_version ?? 1) >= 2) return
+  const have = await supabase.from('foods').select('name')
+  if (have.error) throw have.error
+  const names = new Set((have.data ?? []).map((f) => f.name as string))
+  const rows = SEED_FOODS_V2.filter((f) => !names.has(f.name)).map((f) => ({
+    name: f.name,
+    kcal: f.kcal,
+    protein: f.protein,
+    carbs: f.carbs,
+    fat: f.fat,
+    unit_g: f.unit_g ?? null,
+    unit_label: f.unit_label ?? null,
+    unit_plural: f.unit_plural ?? null,
+    estimated: true,
+  }))
+  if (rows.length) {
+    const ins = await supabase.from('foods').insert(rows)
+    if (ins.error) throw ins.error
+  }
+  const up = await supabase.from('settings').upsert({ food_seed_version: 2 })
+  if (up.error) throw up.error
+}
+
+async function seedRecipes(): Promise<void> {
 
   const foods = await supabase.from('foods').select('id,name')
   if (foods.error) throw foods.error
