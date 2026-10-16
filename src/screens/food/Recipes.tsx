@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import type { FoodData } from '../../lib/useFoodData'
 import { householdLabel, recipeMacros, roundMacros } from '../../lib/nutrition'
 import RecipeEditor from './RecipeEditor'
+import { methodLabel } from '../../lib/recipes'
+import type { Recipe } from '../../types'
 
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
 
@@ -9,7 +11,7 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
   const [query, setQuery] = useState('')
   const [maxMin, setMaxMin] = useState<number | null>(null)
   const [open, setOpen] = useState<string | null>(null)
-  const [creating, setCreating] = useState(false)
+  const [editor, setEditor] = useState<{ recipe: Recipe | null; copy: boolean } | null>(null)
 
   const q = query.trim().toLowerCase()
   const list = useMemo(
@@ -24,9 +26,9 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
     <div>
       <div className="row">
         <input placeholder="Buscar receta o etiqueta (horno, sin cocinar…)" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <button onClick={() => setCreating(true)}>+ Nueva</button>
+        <button onClick={() => setEditor({ recipe: null, copy: false })}>+ Nueva</button>
       </div>
-      {creating && <RecipeEditor data={data} onSaved={() => { setCreating(false); setQuery('') }} onClose={() => setCreating(false)} />}
+      {editor && <RecipeEditor data={data} recipe={editor.recipe} copy={editor.copy} onSaved={() => { setEditor(null); setQuery('') }} onClose={() => setEditor(null)} />}
       <div className="chips">
         {[null, 5, 10, 15].map((m) => (
           <button key={String(m)} className={`chip ${maxMin === m ? 'on' : ''}`} onClick={() => setMaxMin(m)}>
@@ -49,7 +51,8 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
             </button>
             {isOpen && (
               <div className="guide">
-                {r.tags.length > 0 && <p className="muted">{r.tags.join(' · ')}</p>}
+                {(r.method || r.tags.length > 0) && <p className="muted">{[methodLabel(r.method), ...r.tags].filter(Boolean).join(' · ')}</p>}
+                {r.final_weight_g ? <p className="muted">Peso total de lo preparado: {fmt(r.final_weight_g)} g</p> : null}
                 <h3>Ingredientes (1 ración)</h3>
                 <ul>
                   {items.map((it) => {
@@ -64,6 +67,10 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
                   {r.steps.split('\n').filter(Boolean).map((s, i) => <li key={i}>{s}</li>)}
                 </ol>
                 <button className="primary" onClick={() => onLog(r.id)}>Registrar en mi día</button>
+                <div className="row">
+                  <button onClick={() => setEditor({ recipe: r, copy: false })}>Editar</button>
+                  <button onClick={() => setEditor({ recipe: r, copy: true })}>Duplicar</button>
+                </div>
               </div>
             )}
           </section>

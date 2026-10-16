@@ -14,6 +14,8 @@ export interface Food {
   disabled: boolean
 }
 
+export type Method = 'horno' | 'sarten' | 'microondas' | 'olla' | 'plancha' | 'sin_cocinar'
+
 export type MealKey = 'desayuno' | 'comida' | 'merienda' | 'cena'
 
 export interface Recipe {
@@ -24,6 +26,10 @@ export interface Recipe {
   steps: string
   tags: string[]
   servings: number
+  /** peso de todo lo preparado, si se pesó (g) */
+  final_weight_g: number | null
+  /** cómo se cocina: sirve para estimar el peso final y para saber qué hace la receta */
+  method: Method | null
 }
 
 export interface RecipeItem {

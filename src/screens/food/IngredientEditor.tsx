@@ -8,6 +8,20 @@ const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
 let seq = 0
 const newKey = (id: string) => `${id}-e${++seq}`
 
+export interface EditorLabels {
+  title: string
+  addButton: string
+  searchPlaceholder: string
+  empty: string
+}
+
+const RECIPE_LABELS: EditorLabels = {
+  title: 'Ingredientes',
+  addButton: '+ Añadir ingrediente',
+  searchPlaceholder: 'Buscar ingrediente',
+  empty: 'Aún no hay ingredientes. Añade el primero.',
+}
+
 interface Props {
   rows: MealRow[]
   setRows: (updater: (rows: MealRow[]) => MealRow[]) => void
@@ -15,10 +29,12 @@ interface Props {
   /** se avisa al añadir un ingrediente (por ejemplo, para poner nombre por defecto) */
   onAdd?: (f: Food) => void
   hint?: string
+  /** textos: al registrar son "alimentos"; en una receta son "ingredientes" */
+  labels?: EditorLabels
 }
 
 /** Lista editable de ingredientes (cantidad en gramos o medida casera, calorías de cada uno) con buscador para añadir más. */
-export default function IngredientEditor({ rows, setRows, data, onAdd, hint }: Props) {
+export default function IngredientEditor({ rows, setRows, data, onAdd, hint, labels = RECIPE_LABELS }: Props) {
   const [adding, setAdding] = useState(false)
   const [addQuery, setAddQuery] = useState('')
 
@@ -48,7 +64,7 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint }: P
 
   return (
     <>
-      <h3>Ingredientes</h3>
+      <h3>{labels.title}</h3>
       <p className="muted">{hint ?? 'Ajusta lo que usaste, mejor en cosas que puedas contar (1 muslo, 2 huevos, 3 cucharadas). No hace falta apuntar lo que suma menos de unas 20 kcal (ajo, especias, sal, limón): quítalo con la ✕.'}</p>
       {rows.map((r) => {
         const f = data.foodById.get(r.food_id)
@@ -66,11 +82,11 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint }: P
           </div>
         )
       })}
-      {rows.length === 0 && <p className="muted">Aún no hay ingredientes. Añade el primero.</p>}
+      {rows.length === 0 && <p className="muted">{labels.empty}</p>}
 
       {adding ? (
         <div>
-          <input autoFocus placeholder="Buscar ingrediente" value={addQuery} onChange={(e) => setAddQuery(e.target.value)} />
+          <input autoFocus placeholder={labels.searchPlaceholder} value={addQuery} onChange={(e) => setAddQuery(e.target.value)} />
           {addFoods.map((f) => (
             <button key={f.id} className="exrow" onClick={() => addIngredient(f)}>
               <span><strong>{f.name}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
@@ -79,7 +95,7 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint }: P
           <button className="link" onClick={() => setAdding(false)}>Cancelar</button>
         </div>
       ) : (
-        <button onClick={() => setAdding(true)}>+ Añadir ingrediente</button>
+        <button onClick={() => setAdding(true)}>{labels.addButton}</button>
       )}
     </>
   )

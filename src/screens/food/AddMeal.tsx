@@ -6,7 +6,8 @@ import type { Food, MealEntry, MealKey, Recipe } from '../../types'
 import { MEALS, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
 import { similarFoods } from '../../lib/foods'
 import SimilarFoods from './SimilarFoods'
-import IngredientEditor from './IngredientEditor'
+import IngredientEditor, { type EditorLabels } from './IngredientEditor'
+import { servingsForWeight, weightFactor } from '../../lib/recipes'
 import { parseAmount, rowFromGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
 
 type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
@@ -22,6 +23,15 @@ interface Props {
   onSaved: () => void
   onClose: () => void
 }
+
+const MEAL_LABELS: EditorLabels = {
+  title: 'Lo que comiste',
+  addButton: '+ Añadir alimento',
+  searchPlaceholder: 'Buscar alimento',
+  empty: 'Aún no has añadido nada. Añade el primero.',
+}
+
+const weightFactorMissing = (m: Parameters<typeof weightFactor>[0]) => weightFactor(m) == null
 
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
 let rowSeq = 0
@@ -70,6 +80,9 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const [rows, setRows] = useState<MealRow[]>(start.rows)
   const [base, setBase] = useState<Base>(start.base)
   const [mult, setMult] = useState('1')
+  const [qtyMode, setQtyMode] = useState<'raciones' | 'peso'>('raciones')
+  const [eatenG, setEatenG] = useState('')
+  const [weightEst, setWeightEst] = useState(false)
   const [label, setLabel] = useState(start.label)
   const [recipeId, setRecipeId] = useState<string | null>(start.recipeId)
   const [note, setNote] = useState(editEntry?.note ?? '')
@@ -124,6 +137,9 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     setLabel(r.label)
     setRecipeId(r.recipeId)
     setMult('1')
+    setQtyMode('raciones')
+    setEatenG('')
+    setWeightEst(false)
     setNote('')
     setErr(null)
     setComposing(true)
@@ -151,7 +167,25 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     if (f) return pickFood(f)
   }
 
+  const recipeObj = recipeId ? data.recipes.find((r) => r.id === recipeId) : undefined
+  const recipeItems = recipeObj ? data.itemsByRecipe.get(recipeObj.id) ?? [] : []
+  const byWeight = recipeObj && base.length > 0 && qtyMode === 'peso' ? servingsForWeight(parseAmount(eatenG), recipeObj, recipeItems) : null
+
+  /** Por peso: lo que pesó tu parte, comparado con el peso total de la receta, da las raciones equivalentes. */
+  function applyWeight(g: string) {
+    setEatenG(g)
+    if (!recipeObj) return
+    const r = servingsForWeight(parseAmount(g), recipeObj, recipeItems)
+    setWeightEst(!!r?.total.estimated)
+    if (r) {
+      const k = Math.round(r.servings * 1000) / 1000
+      setMult(String(k).replace('.', ','))
+      setRows(rowsFromItems(base, data.foodById, k))
+    }
+  }
+
   function applyMult(m: string) {
+    setWeightEst(false)
     setMult(m)
     const k = parseAmount(m)
     if (base.length && k > 0) setRows(rowsFromItems(base, data.foodById, k))
@@ -246,7 +280,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
   async function save() {
     setErr(null)
-    if (validRows.length === 0) return setErr('Añade al menos un ingrediente con cantidad.')
+    if (validRows.length === 0) return setErr('Añade al menos un alimento con cantidad.')
     const name = label.trim() || (validRows.length === 1 ? validRows[0].name : 'Plato')
     if (saveRecipe && !recipeName.trim()) return setErr('Ponle un nombre a tu receta.')
     setSaving(true)
@@ -272,7 +306,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
         servings: null,
         grams: null,
         ...macros,
-        kcal_estimated: Math.min(macros.kcal, estimatedKcal),
+        kcal_estimated: weightEst ? macros.kcal : Math.min(macros.kcal, estimatedKcal),
         items: validRows,
         photo_path: photoPath,
         status: 'done',
@@ -431,17 +465,40 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
             {base.length > 0 && (
               <>
-                <p className="muted">Raciones (reescala todos los ingredientes)</p>
                 <div className="chips">
-                  {['0.5', '1', '1.5', '2'].map((s) => (
-                    <button key={s} className={`chip ${mult === s ? 'on' : ''}`} onClick={() => applyMult(s)}>{s.replace('.', ',')}</button>
-                  ))}
-                  <input style={{ width: 86 }} inputMode="decimal" value={mult} onChange={(e) => applyMult(e.target.value)} aria-label="Otra cantidad de raciones" placeholder="otra" />
+                  <button className={`chip ${qtyMode === 'raciones' ? 'on' : ''}`} onClick={() => setQtyMode('raciones')}>Por raciones</button>
+                  <button className={`chip ${qtyMode === 'peso' ? 'on' : ''}`} onClick={() => setQtyMode('peso')} disabled={!recipeObj}>Por peso</button>
                 </div>
+                {qtyMode === 'raciones' ? (
+                  <>
+                    <p className="muted">Raciones (reescala todo lo que comiste)</p>
+                    <div className="chips">
+                      {['0.5', '1', '1.5', '2'].map((s) => (
+                        <button key={s} className={`chip ${mult === s ? 'on' : ''}`} onClick={() => applyMult(s)}>{s.replace('.', ',')}</button>
+                      ))}
+                      <input style={{ width: 86 }} inputMode="decimal" value={mult} onChange={(e) => applyMult(e.target.value)} aria-label="Otra cantidad de raciones" placeholder="otra" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <label>Peso de lo que comiste (g)<input inputMode="decimal" value={eatenG} onChange={(e) => applyWeight(e.target.value)} placeholder="ej. 180" /></label>
+                    {byWeight ? (
+                      <p className="muted">
+                        = {fmt(byWeight.servings, 2)} raciones, sobre un total de {fmt(byWeight.total.grams)} g {byWeight.total.estimated ? '(estimado a partir de los ingredientes: lo marco como estimado)' : '(pesado)'}.
+                      </p>
+                    ) : (
+                      <p className="muted">
+                        {recipeObj && !recipeObj.final_weight_g && weightFactorMissing(recipeObj.method)
+                          ? 'Esta receta no tiene peso total y su método no permite estimarlo. Usa raciones, o edita la receta y añade el peso total de lo preparado.'
+                          : 'Escribe cuánto pesó lo que comiste.'}
+                      </p>
+                    )}
+                  </>
+                )}
               </>
             )}
 
-            <IngredientEditor rows={rows} setRows={setRows} data={data} onAdd={(f) => { if (!label) setLabel(f.name) }} />
+            <IngredientEditor rows={rows} setRows={setRows} data={data} labels={MEAL_LABELS} onAdd={(f) => { if (!label) setLabel(f.name) }} />
 
             <p>
               <strong>{macros.kcal} kcal</strong> · <strong>{fmt(macros.protein, 1)} g proteína</strong>

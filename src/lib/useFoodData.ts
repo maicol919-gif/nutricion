@@ -33,7 +33,7 @@ export function useFoodData(): { data: FoodData | null; error: string | null } {
       for (const res of [f, r, i]) if (res.error) throw res.error
       setRaw({
         foods: (f.data ?? []).map((x) => ({ ...x, kcal: num(x.kcal), protein: num(x.protein), carbs: num(x.carbs), fat: num(x.fat), unit_g: x.unit_g == null ? null : num(x.unit_g) })) as Food[],
-        recipes: (r.data ?? []).map((x) => ({ ...x, servings: num(x.servings) })) as Recipe[],
+        recipes: (r.data ?? []).map((x) => ({ ...x, servings: num(x.servings), final_weight_g: x.final_weight_g == null ? null : num(x.final_weight_g) })) as Recipe[],
         items: (i.data ?? []).map((x) => ({ ...x, grams: num(x.grams) })) as RecipeItem[],
       })
     } catch (e) {

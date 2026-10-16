@@ -2,6 +2,12 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.15 · 2026-10-19
+- **Editar y duplicar recetas** (Alimentación → Recetas → abrir una receta). Al guardar como nueva o duplicar, avisa de las recetas parecidas que ya tienes para evitar tener varias casi iguales. Editar no cambia tus registros anteriores.
+- **Método de cocción** en cada receta (horno, sartén, microondas, olla, plancha, sin cocinar) y **peso total de lo preparado** (opcional).
+- **Registrar por peso:** en una receta puedes elegir "Por peso" y escribir cuánto pesó lo que comiste; la app calcula las raciones. Si no pesaste el total, lo estima solo en horno (−10 % por el agua que pierde al hornear), microondas (−15 %) y sin cocinar, y lo marca como estimado.
+- Al registrar, las líneas se llaman **"Lo que comiste"** y **"+ Añadir alimento"**; "Ingredientes" queda solo para las recetas.
+
 ## 1.14 · 2026-10-19
 - **Raciones a medida:** junto a los botones 0,5 · 1 · 1,5 · 2 hay un campo para escribir cualquier cantidad (por ejemplo 0,25 o 3).
 
