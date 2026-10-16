@@ -8,7 +8,7 @@ export default function SettingsTab() {
     const blob = new Blob([JSON.stringify(out, null, 1)], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `comida-respaldo-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `alimentacion-respaldo-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
   }
 

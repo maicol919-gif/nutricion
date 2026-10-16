@@ -1,4 +1,4 @@
-# Comida
+# Alimentación
 
 App web instalable (PWA) para registrar la alimentación, el peso y la cintura. Pensada para un solo usuario y para usarse desde el celular. Es la compañera de **Entreno** (la app de entrenamiento): las dos comparten la misma cuenta y la misma base de datos en Supabase.
 
@@ -13,7 +13,7 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 
 ## Base de datos compartida
 
-Usa el mismo proyecto de Supabase que Entreno (tablas `foods`, `recipes`, `recipe_items`, `meal_log`, `body_weight`, `settings`). El esquema completo está en el repositorio de Entreno (`supabase/schema.sql`). Comida solo escribe sus propias tablas y las columnas `height_cm`, `kcal_target` y `protein_target` de `settings`.
+Usa el mismo proyecto de Supabase que Entreno (tablas `foods`, `recipes`, `recipe_items`, `meal_log`, `body_weight`, `settings`). El esquema completo está en el repositorio de Entreno (`supabase/schema.sql`). Alimentación solo escribe sus propias tablas y las columnas `height_cm`, `kcal_target` y `protein_target` de `settings`.
 
 ## Stack
 

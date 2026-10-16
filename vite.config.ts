@@ -15,7 +15,7 @@ export default defineConfig({
     __BUILD_ID__: JSON.stringify(BUILD_ID),
     __BUILD__: JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' ')),
   },
-  base: '/comida/',
+  base: '/alimentacion/',
   plugins: [
     react(),
     {
@@ -31,15 +31,15 @@ export default defineConfig({
     VitePWA({
       registerType: 'prompt',
       manifest: {
-        name: 'Comida',
-        short_name: 'Comida',
+        name: 'Alimentación',
+        short_name: 'Alimentación',
         description: 'Registro de alimentación, peso y cintura',
         lang: 'es',
         theme_color: '#0f1115',
         background_color: '#0f1115',
         display: 'standalone',
-        start_url: '/comida/',
-        scope: '/comida/',
+        start_url: '/alimentacion/',
+        scope: '/alimentacion/',
         icons: [{ src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
       },
     }),

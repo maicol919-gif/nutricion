@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.1 · 2026-10-17
+- La app pasa a llamarse **Alimentación** (nuevo nombre, nueva dirección: https://maicol919-gif.github.io/alimentacion/). La pestaña de registro de comidas conserva el nombre Comida.
+
 ## 1.0 · 2026-10-17
 - Primera versión como app independiente. Nace de las pestañas Comida y Cuerpo de Entreno 2.7 (que pasan a vivir aquí) con la misma cuenta y los mismos datos.
 - Mi día, recetas como plantillas editables, repetir comidas, foto con detalles después, alimentos editables y recetas rápidas de Mercadona.
