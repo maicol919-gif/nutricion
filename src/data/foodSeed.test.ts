@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SEED_FOODS, SEED_FOODS_V2, SEED_FOODS_V3, SEED_RECIPES } from './foodSeed'
+import { SEED_FOODS, SEED_FOODS_V2, SEED_FOODS_V3, SEED_FOODS_V4, SEED_RECIPES } from './foodSeed'
 import { recipeMacros, roundMacros } from '../lib/nutrition'
 
 const foods = new Map(SEED_FOODS.map((f, i) => [f.name, { ...f, food_id: String(i) }]))
@@ -84,5 +84,13 @@ describe('datos iniciales de alimentación', () => {
     const m = SEED_FOODS_V3.find((f) => f.name.startsWith('Muslo de pollo crudo'))!
     expect(m.estimated).toBe(true)
     expect(m.unit_g).toBeGreaterThan(0)
+  })
+
+  it('los condimentos no repiten nombres y aportan muy pocas calorías por unidad', () => {
+    const before = new Set([...SEED_FOODS, ...SEED_FOODS_V2, ...SEED_FOODS_V3].map((f) => f.name))
+    for (const f of SEED_FOODS_V4) {
+      expect(before.has(f.name), f.name).toBe(false)
+      expect(((f.unit_g ?? 0) * f.kcal) / 100, f.name).toBeLessThan(10)
+    }
   })
 })

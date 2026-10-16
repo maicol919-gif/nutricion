@@ -2,6 +2,11 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.5 · 2026-10-18
+- Cada ingrediente muestra sus calorías al registrar, para ver qué pesa en el día y qué no.
+- Consejo en pantalla: lo que suma menos de ~20 kcal (ajo, especias, sal, limón) no hace falta apuntarlo.
+- Alimentos nuevos: ajo (por diente), limón (por chorrito) y especias/sal/hierbas (por pizca).
+
 ## 1.4 · 2026-10-18
 - 34 alimentos habituales más: muslo de pollo crudo **con hueso** (se registra "1 muslo" o los gramos crudos de la pieza, sin separar el hueso), carnes y pescados, fruta (plátano, manzana…), verduras, legumbres, lácteos, frutos secos, miel y mantequilla.
 - Los alimentos de un solo ingrediente usan valores de tablas y no se marcan como estimados; sí lo están los que dependen del hueso, la marca o la conserva.

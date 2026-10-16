@@ -1,8 +1,8 @@
 import { supabase } from './supabase'
-import { SEED_FOODS, SEED_FOODS_V2, SEED_FOODS_V3, SEED_RECIPES } from '../data/foodSeed'
+import { SEED_FOODS, SEED_FOODS_V2, SEED_FOODS_V3, SEED_FOODS_V4, SEED_RECIPES } from '../data/foodSeed'
 
 /** Versión de los alimentos iniciales: al subirla, los nuevos se añaden una sola vez. */
-const SEED_VERSION = 3
+const SEED_VERSION = 4
 
 let running: Promise<void> | null = null
 
@@ -39,7 +39,7 @@ async function topUpFoods(): Promise<void> {
   const have = await supabase.from('foods').select('name')
   if (have.error) throw have.error
   const names = new Set((have.data ?? []).map((f) => f.name as string))
-  const rows = [...SEED_FOODS_V2, ...SEED_FOODS_V3].filter((f) => !names.has(f.name)).map((f) => ({
+  const rows = [...SEED_FOODS_V2, ...SEED_FOODS_V3, ...SEED_FOODS_V4].filter((f) => !names.has(f.name)).map((f) => ({
     name: f.name,
     kcal: f.kcal,
     protein: f.protein,

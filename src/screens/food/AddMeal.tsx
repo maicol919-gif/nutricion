@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { uploadMealPhoto } from '../../lib/photo'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food, MealEntry, MealKey, Recipe } from '../../types'
-import { MEALS, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
+import { MEALS, foodMacros, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
 import { parseAmount, rowFromGrams, rowGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
 
 type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
@@ -443,13 +443,14 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
             )}
 
             <h3>Ingredientes</h3>
-            <p className="muted">Ajusta lo que realmente usaste. Puedes cambiar entre gramos y medida casera.</p>
+            <p className="muted">Ajusta lo que usaste, mejor en cosas que puedas contar (1 muslo, 2 huevos, 3 cucharadas). No hace falta apuntar lo que suma menos de unas 20 kcal (ajo, especias, sal, limón): quítalo con la ✕.</p>
             {rows.map((r) => {
               const f = data.foodById.get(r.food_id)
               if (!f) return null
+              const rowKcal = Math.round(foodMacros(f, rowGrams(r, f)).kcal)
               return (
                 <div key={r.key} className="ing">
-                  <span className="ing-name">{f.name}{f.estimated && <em className="est"> · estimado</em>}</span>
+                  <span className="ing-name">{f.name}{f.estimated && <em className="est"> · estimado</em>}<small className="muted"> · {rowKcal} kcal</small></span>
                   <input inputMode="decimal" value={r.amount} onChange={(e) => updateRow(r.key, { amount: e.target.value })} aria-label={`Cantidad de ${f.name}`} />
                   <select value={r.unit === 'u' && f.unit_g ? 'u' : 'g'} onChange={(e) => changeUnit(r, e.target.value as 'g' | 'u')} aria-label={`Unidad de ${f.name}`}>
                     <option value="g">g</option>

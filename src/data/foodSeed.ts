@@ -316,3 +316,10 @@ export const SEED_FOODS_V3: SeedFood[] = [
   { name: 'Miel', kcal: 304, protein: 0.3, carbs: 82, fat: 0, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' },
   { name: 'Mantequilla', kcal: 717, protein: 0.9, carbs: 0.1, fat: 81, unit_g: 5, unit_label: 'cucharadita', unit_plural: 'cucharaditas' },
 ]
+
+/** Condimentos: aportan muy pocas calorías; existen para poder anotarlos sin pesar, o ignorarlos. */
+export const SEED_FOODS_V4: SeedFood[] = [
+  { name: 'Ajo', kcal: 149, protein: 6.4, carbs: 33, fat: 0.5, unit_g: 3, unit_label: 'diente', unit_plural: 'dientes' },
+  { name: 'Limón (zumo)', kcal: 22, protein: 0.4, carbs: 6.9, fat: 0.2, unit_g: 15, unit_label: 'chorrito', unit_plural: 'chorritos' },
+  { name: 'Especias, sal y hierbas', kcal: 0, protein: 0, carbs: 0, fat: 0, unit_g: 1, unit_label: 'pizca', unit_plural: 'pizcas' },
+]
