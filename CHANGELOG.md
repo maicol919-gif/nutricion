@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.3 · 2026-10-18
+- Crear un alimento nuevo desde la misma ventana de Añadir comida: botón "Crear un alimento nuevo" en la lista de Alimentos (con el nombre buscado ya escrito) y la pestaña Etiqueta, que ahora permite marcar los valores como aproximados.
+
 ## 1.2 · 2026-10-17
 - **37 alimentos genéricos** de bollería, postres, comida de restaurante, salsas y bebidas (croissant, bizcocho, pizza, paella, cerveza, café con leche…), con su peso típico por unidad. Se marcan como **estimados** y puedes corregir el peso de la unidad pesando una pieza una sola vez.
 - **Etiqueta:** copia los valores de un producto (por 100 g o por unidad) una sola vez; queda guardado y listo para repetir.

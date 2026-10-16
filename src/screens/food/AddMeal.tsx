@@ -90,6 +90,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const [lProtein, setLProtein] = useState('')
   const [lCarbs, setLCarbs] = useState('')
   const [lFat, setLFat] = useState('')
+  const [lEstimated, setLEstimated] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -203,7 +204,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
         unit_g: unitGrams ?? null,
         unit_label: unitGrams ? unitName : null,
         unit_plural: unitGrams ? (unitName === 'unidad' ? 'unidades' : unitName) : null,
-        estimated: false,
+        estimated: lEstimated,
       })
       .select('id')
       .single()
@@ -363,13 +364,14 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                     <span><strong>{f.name}{f.estimated ? ' · estimado' : ''}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
                   </button>
                 ))}
-                {foods.length === 0 && <p className="muted">Ningún alimento coincide. Prueba en "Etiqueta" (si tiene etiqueta) o en "Rápido".</p>}
+                {foods.length === 0 && <p className="muted">Ningún alimento coincide.</p>}
+                <button onClick={() => { setLName(query.trim()); setMode('etiqueta') }}>+ Crear un alimento nuevo{query.trim() ? ` ("${query.trim()}")` : ''}</button>
               </>
             )}
 
             {mode === 'etiqueta' && (
               <section className="card">
-                <p className="muted">Copia los valores de la etiqueta una sola vez: queda guardado para repetirlo.</p>
+                <p className="muted">Sirve para productos con etiqueta y para crear un alimento nuevo (muslo, plátano…): escribes los valores una sola vez y queda guardado.</p>
                 <label>Producto<input value={lName} onChange={(e) => setLName(e.target.value)} placeholder="ej. Galletas de avena" /></label>
                 <label>La etiqueta indica los valores
                   <select value={lBasis} onChange={(e) => setLBasis(e.target.value as '100g' | 'unit')}>
@@ -391,6 +393,10 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                   <label style={{ flex: 1 }}>Carbohidratos (g)<input inputMode="decimal" placeholder="opcional" value={lCarbs} onChange={(e) => setLCarbs(e.target.value)} /></label>
                   <label style={{ flex: 1 }}>Grasa (g)<input inputMode="decimal" placeholder="opcional" value={lFat} onChange={(e) => setLFat(e.target.value)} /></label>
                 </div>
+                <label className="check-row">
+                  <input type="checkbox" checked={lEstimated} onChange={(e) => setLEstimated(e.target.checked)} />
+                  <span>Valores aproximados (no vienen de una etiqueta)</span>
+                </label>
                 {err && <p className="err">{err}</p>}
                 <button className="primary" disabled={saving} onClick={saveLabelFood}>Guardar y usar</button>
               </section>
