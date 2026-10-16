@@ -108,7 +108,7 @@ export default function Foods({ data }: { data: FoodData }) {
     }
     const { error } = form.id ? await supabase.from('foods').update(row).eq('id', form.id) : await supabase.from('foods').insert(row)
     if (error) return setMsg(error.code === '23505' ? 'Ya existe un alimento con ese nombre (puede estar deshabilitado: míralo abajo en "Deshabilitados").' : error.message)
-    setMsg('Guardado. Las comidas ya registradas no cambian.')
+    setMsg('Guardado. Tus registros anteriores no cambian.')
     setForm(null)
     await data.reload()
   }
@@ -117,7 +117,7 @@ export default function Foods({ data }: { data: FoodData }) {
     if (!form?.id) return
     const { error } = await supabase.from('foods').update({ disabled }).eq('id', form.id)
     if (error) return setMsg(error.message)
-    setMsg(disabled ? 'Alimento deshabilitado: ya no sale en las búsquedas. Tus comidas anteriores siguen igual y puedes habilitarlo cuando quieras.' : 'Alimento habilitado.')
+    setMsg(disabled ? 'Alimento deshabilitado: ya no sale en las búsquedas. Tus registros anteriores siguen igual y puedes habilitarlo cuando quieras.' : 'Alimento habilitado.')
     setForm(null)
     await data.reload()
   }
@@ -138,7 +138,7 @@ export default function Foods({ data }: { data: FoodData }) {
     return (
       <section className="card">
         <h3>{form.id ? 'Editar alimento' : 'Nuevo alimento'}</h3>
-        {current?.disabled && <p className="warn-text">Este alimento está deshabilitado: no sale en las búsquedas, pero tus comidas anteriores lo conservan.</p>}
+        {current?.disabled && <p className="warn-text">Este alimento está deshabilitado: no sale en las búsquedas, pero tus registros anteriores lo conservan.</p>}
         <p className="muted">Valores por 100 g, tal como salen en la etiqueta.</p>
         {msg && <p className="err">{msg}</p>}
         <label>Nombre<input value={form.name} onChange={set('name')} /></label>
@@ -169,9 +169,9 @@ export default function Foods({ data }: { data: FoodData }) {
             <p className="muted">
               {current?.disabled
                 ? 'Vuelve a salir en las búsquedas.'
-                : 'Deja de salir en las búsquedas, pero tus comidas y recetas que lo usan no cambian. Es reversible.'}
+                : 'Deja de salir en las búsquedas, pero tus registros y recetas que lo usan no cambian. Es reversible.'}
             </p>
-            {usage && <p className="muted">Usado en {usage.meals} {usage.meals === 1 ? 'comida registrada' : 'comidas registradas'} y {usage.recipes} {usage.recipes === 1 ? 'receta' : 'recetas'}.</p>}
+            {usage && <p className="muted">Usado en {usage.meals} {usage.meals === 1 ? 'registro' : 'registros'} y {usage.recipes} {usage.recipes === 1 ? 'receta' : 'recetas'}.</p>}
             <button onClick={() => setDisabled(!current?.disabled)}>{current?.disabled ? 'Habilitar' : 'Deshabilitar'}</button>
             {unused && <button className="link" onClick={remove}>Borrar definitivamente (nunca se usó)</button>}
           </div>

@@ -4,10 +4,10 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 
 ## Qué hace
 
-- **Alimentación → Mi día:** barras de proteína y calorías contra tus metas, lo que te falta, y las comidas agrupadas (desayuno, comida, cena y extras). Navegación por días para completar olvidos.
-- **Recetas como plantillas:** al registrar una comida ves cada ingrediente con su cantidad (gramos o medida casera: cucharadas, huevos, latas). Puedes cambiarla, quitar o añadir ingredientes y reescalar las raciones. Se puede guardar como receta propia.
-- **Repetir** una comida reciente con las mismas cantidades.
-- **Foto ahora, detalles después:** la foto crea una comida "por completar" que no cuenta en los totales hasta que indicas qué llevaba. Las fotos son privadas. La app no estima calorías desde la foto (las apps que lo hacen subestiman las cantidades).
+- **Alimentación → Mi día:** barras de proteína y calorías contra tus metas, lo que te falta, y los registros agrupados por momento del día (desayuno, comida, cena y extras). Navegación por días para completar olvidos.
+- **Recetas como plantillas:** al registrar ves cada ingrediente con su cantidad (gramos o medida casera: cucharadas, huevos, latas). Puedes cambiarla, quitar o añadir ingredientes y reescalar las raciones. Se puede guardar como receta propia.
+- **Repetir** un registro reciente con las mismas cantidades.
+- **Foto ahora, detalles después:** la foto crea un registro "por completar" que no cuenta en los totales hasta que indicas qué llevaba. Las fotos son privadas. La app no estima calorías desde la foto (las apps que lo hacen subestiman las cantidades).
 - **Recetas y alimentos:** 16 recetas rápidas de Mercadona y 40 alimentos con valores por 100 g, editables con la etiqueta de tu marca. Cada registro guarda su propia copia de los valores.
 - **Genéricos y etiqueta:** alimentos sin etiqueta (bollería, restaurante, bebidas) con peso típico por unidad y marca de estimado; productos con etiqueta se guardan una vez. Cada día indica cuántas kcal son estimadas.
 - **Día sin registrar:** marca un día como no registrado, sin penalización.

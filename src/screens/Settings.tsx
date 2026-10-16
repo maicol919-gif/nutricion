@@ -29,7 +29,7 @@ export default function SettingsTab() {
 
       <section className="card">
         <h3>Datos</h3>
-        <p className="muted">Descarga todo lo que has registrado (comidas, alimentos, recetas, peso y cintura).</p>
+        <p className="muted">Descarga todo lo que has registrado (registros de lo que comes, alimentos, recetas, peso y cintura).</p>
         <button onClick={exportAll}>Descargar respaldo</button>
       </section>
 

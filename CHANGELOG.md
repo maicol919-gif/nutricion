@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.12 · 2026-10-18
+- **Un solo significado para "Comida":** queda únicamente como momento del día (Desayuno · Comida · Cena · Extras). Para cualquier cosa que apuntas se usa **registro**: el botón principal es "Registrar lo que comí", la ventana se llama "Nuevo registro" / "Editar registro" / "Completar registro", y los avisos hablan de "tus registros anteriores".
+
 ## 1.11 · 2026-10-18
 - **Deshabilitar desde la lista de Añadir comida:** cada alimento tiene un botón "Deshabilitar" a su derecha (con confirmación), para quitar un duplicado justo donde lo ves, sin salir de la ventana.
 

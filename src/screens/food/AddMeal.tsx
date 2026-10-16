@@ -187,7 +187,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   /** Cierra la ventana; si hay ingredientes sin guardar, pregunta antes de descartarlos. */
   function close() {
     const unsaved = composing && rows.length > 0 && !saving
-    if (unsaved && !window.confirm('Todavía no has registrado esta comida. ¿Descartar lo que escribiste?')) return
+    if (unsaved && !window.confirm('Todavía no has guardado este registro. ¿Descartar lo que escribiste?')) return
     onClose()
   }
   const validRows = useMemo(() => toStoredItems(rows, data.foodById), [rows, data.foodById])
@@ -196,7 +196,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
   /** Oculta un alimento de las búsquedas (sin borrar nada) para quitar duplicados al momento. */
   async function disableFood(f: Food) {
-    const ok = window.confirm(`¿Deshabilitar "${f.name}"?\n\nDejará de salir en las búsquedas. Tus comidas anteriores y tus recetas no cambian, y puedes habilitarlo de nuevo en Alimentación → Alimentos → Deshabilitados.`)
+    const ok = window.confirm(`¿Deshabilitar "${f.name}"?\n\nDejará de salir en las búsquedas. Tus registros anteriores y tus recetas no cambian, y puedes habilitarlo de nuevo en Alimentación → Alimentos → Deshabilitados.`)
     if (!ok) return
     const { error } = await supabase.from('foods').update({ disabled: true }).eq('id', f.id)
     if (error) return setErr(error.message)
@@ -315,10 +315,10 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   }
 
   return (
-    <div className="overlay" role="dialog" aria-label={editEntry ? 'Completar comida' : 'Añadir comida'}>
+    <div className="overlay" role="dialog" aria-label={editEntry ? 'Completar registro' : 'Nuevo registro'}>
       <div className="overlay-inner">
         <div className="row between">
-          <h2>{editEntry ? (editEntry.status === 'pending' ? 'Completar comida' : 'Editar comida') : 'Añadir comida'}</h2>
+          <h2>{editEntry ? (editEntry.status === 'pending' ? 'Completar registro' : 'Editar registro') : 'Nuevo registro'}</h2>
           <button onClick={close}>Cerrar</button>
         </div>
 
@@ -348,7 +348,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                 <input placeholder="Buscar" value={query} onChange={(e) => setQuery(e.target.value)} />
                 {!q && recent.length > 0 && (
                   <div>
-                    <p className="muted">Repetir una comida reciente (con tus mismas cantidades)</p>
+                    <p className="muted">Repetir algo reciente (con tus mismas cantidades)</p>
                     <div className="chips">
                       {recent.map((e) => <button key={e.id} className="chip" onClick={() => pickRecent(e)}>{e.label}</button>)}
                     </div>
@@ -451,8 +451,8 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
         {composing && (
           <section className="card">
-            {editEntry?.photo_path && <p className="muted">Esta comida tiene foto: mírala en la lista del día mientras completas los ingredientes.</p>}
-            <label>Nombre de la comida<input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="ej. Cena de huevos y atún" /></label>
+            {editEntry?.photo_path && <p className="muted">Este registro tiene foto: mírala en la lista del día mientras completas los ingredientes.</p>}
+            <label>Nombre<input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="ej. Cena de huevos y atún" /></label>
 
             {base.length > 0 && (
               <>

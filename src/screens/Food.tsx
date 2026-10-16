@@ -166,12 +166,12 @@ export default function Food() {
           {dayMarked && (
             <section className="card warn">
               <h3>Día sin registrar</h3>
-              <p className="muted">Este día no cuenta como fallo ni entra en tus promedios. Si registras una comida, la marca se quita sola.</p>
+              <p className="muted">Este día no cuenta como fallo ni entra en tus promedios. Si registras algo, la marca se quita sola.</p>
               <button onClick={toggleMark}>Quitar la marca</button>
             </section>
           )}
 
-          <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Añadir comida</button>
+          <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
 
           {pending.length > 0 && (
             <section className="card warn">
@@ -179,7 +179,7 @@ export default function Food() {
               <p className="muted">Todavía no cuentan en tus totales. Completa qué llevaban.</p>
               {pending.map((e) => (
                 <div key={e.id} className="entry">
-                  {e.photo_path && photoUrls[e.photo_path] ? <img className="thumb" src={photoUrls[e.photo_path]} alt="Foto de la comida" /> : <div className="thumb empty">sin foto</div>}
+                  {e.photo_path && photoUrls[e.photo_path] ? <img className="thumb" src={photoUrls[e.photo_path]} alt="Foto del plato" /> : <div className="thumb empty">sin foto</div>}
                   <div>
                     <strong>{MEALS.find((m) => m.key === e.meal)?.label}</strong>
                     <button onClick={() => setAdding({ recipeId: null, entry: e })}>Completar</button>
@@ -205,7 +205,7 @@ export default function Food() {
                   const summary = itemsSummary(e.items)
                   return (
                     <div key={e.id} className="entry">
-                      {e.photo_path && photoUrls[e.photo_path] && <img className="thumb" src={photoUrls[e.photo_path]} alt="Foto de la comida" />}
+                      {e.photo_path && photoUrls[e.photo_path] && <img className="thumb" src={photoUrls[e.photo_path]} alt="Foto del plato" />}
                       <div>
                         <strong>{e.label}</strong>
                         <small className="muted">{fmt(e.kcal)} kcal · {fmt(e.protein, 1)} g prot.</small>

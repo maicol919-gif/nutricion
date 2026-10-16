@@ -39,7 +39,7 @@ describe('AddMeal (render)', () => {
   it('completar una comida pendiente abre sin ingredientes', () => {
     const entry = { id: 'e1', date: '2026-10-16', meal: 'cena', recipe_id: null, food_id: null, label: 'Comida sin completar', servings: null, grams: null, kcal: 0, protein: 0, carbs: 0, fat: 0, note: null, items: null, photo_path: 'x.jpg', kcal_estimated: 0, status: 'pending', created_at: '' } as MealEntry
     const html = renderToString(<AddMeal {...base} presetRecipeId={null} editEntry={entry} />)
-    expect(html).toContain('Completar comida')
+    expect(html).toContain('Completar registro')
     expect(html).toContain('Aún no hay ingredientes')
   })
 
