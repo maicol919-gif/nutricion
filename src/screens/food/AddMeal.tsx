@@ -4,6 +4,8 @@ import { uploadMealPhoto } from '../../lib/photo'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food, MealEntry, MealKey, Recipe } from '../../types'
 import { MEALS, foodMacros, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
+import { similarFoods } from '../../lib/foods'
+import SimilarFoods from './SimilarFoods'
 import { parseAmount, rowFromGrams, rowGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
 
 type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
@@ -189,6 +191,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     onClose()
   }
   const validRows = useMemo(() => toStoredItems(rows, data.foodById), [rows, data.foodById])
+  const similar = useMemo(() => similarFoods(lName, data.foods), [lName, data.foods])
   const estimatedKcal = useMemo(() => Math.round(rowsEstimatedKcal(rows, data.foodById)), [rows, data.foodById])
 
   async function saveLabelFood() {
@@ -380,6 +383,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
               <section className="card">
                 <p className="muted">Sirve para productos con etiqueta y para crear un alimento nuevo (muslo, plátano…): escribes los valores una sola vez y queda guardado.</p>
                 <label>Producto<input value={lName} onChange={(e) => setLName(e.target.value)} placeholder="ej. Galletas de avena" /></label>
+                <SimilarFoods similar={similar} onUse={pickFood} />
                 <label>La etiqueta indica los valores
                   <select value={lBasis} onChange={(e) => setLBasis(e.target.value as '100g' | 'unit')}>
                     <option value="100g">por 100 g</option>
@@ -405,7 +409,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                   <span>Valores aproximados (no vienen de una etiqueta)</span>
                 </label>
                 {err && <p className="err">{err}</p>}
-                <button className="primary" disabled={saving} onClick={saveLabelFood}>Guardar y usar</button>
+                <button className="primary" disabled={saving} onClick={saveLabelFood}>{similar.length > 0 ? 'Crear de todos modos y usar' : 'Guardar y usar'}</button>
               </section>
             )}
 

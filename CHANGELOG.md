@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.9 · 2026-10-18
+- **Aviso de alimentos parecidos:** al crear un alimento nuevo (desde Añadir comida o desde Alimentos), si ya existe uno con una palabra clave en común (por ejemplo "muslo"), te los enseña con sus valores para que uses el que ya tienes. Evita tener el mismo alimento dos veces con números distintos.
+- El botón pasa a decir "Crear de todos modos" cuando hay parecidos.
+
 ## 1.8 · 2026-10-18
 - La app pasa a llamarse **Nutrición** (nueva dirección: https://maicol919-gif.github.io/nutricion/) y su pestaña principal, antes Diario, se llama **Alimentación**. La dirección anterior (`/alimentacion/`) deja de funcionar.
 

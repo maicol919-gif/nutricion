@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food } from '../../types'
+import { similarFoods } from '../../lib/foods'
+import SimilarFoods from './SimilarFoods'
 
 const parse = (s: string): number => Number(s.replace(',', '.'))
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
@@ -43,6 +45,7 @@ export default function Foods({ data }: { data: FoodData }) {
 
   const q = query.trim().toLowerCase()
   const list = data.foods.filter((f) => !q || f.name.toLowerCase().includes(q))
+  const similar = form && !form.id ? similarFoods(form.name, data.foods) : []
 
   async function save() {
     if (!form) return
@@ -91,6 +94,7 @@ export default function Foods({ data }: { data: FoodData }) {
         <p className="muted">Valores por 100 g, tal como salen en la etiqueta.</p>
         {msg && <p className="err">{msg}</p>}
         <label>Nombre<input value={form.name} onChange={set('name')} /></label>
+        <SimilarFoods similar={similar} />
         <div className="row">
           <label style={{ flex: 1 }}>Calorías<input inputMode="decimal" value={form.kcal} onChange={set('kcal')} /></label>
           <label style={{ flex: 1 }}>Proteína (g)<input inputMode="decimal" value={form.protein} onChange={set('protein')} /></label>
