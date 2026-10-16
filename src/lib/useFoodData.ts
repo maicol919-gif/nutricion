@@ -6,7 +6,10 @@ import type { Food, Recipe, RecipeItem } from '../types'
 const num = (v: unknown): number => Number(v)
 
 export interface FoodData {
+  /** todos los alimentos, también los deshabilitados (para historial y recetas) */
   foods: Food[]
+  /** solo los habilitados: los que salen en buscadores y avisos */
+  activeFoods: Food[]
   recipes: Recipe[]
   items: RecipeItem[]
   foodById: Map<string, Food>
@@ -46,7 +49,7 @@ export function useFoodData(): { data: FoodData | null; error: string | null } {
     if (!raw) return null
     const itemsByRecipe = new Map<string, RecipeItem[]>()
     for (const it of raw.items) itemsByRecipe.set(it.recipe_id, [...(itemsByRecipe.get(it.recipe_id) ?? []), it])
-    return { ...raw, foodById: new Map(raw.foods.map((x) => [x.id, x])), itemsByRecipe, reload }
+    return { ...raw, activeFoods: raw.foods.filter((f) => !f.disabled), foodById: new Map(raw.foods.map((x) => [x.id, x])), itemsByRecipe, reload }
   }, [raw, reload])
 
   return { data, error }

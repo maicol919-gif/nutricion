@@ -104,11 +104,11 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
         .sort((a, b) => a.minutes - b.minutes || a.name.localeCompare(b.name)),
     [data.recipes, q, maxMin],
   )
-  const foods = useMemo(() => data.foods.filter((f) => !q || f.name.toLowerCase().includes(q)), [data.foods, q])
+  const foods = useMemo(() => data.activeFoods.filter((f) => !q || f.name.toLowerCase().includes(q)), [data.activeFoods, q])
   const addFoods = useMemo(() => {
     const s = addQuery.trim().toLowerCase()
-    return data.foods.filter((f) => !s || f.name.toLowerCase().includes(s)).slice(0, 8)
-  }, [data.foods, addQuery])
+    return data.activeFoods.filter((f) => !s || f.name.toLowerCase().includes(s)).slice(0, 8)
+  }, [data.activeFoods, addQuery])
 
   const recent = useMemo(() => {
     const seen = new Set<string>()
@@ -191,7 +191,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     onClose()
   }
   const validRows = useMemo(() => toStoredItems(rows, data.foodById), [rows, data.foodById])
-  const similar = useMemo(() => similarFoods(lName, data.foods), [lName, data.foods])
+  const similar = useMemo(() => similarFoods(lName, data.activeFoods), [lName, data.activeFoods])
   const estimatedKcal = useMemo(() => Math.round(rowsEstimatedKcal(rows, data.foodById)), [rows, data.foodById])
 
   async function saveLabelFood() {
@@ -219,7 +219,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
       .select('id')
       .single()
     setSaving(false)
-    if (error) return setErr(error.code === '23505' ? 'Ya existe un alimento con ese nombre: búscalo en Alimentos.' : error.message)
+    if (error) return setErr(error.code === '23505' ? 'Ya existe un alimento con ese nombre (quizá deshabilitado: habilítalo en Alimentación → Alimentos).' : error.message)
     await data.reload()
     startFrom({
       rows: [unitGrams ? { key: newKey(row.id), food_id: row.id, amount: '1', unit: 'u' } : { key: newKey(row.id), food_id: row.id, amount: '100', unit: 'g' }],

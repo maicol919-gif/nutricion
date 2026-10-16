@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.10 · 2026-10-18
+- **Deshabilitar alimentos:** un alimento deshabilitado deja de salir en las búsquedas y en el aviso de parecidos, pero tus comidas anteriores y tus recetas siguen igual y se puede volver a habilitar (sección "Deshabilitados" en Alimentos). Antes, borrar un alimento hacía que al editar una comida antigua ese ingrediente desapareciera.
+- **Borrar definitivamente** solo aparece si el alimento nunca se usó en una comida ni en una receta. La ficha indica en cuántas se usó.
+
 ## 1.9 · 2026-10-18
 - **Aviso de alimentos parecidos:** al crear un alimento nuevo (desde Añadir comida o desde Alimentos), si ya existe uno con una palabra clave en común (por ejemplo "muslo"), te los enseña con sus valores para que uses el que ya tienes. Evita tener el mismo alimento dos veces con números distintos.
 - El botón pasa a decir "Crear de todos modos" cuando hay parecidos.

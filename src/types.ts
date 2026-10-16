@@ -10,6 +10,8 @@ export interface Food {
   unit_plural: string | null
   /** valor aproximado (genérico, sin etiqueta o dependiente de la marca) */
   estimated: boolean
+  /** oculto en buscadores; sigue existiendo para el historial y las recetas */
+  disabled: boolean
 }
 
 export type MealKey = 'desayuno' | 'comida' | 'merienda' | 'cena'

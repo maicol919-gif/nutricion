@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { keyWords, normalize, similarFoods } from './foods'
 import type { Food } from '../types'
 
-const food = (name: string): Food => ({ id: name, name, kcal: 100, protein: 10, carbs: 0, fat: 5, unit_g: null, unit_label: null, unit_plural: null, estimated: false })
+const food = (name: string): Food => ({ id: name, name, kcal: 100, protein: 10, carbs: 0, fat: 5, unit_g: null, unit_label: null, unit_plural: null, estimated: false, disabled: false })
 const foods = [
   'Muslo de pollo crudo (con hueso y piel)',
   'Pechuga de pollo cocinada',
