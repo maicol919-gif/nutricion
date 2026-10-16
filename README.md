@@ -1,10 +1,10 @@
-# Alimentación
+# Nutrición
 
 App web instalable (PWA) para registrar la alimentación, el peso y la cintura. Pensada para un solo usuario y para usarse desde el celular. Es la compañera de **Entreno** (la app de entrenamiento): las dos comparten la misma cuenta y la misma base de datos en Supabase.
 
 ## Qué hace
 
-- **Diario → Mi día:** barras de proteína y calorías contra tus metas, lo que te falta, y las comidas agrupadas (desayuno, comida, cena y extras). Navegación por días para completar olvidos.
+- **Alimentación → Mi día:** barras de proteína y calorías contra tus metas, lo que te falta, y las comidas agrupadas (desayuno, comida, cena y extras). Navegación por días para completar olvidos.
 - **Recetas como plantillas:** al registrar una comida ves cada ingrediente con su cantidad (gramos o medida casera: cucharadas, huevos, latas). Puedes cambiarla, quitar o añadir ingredientes y reescalar las raciones. Se puede guardar como receta propia.
 - **Repetir** una comida reciente con las mismas cantidades.
 - **Foto ahora, detalles después:** la foto crea una comida "por completar" que no cuenta en los totales hasta que indicas qué llevaba. Las fotos son privadas. La app no estima calorías desde la foto (las apps que lo hacen subestiman las cantidades).
@@ -15,7 +15,7 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 
 ## Base de datos compartida
 
-Usa el mismo proyecto de Supabase que Entreno (tablas `foods`, `recipes`, `recipe_items`, `meal_log`, `body_weight`, `settings`). El esquema completo está en el repositorio de Entreno (`supabase/schema.sql`). Alimentación solo escribe sus propias tablas y las columnas `height_cm`, `kcal_target` y `protein_target` de `settings`.
+Usa el mismo proyecto de Supabase que Entreno (tablas `foods`, `recipes`, `recipe_items`, `meal_log`, `body_weight`, `settings`). El esquema completo está en el repositorio de Entreno (`supabase/schema.sql`). Nutrición solo escribe sus propias tablas y las columnas `height_cm`, `kcal_target` y `protein_target` de `settings`.
 
 ## Stack
 

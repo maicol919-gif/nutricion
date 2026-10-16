@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.8 · 2026-10-18
+- La app pasa a llamarse **Nutrición** (nueva dirección: https://maicol919-gif.github.io/nutricion/) y su pestaña principal, antes Diario, se llama **Alimentación**. La dirección anterior (`/alimentacion/`) deja de funcionar.
+
 ## 1.7 · 2026-10-18
 - Los momentos del día quedan: **Desayuno · Comida · Cena · Extras**. "Comida" vuelve a llamarse así (no Almuerzo) y **Extras** sustituye a Merienda, va al final y nunca se sugiere por hora: es para snacks, cafés y dulces a cualquier momento. Lo ya registrado como merienda aparece en Extras.
 - La hora sugerida al abrir Añadir comida: antes de las 11 Desayuno, hasta las 18 Comida, después Cena.

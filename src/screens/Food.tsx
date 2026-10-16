@@ -134,7 +134,7 @@ export default function Food() {
 
   return (
     <div className="screen">
-      <h2>Diario</h2>
+      <h2>Alimentación</h2>
       <div className="subtabs">
         {([['hoy', 'Mi día'], ['recetas', 'Recetas'], ['alimentos', 'Alimentos']] as [View, string][]).map(([k, label]) => (
           <button key={k} className={view === k ? 'active' : ''} onClick={() => setView(k)}>{label}</button>
