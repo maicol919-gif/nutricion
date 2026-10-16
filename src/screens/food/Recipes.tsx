@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import type { FoodData } from '../../lib/useFoodData'
 import { householdLabel, recipeMacros, roundMacros } from '../../lib/nutrition'
-import RecipeEditor from './RecipeEditor'
+import RecipeEditor, { type RecipeDraft } from './RecipeEditor'
+import RecipeImport from './RecipeImport'
+import { importedMethod, rowsFromImported, type ImportedRecipe } from '../../lib/importRecipe'
 import { methodLabel } from '../../lib/recipes'
 import type { Recipe } from '../../types'
 
@@ -11,7 +13,25 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
   const [query, setQuery] = useState('')
   const [maxMin, setMaxMin] = useState<number | null>(null)
   const [open, setOpen] = useState<string | null>(null)
-  const [editor, setEditor] = useState<{ recipe: Recipe | null; copy: boolean } | null>(null)
+  const [editor, setEditor] = useState<{ recipe: Recipe | null; copy: boolean; draft?: RecipeDraft } | null>(null)
+  const [importing, setImporting] = useState(false)
+
+  function onImported(x: ImportedRecipe) {
+    const mapped = rowsFromImported(x.ingredients, data.activeFoods)
+    const draft: RecipeDraft = {
+      name: x.name ?? '',
+      servings: x.servings && x.servings > 0 ? String(x.servings).replace('.', ',') : '1',
+      minutes: x.minutes && x.minutes > 0 ? String(Math.round(x.minutes)) : '',
+      steps: (x.steps ?? []).join('\n'),
+      method: importedMethod(x.method) ?? '',
+      rows: mapped.rows,
+      unmatched: mapped.unmatched,
+      omitted: mapped.omitted,
+      notes: x.notes ?? '',
+    }
+    setImporting(false)
+    setEditor({ recipe: null, copy: false, draft })
+  }
 
   const q = query.trim().toLowerCase()
   const list = useMemo(
@@ -28,7 +48,9 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
         <input placeholder="Buscar receta o etiqueta (horno, sin cocinar…)" value={query} onChange={(e) => setQuery(e.target.value)} />
         <button onClick={() => setEditor({ recipe: null, copy: false })}>+ Nueva</button>
       </div>
-      {editor && <RecipeEditor data={data} recipe={editor.recipe} copy={editor.copy} onSaved={() => { setEditor(null); setQuery('') }} onClose={() => setEditor(null)} />}
+      <button className="link" onClick={() => setImporting(true)}>📷 Importar receta desde foto o PDF</button>
+      {importing && <RecipeImport onRead={onImported} onClose={() => setImporting(false)} />}
+      {editor && <RecipeEditor data={data} recipe={editor.recipe} copy={editor.copy} draft={editor.draft ?? null} onSaved={() => { setEditor(null); setQuery('') }} onClose={() => setEditor(null)} />}
       <div className="chips">
         {[null, 5, 10, 15].map((m) => (
           <button key={String(m)} className={`chip ${maxMin === m ? 'on' : ''}`} onClick={() => setMaxMin(m)}>

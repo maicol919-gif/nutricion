@@ -35,3 +35,13 @@ export async function signedPhotoUrls(paths: string[]): Promise<Record<string, s
   for (const s of data ?? []) if (s.signedUrl && s.path) out[s.path] = s.signedUrl
   return out
 }
+
+/** Contenido de un archivo en base64 (sin el prefijo "data:...;base64,"). */
+export function toBase64(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'))
+    reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '')
+    reader.readAsDataURL(file)
+  })
+}

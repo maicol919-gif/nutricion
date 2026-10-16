@@ -9,28 +9,43 @@ import IngredientEditor from './IngredientEditor'
 
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
 
+/** Receta leída de una foto o PDF, lista para revisar en el editor. */
+export interface RecipeDraft {
+  name: string
+  servings: string
+  minutes: string
+  steps: string
+  method: Method | ''
+  rows: MealRow[]
+  unmatched: string[]
+  omitted: string[]
+  notes: string
+}
+
 interface Props {
   data: FoodData
   /** receta que se edita o se duplica (sin esto, se crea una nueva) */
   recipe?: Recipe | null
   /** true = partir de `recipe` pero guardarla como una receta nueva */
   copy?: boolean
+  /** datos leídos de una foto o PDF: se muestran para revisar antes de guardar */
+  draft?: RecipeDraft | null
   onSaved: () => void
   onClose: () => void
 }
 
 /** Crea una receta con los ingredientes de TODA la preparación y las raciones que salen; luego se registran 1, 1,5, 2… raciones. */
-export default function RecipeEditor({ data, recipe = null, copy = false, onSaved, onClose }: Props) {
+export default function RecipeEditor({ data, recipe = null, copy = false, draft = null, onSaved, onClose }: Props) {
   const editing = !!recipe && !copy
   const startItems = useMemo(() => (recipe ? (data.itemsByRecipe.get(recipe.id) ?? []).map((i) => ({ food_id: i.food_id, grams: i.grams })) : []), [recipe, data.itemsByRecipe])
 
-  const [name, setName] = useState(recipe ? (copy ? `${recipe.name} (variante)` : recipe.name) : '')
-  const [servings, setServings] = useState(recipe ? String(recipe.servings).replace('.', ',') : '1')
-  const [minutes, setMinutes] = useState(recipe ? String(recipe.minutes) : '')
-  const [steps, setSteps] = useState(recipe?.steps ?? '')
-  const [method, setMethod] = useState<Method | ''>(recipe?.method ?? '')
+  const [name, setName] = useState(draft ? draft.name : recipe ? (copy ? `${recipe.name} (variante)` : recipe.name) : '')
+  const [servings, setServings] = useState(draft ? draft.servings : recipe ? String(recipe.servings).replace('.', ',') : '1')
+  const [minutes, setMinutes] = useState(draft ? draft.minutes : recipe ? String(recipe.minutes) : '')
+  const [steps, setSteps] = useState(draft ? draft.steps : recipe?.steps ?? '')
+  const [method, setMethod] = useState<Method | ''>(draft ? draft.method : recipe?.method ?? '')
   const [finalWeight, setFinalWeight] = useState(recipe?.final_weight_g ? String(recipe.final_weight_g).replace('.', ',') : '')
-  const [rows, setRows] = useState<MealRow[]>(() => rowsFromItems(startItems, data.foodById))
+  const [rows, setRows] = useState<MealRow[]>(() => (draft ? draft.rows : rowsFromItems(startItems, data.foodById)))
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -91,7 +106,7 @@ export default function RecipeEditor({ data, recipe = null, copy = false, onSave
     }
   }
 
-  const title = editing ? 'Editar receta' : copy ? 'Duplicar receta' : 'Nueva receta'
+  const title = editing ? 'Editar receta' : copy ? 'Duplicar receta' : draft ? 'Revisar receta importada' : 'Nueva receta'
 
   return (
     <div className="overlay" role="dialog" aria-label={title}>
@@ -103,6 +118,17 @@ export default function RecipeEditor({ data, recipe = null, copy = false, onSave
         <section className="card">
           <p className="muted">Pon los ingredientes de <strong>toda</strong> la preparación (por ejemplo, el pastel entero) y cuántas raciones salen. Luego, al registrar, eliges 1, 1,5 o 2 raciones, o el peso que comiste.</p>
           {editing && <p className="muted">Al guardar cambios, tus registros anteriores no se modifican.</p>}
+          {draft && (
+            <div className="card warn">
+              <h3>Leída de tu archivo: revísala</h3>
+              <p className="muted">La lectura puede equivocarse en nombres, cantidades o raciones. Comprueba cada ingrediente antes de guardar.</p>
+              {draft.notes && <p className="muted">Aviso de la lectura: {draft.notes}</p>}
+              {draft.unmatched.length > 0 && (
+                <p className="muted"><strong>No están en tus alimentos (añádelos a mano si pesan en el día):</strong> {draft.unmatched.join(' · ')}.</p>
+              )}
+              {draft.omitted.length > 0 && <p className="muted">Sin cantidad o "al gusto" (no incluidos): {draft.omitted.join(', ')}.</p>}
+            </div>
+          )}
           <label>Nombre de la receta<input value={name} onChange={(e) => setName(e.target.value)} placeholder="ej. Pastel de banano" /></label>
           {similar.length > 0 && (
             <div className="card warn">

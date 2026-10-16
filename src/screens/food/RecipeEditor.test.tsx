@@ -8,6 +8,8 @@ vi.mock('../../lib/supabase', () => ({ supabase: {} }))
 
 const { default: RecipeEditor } = await import('./RecipeEditor')
 const { default: AddMeal } = await import('./AddMeal')
+const { default: RecipeImport } = await import('./RecipeImport')
+const { rowsFromImported } = await import('../../lib/importRecipe')
 
 const foods: Food[] = SEED_FOODS.map((f, i) => ({ id: `f${i}`, name: f.name, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat, unit_g: f.unit_g ?? null, unit_label: f.unit_label ?? null, unit_plural: f.unit_plural ?? null, estimated: f.estimated ?? false, disabled: false }))
 const huevo = foods.find((f) => f.name === 'Huevo entero')!
@@ -68,3 +70,33 @@ describe('RecipeEditor: editar y duplicar', () => {
     expect(html).toContain('Guardar receta')
   })
 })
+
+describe('importar una receta de una foto o PDF', () => {
+  it('la pantalla de importar explica que se revisa antes de guardar', () => {
+    const html = renderToString(<RecipeImport onRead={() => {}} onClose={() => {}} />)
+    expect(html).toContain('Importar receta')
+    expect(html).toContain('Elegir foto o PDF')
+    expect(html).toContain('confirmas')
+  })
+
+  it('el editor muestra lo leído, lo no encontrado y lo omitido para revisar', () => {
+    const mapped = rowsFromImported(
+      [
+        { name: 'huevos', quantity: 4, unit: 'unidad', grams: null, optional: false },
+        { name: 'levadura química', quantity: 1, unit: 'cucharadita', grams: 5, optional: false },
+        { name: 'sal', quantity: null, unit: 'al_gusto', grams: null, optional: false },
+      ],
+      data.activeFoods,
+    )
+    const draft = { name: 'Bizcocho de la foto', servings: '8', minutes: '45', steps: 'Mezclar. Hornear', method: 'horno' as const, rows: mapped.rows, unmatched: mapped.unmatched, omitted: mapped.omitted, notes: 'La última línea no se lee bien' }
+    const html = renderToString(<RecipeEditor data={data} draft={draft} onSaved={() => {}} onClose={() => {}} />)
+    expect(html).toContain('Revisar receta importada')
+    expect(html).toContain('value="Bizcocho de la foto"')
+    expect(html).toContain('Leída de tu archivo')
+    expect(html).toContain('levadura química (1 cucharadita)')
+    expect(html).toContain('La última línea no se lee bien')
+    expect(html).toContain('value="4"') // 4 huevos
+    expect(html).toContain('Guardar receta')
+  })
+})
+
