@@ -436,6 +436,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                   {['0.5', '1', '1.5', '2'].map((s) => (
                     <button key={s} className={`chip ${mult === s ? 'on' : ''}`} onClick={() => applyMult(s)}>{s.replace('.', ',')}</button>
                   ))}
+                  <input style={{ width: 86 }} inputMode="decimal" value={mult} onChange={(e) => applyMult(e.target.value)} aria-label="Otra cantidad de raciones" placeholder="otra" />
                 </div>
               </>
             )}

@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.14 · 2026-10-19
+- **Raciones a medida:** junto a los botones 0,5 · 1 · 1,5 · 2 hay un campo para escribir cualquier cantidad (por ejemplo 0,25 o 3).
+
 ## 1.13 · 2026-10-18
 - **Nueva receta** (Alimentación → Recetas → "+ Nueva"): escribes los ingredientes de **toda** la preparación (por ejemplo, el pastel entero) y cuántas raciones salen; la app calcula calorías y proteína de toda la receta y de cada ración. Después, al registrar, eliges 0,5, 1, 1,5 o 2 raciones.
 - Las recetas indican cuántas raciones rinden y sus ingredientes se muestran por ración.
