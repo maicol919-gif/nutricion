@@ -1,5 +1,8 @@
 import { supabase } from './supabase'
-import { SEED_FOODS, SEED_FOODS_V2, SEED_RECIPES } from '../data/foodSeed'
+import { SEED_FOODS, SEED_FOODS_V2, SEED_FOODS_V3, SEED_RECIPES } from '../data/foodSeed'
+
+/** Versión de los alimentos iniciales: al subirla, los nuevos se añaden una sola vez. */
+const SEED_VERSION = 3
 
 let running: Promise<void> | null = null
 
@@ -32,11 +35,11 @@ async function run(): Promise<void> {
 async function topUpFoods(): Promise<void> {
   const st = await supabase.from('settings').select('food_seed_version').maybeSingle()
   if (st.error) throw st.error
-  if (Number(st.data?.food_seed_version ?? 1) >= 2) return
+  if (Number(st.data?.food_seed_version ?? 1) >= SEED_VERSION) return
   const have = await supabase.from('foods').select('name')
   if (have.error) throw have.error
   const names = new Set((have.data ?? []).map((f) => f.name as string))
-  const rows = SEED_FOODS_V2.filter((f) => !names.has(f.name)).map((f) => ({
+  const rows = [...SEED_FOODS_V2, ...SEED_FOODS_V3].filter((f) => !names.has(f.name)).map((f) => ({
     name: f.name,
     kcal: f.kcal,
     protein: f.protein,
@@ -45,13 +48,13 @@ async function topUpFoods(): Promise<void> {
     unit_g: f.unit_g ?? null,
     unit_label: f.unit_label ?? null,
     unit_plural: f.unit_plural ?? null,
-    estimated: true,
+    estimated: f.estimated ?? false,
   }))
   if (rows.length) {
     const ins = await supabase.from('foods').insert(rows)
     if (ins.error) throw ins.error
   }
-  const up = await supabase.from('settings').upsert({ food_seed_version: 2 })
+  const up = await supabase.from('settings').upsert({ food_seed_version: SEED_VERSION })
   if (up.error) throw up.error
 }
 

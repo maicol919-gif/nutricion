@@ -268,3 +268,51 @@ export const SEED_FOODS_V2: SeedFood[] = [
   g({ name: 'Leche semidesnatada', kcal: 46, protein: 3.4, carbs: 4.8, fat: 1.6, unit_g: 200, unit_label: 'taza', unit_plural: 'tazas' }),
   g({ name: 'Café con leche', kcal: 25, protein: 1.7, carbs: 2.3, fat: 1.2, unit_g: 200, unit_label: 'taza', unit_plural: 'tazas' }),
 ]
+
+/**
+ * Alimentos habituales (versión 3). Los productos de un solo ingrediente (fruta, verdura, carne cruda) usan valores de
+ * tablas BEDCA / USDA y no se marcan como estimados. Se marcan estimados los que dependen de algo desconocido: el hueso
+ * de una pieza, la marca de un embutido o una conserva.
+ */
+const e = (f: SeedFood): SeedFood => ({ ...f, estimated: true })
+
+export const SEED_FOODS_V3: SeedFood[] = [
+  // Carnes y pescados
+  // Muslo de pollo crudo CON hueso: valores de carne y piel crudas (221 kcal, 16,5 P, 16,6 G por 100 g) × ~75 % comestible.
+  e({ name: 'Muslo de pollo crudo (con hueso y piel)', kcal: 166, protein: 12.4, carbs: 0.2, fat: 12.5, unit_g: 150, unit_label: 'muslo', unit_plural: 'muslos' }),
+  { name: 'Lomo de cerdo crudo', kcal: 135, protein: 21, carbs: 0, fat: 5.5 },
+  { name: 'Ternera magra cruda', kcal: 120, protein: 21, carbs: 0, fat: 4 },
+  { name: 'Merluza', kcal: 80, protein: 17, carbs: 0, fat: 1 },
+  { name: 'Bacalao', kcal: 82, protein: 18, carbs: 0, fat: 0.7 },
+  e({ name: 'Atún al natural (escurrido)', kcal: 110, protein: 25, carbs: 0, fat: 1, unit_g: 52, unit_label: 'lata pequeña', unit_plural: 'latas pequeñas' }),
+  e({ name: 'Sardinas en aceite (escurridas)', kcal: 208, protein: 25, carbs: 0, fat: 11, unit_g: 85, unit_label: 'lata', unit_plural: 'latas' }),
+  e({ name: 'Jamón serrano', kcal: 241, protein: 30, carbs: 0, fat: 13, unit_g: 15, unit_label: 'loncha', unit_plural: 'lonchas' }),
+  e({ name: 'Pechuga de pavo (fiambre)', kcal: 105, protein: 18, carbs: 1, fat: 3, unit_g: 15, unit_label: 'loncha', unit_plural: 'lonchas' }),
+  // Lácteos
+  { name: 'Leche entera', kcal: 61, protein: 3.2, carbs: 4.8, fat: 3.3, unit_g: 200, unit_label: 'taza', unit_plural: 'tazas' },
+  e({ name: 'Yogur natural', kcal: 61, protein: 3.5, carbs: 4.7, fat: 3.3, unit_g: 125, unit_label: 'yogur', unit_plural: 'yogures' }),
+  e({ name: 'Queso fresco batido 0 %', kcal: 47, protein: 8, carbs: 4, fat: 0.2, unit_g: 125, unit_label: 'tarrina', unit_plural: 'tarrinas' }),
+  // Fruta
+  { name: 'Plátano', kcal: 89, protein: 1.1, carbs: 22.8, fat: 0.3, unit_g: 120, unit_label: 'plátano', unit_plural: 'plátanos' },
+  { name: 'Manzana', kcal: 52, protein: 0.3, carbs: 13.8, fat: 0.2, unit_g: 180, unit_label: 'manzana', unit_plural: 'manzanas' },
+  { name: 'Naranja', kcal: 47, protein: 0.9, carbs: 11.8, fat: 0.1, unit_g: 150, unit_label: 'naranja', unit_plural: 'naranjas' },
+  { name: 'Fresas', kcal: 32, protein: 0.7, carbs: 7.7, fat: 0.3 },
+  { name: 'Uvas', kcal: 69, protein: 0.7, carbs: 18, fat: 0.2 },
+  { name: 'Aguacate', kcal: 160, protein: 2, carbs: 8.5, fat: 14.7, unit_g: 140, unit_label: 'aguacate', unit_plural: 'aguacates' },
+  // Verdura y legumbres
+  { name: 'Zanahoria', kcal: 41, protein: 0.9, carbs: 9.6, fat: 0.2 },
+  { name: 'Pimiento', kcal: 31, protein: 1, carbs: 6, fat: 0.3 },
+  { name: 'Cebolla', kcal: 40, protein: 1.1, carbs: 9.3, fat: 0.1 },
+  { name: 'Lechuga', kcal: 15, protein: 1.4, carbs: 2.9, fat: 0.2 },
+  { name: 'Calabacín', kcal: 17, protein: 1.2, carbs: 3.1, fat: 0.3 },
+  { name: 'Pepino', kcal: 15, protein: 0.7, carbs: 3.6, fat: 0.1 },
+  { name: 'Patata cruda', kcal: 77, protein: 2, carbs: 17, fat: 0.1 },
+  { name: 'Lentejas cocidas', kcal: 116, protein: 9, carbs: 20, fat: 0.4 },
+  { name: 'Alubias cocidas', kcal: 127, protein: 8.7, carbs: 22.8, fat: 0.5 },
+  // Frutos secos, untables y otros
+  { name: 'Almendras', kcal: 579, protein: 21, carbs: 22, fat: 50, unit_g: 30, unit_label: 'puñado', unit_plural: 'puñados' },
+  { name: 'Nueces', kcal: 654, protein: 15, carbs: 14, fat: 65, unit_g: 30, unit_label: 'puñado', unit_plural: 'puñados' },
+  e({ name: 'Crema de cacahuete', kcal: 588, protein: 25, carbs: 20, fat: 50, unit_g: 15, unit_label: 'cucharada', unit_plural: 'cucharadas' }),
+  { name: 'Miel', kcal: 304, protein: 0.3, carbs: 82, fat: 0, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas' },
+  { name: 'Mantequilla', kcal: 717, protein: 0.9, carbs: 0.1, fat: 81, unit_g: 5, unit_label: 'cucharadita', unit_plural: 'cucharaditas' },
+]

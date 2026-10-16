@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SEED_FOODS, SEED_FOODS_V2, SEED_RECIPES } from './foodSeed'
+import { SEED_FOODS, SEED_FOODS_V2, SEED_FOODS_V3, SEED_RECIPES } from './foodSeed'
 import { recipeMacros, roundMacros } from '../lib/nutrition'
 
 const foods = new Map(SEED_FOODS.map((f, i) => [f.name, { ...f, food_id: String(i) }]))
@@ -64,5 +64,25 @@ describe('datos iniciales de alimentación', () => {
         expect(f.unit_plural, f.name).toBeTruthy()
       }
     }
+  })
+
+  it('los alimentos de la versión 3 no repiten nombres de las versiones anteriores', () => {
+    const before = new Set([...SEED_FOODS, ...SEED_FOODS_V2].map((f) => f.name))
+    const names = SEED_FOODS_V3.map((f) => f.name)
+    expect(new Set(names).size).toBe(names.length)
+    for (const n of names) expect(before.has(n), n).toBe(false)
+  })
+
+  it('las calorías de la versión 3 coinciden con sus macros (Atwater, margen 25 %)', () => {
+    for (const f of SEED_FOODS_V3) {
+      const est = f.protein * 4 + f.carbs * 4 + f.fat * 9
+      expect(Math.abs(est - f.kcal), f.name).toBeLessThanOrEqual(Math.max(25, f.kcal * 0.25))
+    }
+  })
+
+  it('el muslo con hueso está marcado como estimado y tiene peso por unidad', () => {
+    const m = SEED_FOODS_V3.find((f) => f.name.startsWith('Muslo de pollo crudo'))!
+    expect(m.estimated).toBe(true)
+    expect(m.unit_g).toBeGreaterThan(0)
   })
 })

@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.4 · 2026-10-18
+- 34 alimentos habituales más: muslo de pollo crudo **con hueso** (se registra "1 muslo" o los gramos crudos de la pieza, sin separar el hueso), carnes y pescados, fruta (plátano, manzana…), verduras, legumbres, lácteos, frutos secos, miel y mantequilla.
+- Los alimentos de un solo ingrediente usan valores de tablas y no se marcan como estimados; sí lo están los que dependen del hueso, la marca o la conserva.
+
 ## 1.3 · 2026-10-18
 - Crear un alimento nuevo desde la misma ventana de Añadir comida: botón "Crear un alimento nuevo" en la lista de Alimentos (con el nombre buscado ya escrito) y la pestaña Etiqueta, que ahora permite marcar los valores como aproximados.
 
