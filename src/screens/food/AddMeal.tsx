@@ -3,10 +3,11 @@ import { supabase } from '../../lib/supabase'
 import { uploadMealPhoto } from '../../lib/photo'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food, MealEntry, MealKey, Recipe } from '../../types'
-import { MEALS, foodMacros, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
+import { MEALS, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
 import { similarFoods } from '../../lib/foods'
 import SimilarFoods from './SimilarFoods'
-import { parseAmount, rowFromGrams, rowGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
+import IngredientEditor from './IngredientEditor'
+import { parseAmount, rowFromGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
 
 type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
 
@@ -71,8 +72,6 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const [mult, setMult] = useState('1')
   const [label, setLabel] = useState(start.label)
   const [recipeId, setRecipeId] = useState<string | null>(start.recipeId)
-  const [adding, setAdding] = useState(false)
-  const [addQuery, setAddQuery] = useState('')
   const [note, setNote] = useState(editEntry?.note ?? '')
   const [photo, setPhoto] = useState<File | null>(null)
   const [saveRecipe, setSaveRecipe] = useState(false)
@@ -105,11 +104,6 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     [data.recipes, q, maxMin],
   )
   const foods = useMemo(() => data.activeFoods.filter((f) => !q || f.name.toLowerCase().includes(q)), [data.activeFoods, q])
-  const addFoods = useMemo(() => {
-    const s = addQuery.trim().toLowerCase()
-    return data.activeFoods.filter((f) => !s || f.name.toLowerCase().includes(s)).slice(0, 8)
-  }, [data.activeFoods, addQuery])
-
   const recent = useMemo(() => {
     const seen = new Set<string>()
     const out: MealEntry[] = []
@@ -161,25 +155,6 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     setMult(m)
     const k = parseAmount(m)
     if (base.length && k > 0) setRows(rowsFromItems(base, data.foodById, k))
-  }
-
-  function updateRow(key: string, patch: Partial<MealRow>) {
-    setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)))
-  }
-
-  function changeUnit(row: MealRow, unit: 'g' | 'u') {
-    const f = data.foodById.get(row.food_id)
-    const g = rowGrams(row, f)
-    if (!f || row.unit === unit) return
-    const amount = unit === 'u' && f.unit_g ? String(Math.round((g / f.unit_g) * 10) / 10).replace('.', ',') : String(Math.round(g * 10) / 10).replace('.', ',')
-    updateRow(row.key, { unit, amount: g > 0 ? amount : '' })
-  }
-
-  function addIngredient(f: Food) {
-    setRows((rs) => [...rs, f.unit_g ? { key: newKey(f.id), food_id: f.id, amount: '1', unit: 'u' } : { key: newKey(f.id), food_id: f.id, amount: '100', unit: 'g' }])
-    setAdding(false)
-    setAddQuery('')
-    if (!label) setLabel(f.name)
   }
 
   const macros = useMemo(() => roundMacros(rowsMacros(rows, data.foodById)), [rows, data.foodById])
@@ -465,39 +440,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
               </>
             )}
 
-            <h3>Ingredientes</h3>
-            <p className="muted">Ajusta lo que usaste, mejor en cosas que puedas contar (1 muslo, 2 huevos, 3 cucharadas). No hace falta apuntar lo que suma menos de unas 20 kcal (ajo, especias, sal, limón): quítalo con la ✕.</p>
-            {rows.map((r) => {
-              const f = data.foodById.get(r.food_id)
-              if (!f) return null
-              const rowKcal = Math.round(foodMacros(f, rowGrams(r, f)).kcal)
-              return (
-                <div key={r.key} className="ing">
-                  <span className="ing-name">{f.name}{f.estimated && <em className="est"> · estimado</em>}<small className="muted"> · {rowKcal} kcal</small></span>
-                  <input inputMode="decimal" value={r.amount} onChange={(e) => updateRow(r.key, { amount: e.target.value })} aria-label={`Cantidad de ${f.name}`} />
-                  <select value={r.unit === 'u' && f.unit_g ? 'u' : 'g'} onChange={(e) => changeUnit(r, e.target.value as 'g' | 'u')} aria-label={`Unidad de ${f.name}`}>
-                    <option value="g">g</option>
-                    {f.unit_g && <option value="u">{f.unit_plural ?? f.unit_label}</option>}
-                  </select>
-                  <button className="link" onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))} aria-label={`Quitar ${f.name}`}>✕</button>
-                </div>
-              )
-            })}
-            {rows.length === 0 && <p className="muted">Aún no hay ingredientes. Añade el primero.</p>}
-
-            {adding ? (
-              <div>
-                <input autoFocus placeholder="Buscar ingrediente" value={addQuery} onChange={(e) => setAddQuery(e.target.value)} />
-                {addFoods.map((f) => (
-                  <button key={f.id} className="exrow" onClick={() => addIngredient(f)}>
-                    <span><strong>{f.name}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
-                  </button>
-                ))}
-                <button className="link" onClick={() => setAdding(false)}>Cancelar</button>
-              </div>
-            ) : (
-              <button onClick={() => setAdding(true)}>+ Añadir ingrediente</button>
-            )}
+            <IngredientEditor rows={rows} setRows={setRows} data={data} onAdd={(f) => { if (!label) setLabel(f.name) }} />
 
             <p>
               <strong>{macros.kcal} kcal</strong> · <strong>{fmt(macros.protein, 1)} g proteína</strong>

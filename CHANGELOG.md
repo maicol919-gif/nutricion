@@ -2,6 +2,11 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.13 · 2026-10-18
+- **Nueva receta** (Alimentación → Recetas → "+ Nueva"): escribes los ingredientes de **toda** la preparación (por ejemplo, el pastel entero) y cuántas raciones salen; la app calcula calorías y proteína de toda la receta y de cada ración. Después, al registrar, eliges 0,5, 1, 1,5 o 2 raciones.
+- Las recetas indican cuántas raciones rinden y sus ingredientes se muestran por ración.
+- El editor de ingredientes se comparte entre registrar y crear receta.
+
 ## 1.12 · 2026-10-18
 - **Un solo significado para "Comida":** queda únicamente como momento del día (Desayuno · Comida · Cena · Extras). Para cualquier cosa que apuntas se usa **registro**: el botón principal es "Registrar lo que comí", la ventana se llama "Nuevo registro" / "Editar registro" / "Completar registro", y los avisos hablan de "tus registros anteriores".
 
