@@ -194,6 +194,15 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const similar = useMemo(() => similarFoods(lName, data.activeFoods), [lName, data.activeFoods])
   const estimatedKcal = useMemo(() => Math.round(rowsEstimatedKcal(rows, data.foodById)), [rows, data.foodById])
 
+  /** Oculta un alimento de las búsquedas (sin borrar nada) para quitar duplicados al momento. */
+  async function disableFood(f: Food) {
+    const ok = window.confirm(`¿Deshabilitar "${f.name}"?\n\nDejará de salir en las búsquedas. Tus comidas anteriores y tus recetas no cambian, y puedes habilitarlo de nuevo en Alimentación → Alimentos → Deshabilitados.`)
+    if (!ok) return
+    const { error } = await supabase.from('foods').update({ disabled: true }).eq('id', f.id)
+    if (error) return setErr(error.message)
+    await data.reload()
+  }
+
   async function saveLabelFood() {
     setErr(null)
     const name = lName.trim()
@@ -370,9 +379,12 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
             {mode === 'alimentos' && (
               <>
                 {foods.map((f) => (
-                  <button key={f.id} className="exrow" onClick={() => pickFood(f)}>
-                    <span><strong>{f.name}{f.estimated ? ' · estimado' : ''}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
-                  </button>
+                  <div key={f.id} className="foodline">
+                    <button className="exrow" onClick={() => pickFood(f)}>
+                      <span><strong>{f.name}{f.estimated ? ' · estimado' : ''}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
+                    </button>
+                    <button className="link small" onClick={() => void disableFood(f)}>Deshabilitar</button>
+                  </div>
                 ))}
                 {foods.length === 0 && <p className="muted">Ningún alimento coincide.</p>}
                 <button onClick={() => { setLName(query.trim()); setMode('etiqueta') }}>+ Crear un alimento nuevo{query.trim() ? ` ("${query.trim()}")` : ''}</button>

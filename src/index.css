@@ -80,3 +80,7 @@ details summary { cursor: pointer; color: var(--accent); margin: 6px 0; }
 .thumb.empty { display: grid; place-items: center; color: var(--muted); font-size: .7rem; }
 .entry > div { flex: 1; }
 .est { font-style: normal; color: var(--warn); }
+
+.foodline { display: flex; gap: 6px; align-items: center; }
+.foodline .exrow { flex: 1; }
+button.small { font-size: .8rem; padding: 6px 8px; flex: none; }

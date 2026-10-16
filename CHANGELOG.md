@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.11 · 2026-10-18
+- **Deshabilitar desde la lista de Añadir comida:** cada alimento tiene un botón "Deshabilitar" a su derecha (con confirmación), para quitar un duplicado justo donde lo ves, sin salir de la ventana.
+
 ## 1.10 · 2026-10-18
 - **Deshabilitar alimentos:** un alimento deshabilitado deja de salir en las búsquedas y en el aviso de parecidos, pero tus comidas anteriores y tus recetas siguen igual y se puede volver a habilitar (sección "Deshabilitados" en Alimentos). Antes, borrar un alimento hacía que al editar una comida antigua ese ingrediente desapareciera.
 - **Borrar definitivamente** solo aparece si el alimento nunca se usó en una comida ni en una receta. La ficha indica en cuántas se usó.
