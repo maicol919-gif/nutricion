@@ -30,16 +30,19 @@ interface Props {
   copy?: boolean
   /** datos leídos de una foto o PDF: se muestran para revisar antes de guardar */
   draft?: RecipeDraft | null
-  onSaved: () => void
+  /** nombre inicial al crear desde cero (por ejemplo, lo que se buscó) */
+  initialName?: string
+  /** recibe el id de la receta guardada */
+  onSaved: (id?: string) => void
   onClose: () => void
 }
 
 /** Crea una receta con los ingredientes de TODA la preparación y las raciones que salen; luego se registran 1, 1,5, 2… raciones. */
-export default function RecipeEditor({ data, recipe = null, copy = false, draft = null, onSaved, onClose }: Props) {
+export default function RecipeEditor({ data, recipe = null, copy = false, draft = null, initialName = '', onSaved, onClose }: Props) {
   const editing = !!recipe && !copy
   const startItems = useMemo(() => (recipe ? (data.itemsByRecipe.get(recipe.id) ?? []).map((i) => ({ food_id: i.food_id, grams: i.grams })) : []), [recipe, data.itemsByRecipe])
 
-  const [name, setName] = useState(draft ? draft.name : recipe ? (copy ? `${recipe.name} (variante)` : recipe.name) : '')
+  const [name, setName] = useState(draft ? draft.name : recipe ? (copy ? `${recipe.name} (variante)` : recipe.name) : initialName)
   const [servings, setServings] = useState(draft ? draft.servings : recipe ? String(recipe.servings).replace('.', ',') : '1')
   const [minutes, setMinutes] = useState(draft ? draft.minutes : recipe ? String(recipe.minutes) : '')
   const [steps, setSteps] = useState(draft ? draft.steps : recipe?.steps ?? '')
@@ -81,7 +84,9 @@ export default function RecipeEditor({ data, recipe = null, copy = false, draft 
     }
     setSaving(true)
     try {
+      let savedId: string | undefined
       if (editing && !asNew && recipe) {
+        savedId = recipe.id
         const up = await supabase.from('recipes').update(fields).eq('id', recipe.id)
         if (up.error) throw new Error(up.error.code === '23505' ? 'Ya tienes otra receta con ese nombre.' : up.error.message)
         const del = await supabase.from('recipe_items').delete().eq('recipe_id', recipe.id)
@@ -96,9 +101,10 @@ export default function RecipeEditor({ data, recipe = null, copy = false, draft 
           await supabase.from('recipes').delete().eq('id', ins.data.id)
           throw its.error
         }
+        savedId = ins.data.id
       }
       await data.reload()
-      onSaved()
+      onSaved(savedId)
     } catch (e) {
       setErr(e instanceof Error ? e.message : String((e as { message?: string }).message ?? e))
     } finally {

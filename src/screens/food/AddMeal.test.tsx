@@ -23,6 +23,7 @@ describe('AddMeal (render)', () => {
     const html = renderToString(<AddMeal {...base} presetRecipeId={null} editEntry={null} />)
     expect(html).toContain('Foto ahora, detalles después')
     expect(html).toContain('Etiqueta')
+    expect(html).toContain('Crear receta nueva') // se puede crear una receta sin salir del registro
     expect(html).toContain('Pastel de coco proteico')
   })
 

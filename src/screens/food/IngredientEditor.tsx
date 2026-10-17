@@ -3,6 +3,7 @@ import type { FoodData } from '../../lib/useFoodData'
 import type { Food } from '../../types'
 import { foodMacros } from '../../lib/nutrition'
 import { rowGrams, type MealRow } from '../../lib/meal'
+import NewFoodForm from './NewFoodForm'
 
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
 let seq = 0
@@ -37,6 +38,7 @@ interface Props {
 export default function IngredientEditor({ rows, setRows, data, onAdd, hint, labels = RECIPE_LABELS }: Props) {
   const [adding, setAdding] = useState(false)
   const [addQuery, setAddQuery] = useState('')
+  const [creating, setCreating] = useState(false)
 
   const addFoods = useMemo(() => {
     const s = addQuery.trim().toLowerCase()
@@ -58,6 +60,7 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint, lab
   function addIngredient(f: Food) {
     setRows((rs) => [...rs, f.unit_g ? { key: newKey(f.id), food_id: f.id, amount: '1', unit: 'u' } : { key: newKey(f.id), food_id: f.id, amount: '100', unit: 'g' }])
     setAdding(false)
+    setCreating(false)
     setAddQuery('')
     onAdd?.(f)
   }
@@ -84,7 +87,16 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint, lab
       })}
       {rows.length === 0 && <p className="muted">{labels.empty}</p>}
 
-      {adding ? (
+      {adding && creating ? (
+        <NewFoodForm
+          data={data}
+          initialName={addQuery.trim()}
+          onCreated={addIngredient}
+          onUse={addIngredient}
+          onCancel={() => setCreating(false)}
+          intro="El alimento no está en tu lista: créalo una vez (valores por 100 g o por unidad) y se añade aquí."
+        />
+      ) : adding ? (
         <div>
           <input autoFocus placeholder={labels.searchPlaceholder} value={addQuery} onChange={(e) => setAddQuery(e.target.value)} />
           {addFoods.map((f) => (
@@ -92,6 +104,8 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint, lab
               <span><strong>{f.name}</strong><small>por 100 g: {fmt(f.kcal)} kcal · {fmt(f.protein, 1)} g proteína</small></span>
             </button>
           ))}
+          {addFoods.length === 0 && <p className="muted">Ningún alimento coincide.</p>}
+          <button onClick={() => setCreating(true)}>+ Crear alimento nuevo{addQuery.trim() ? ` ("${addQuery.trim()}")` : ''}</button>
           <button className="link" onClick={() => setAdding(false)}>Cancelar</button>
         </div>
       ) : (

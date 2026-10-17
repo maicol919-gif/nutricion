@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { uploadMealPhoto } from '../../lib/photo'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food, MealEntry, MealKey, Recipe } from '../../types'
-import { MEALS, labelToPer100, recipeMacros, roundMacros } from '../../lib/nutrition'
-import { similarFoods } from '../../lib/foods'
-import SimilarFoods from './SimilarFoods'
+import { MEALS, recipeMacros, roundMacros } from '../../lib/nutrition'
+import NewFoodForm from './NewFoodForm'
+import RecipeEditor from './RecipeEditor'
 import IngredientEditor, { type EditorLabels } from './IngredientEditor'
 import { servingsForWeight, weightFactor } from '../../lib/recipes'
 import { parseAmount, rowFromGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
@@ -96,15 +96,9 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const [qCarbs, setQCarbs] = useState('')
   const [qFat, setQFat] = useState('')
   const [qEstimated, setQEstimated] = useState(true)
-  const [lName, setLName] = useState('')
-  const [lBasis, setLBasis] = useState<'100g' | 'unit'>('100g')
-  const [lUnitG, setLUnitG] = useState('')
-  const [lUnitName, setLUnitName] = useState('')
-  const [lKcal, setLKcal] = useState('')
-  const [lProtein, setLProtein] = useState('')
-  const [lCarbs, setLCarbs] = useState('')
-  const [lFat, setLFat] = useState('')
-  const [lEstimated, setLEstimated] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [creatingRecipe, setCreatingRecipe] = useState(false)
+  const [pendingRecipe, setPendingRecipe] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -205,7 +199,6 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     onClose()
   }
   const validRows = useMemo(() => toStoredItems(rows, data.foodById), [rows, data.foodById])
-  const similar = useMemo(() => similarFoods(lName, data.activeFoods), [lName, data.activeFoods])
   const estimatedKcal = useMemo(() => Math.round(rowsEstimatedKcal(rows, data.foodById)), [rows, data.foodById])
 
   /** Oculta un alimento de las búsquedas (sin borrar nada) para quitar duplicados al momento. */
@@ -217,40 +210,21 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     await data.reload()
   }
 
-  async function saveLabelFood() {
-    setErr(null)
-    const name = lName.trim()
-    if (!name) return setErr('Escribe el nombre del producto.')
-    const unitGrams = lBasis === 'unit' ? parseAmount(lUnitG) : undefined
-    const per100 = labelToPer100({ basis: lBasis, unitGrams, kcal: parseAmount(lKcal), protein: parseAmount(lProtein || '0'), carbs: parseAmount(lCarbs || '0'), fat: parseAmount(lFat || '0') })
-    if (!lKcal.trim() || !per100) return setErr(lBasis === 'unit' && !(unitGrams && unitGrams > 0) ? 'Escribe cuánto pesa una unidad (en gramos).' : 'Revisa las calorías y los demás valores.')
-    const unitName = lUnitName.trim() || 'unidad'
-    setSaving(true)
-    const { data: row, error } = await supabase
-      .from('foods')
-      .insert({
-        name,
-        kcal: Math.round(per100.kcal * 10) / 10,
-        protein: Math.round(per100.protein * 10) / 10,
-        carbs: Math.round(per100.carbs * 10) / 10,
-        fat: Math.round(per100.fat * 10) / 10,
-        unit_g: unitGrams ?? null,
-        unit_label: unitGrams ? unitName : null,
-        unit_plural: unitGrams ? (unitName === 'unidad' ? 'unidades' : unitName) : null,
-        estimated: lEstimated,
-      })
-      .select('id')
-      .single()
-    setSaving(false)
-    if (error) return setErr(error.code === '23505' ? 'Ya existe un alimento con ese nombre (quizá deshabilitado: habilítalo en Alimentación → Alimentos).' : error.message)
-    await data.reload()
-    startFrom({
-      rows: [unitGrams ? { key: newKey(row.id), food_id: row.id, amount: '1', unit: 'u' } : { key: newKey(row.id), food_id: row.id, amount: '100', unit: 'g' }],
-      base: [],
-      label: name,
-      recipeId: null,
-    })
+  /** Un alimento recién creado pasa directo a lo que comiste (100 g o 1 unidad). */
+  function useNewFood(food: Food) {
+    const row: MealRow = food.unit_g ? { key: newKey(food.id), food_id: food.id, amount: '1', unit: 'u' } : { key: newKey(food.id), food_id: food.id, amount: '100', unit: 'g' }
+    startFrom({ rows: [row], base: [], label: food.name, recipeId: null })
   }
+
+  // al guardar una receta nueva desde aquí, se vuelve al registro con esa receta ya elegida
+  useEffect(() => {
+    if (!pendingRecipe) return
+    const r = data.recipes.find((x) => x.id === pendingRecipe)
+    if (r) {
+      setPendingRecipe(null)
+      pickRecipe(r)
+    }
+  }, [pendingRecipe, data.recipes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function capturePending(file: File) {
     setErr(null)
@@ -330,6 +304,14 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
 
   return (
     <div className="overlay" role="dialog" aria-label={editEntry ? 'Completar registro' : 'Nuevo registro'}>
+      {creatingRecipe && (
+        <RecipeEditor
+          data={data}
+          initialName={query.trim()}
+          onSaved={(id) => { setCreatingRecipe(false); if (id) setPendingRecipe(id) }}
+          onClose={() => setCreatingRecipe(false)}
+        />
+      )}
       <div className="overlay-inner">
         <div className="row between">
           <h2>{editEntry ? (editEntry.status === 'pending' ? 'Completar registro' : 'Editar registro') : 'Nuevo registro'}</h2>
@@ -387,6 +369,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                   )
                 })}
                 {recipes.length === 0 && <p className="muted">Ninguna receta coincide.</p>}
+                <button onClick={() => setCreatingRecipe(true)}>+ Crear receta nueva{query.trim() ? ` ("${query.trim()}")` : ''}</button>
               </>
             )}
 
@@ -401,43 +384,11 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
                   </div>
                 ))}
                 {foods.length === 0 && <p className="muted">Ningún alimento coincide.</p>}
-                <button onClick={() => { setLName(query.trim()); setMode('etiqueta') }}>+ Crear un alimento nuevo{query.trim() ? ` ("${query.trim()}")` : ''}</button>
+                <button onClick={() => { setNewName(query.trim()); setMode('etiqueta') }}>+ Crear un alimento nuevo{query.trim() ? ` ("${query.trim()}")` : ''}</button>
               </>
             )}
 
-            {mode === 'etiqueta' && (
-              <section className="card">
-                <p className="muted">Sirve para productos con etiqueta y para crear un alimento nuevo (muslo, plátano…): escribes los valores una sola vez y queda guardado.</p>
-                <label>Producto<input value={lName} onChange={(e) => setLName(e.target.value)} placeholder="ej. Galletas de avena" /></label>
-                <SimilarFoods similar={similar} onUse={pickFood} />
-                <label>La etiqueta indica los valores
-                  <select value={lBasis} onChange={(e) => setLBasis(e.target.value as '100g' | 'unit')}>
-                    <option value="100g">por 100 g</option>
-                    <option value="unit">por unidad (galleta, barrita, lata…)</option>
-                  </select>
-                </label>
-                {lBasis === 'unit' && (
-                  <div className="row">
-                    <label style={{ flex: 1 }}>Peso de 1 unidad (g)<input inputMode="decimal" value={lUnitG} onChange={(e) => setLUnitG(e.target.value)} /></label>
-                    <label style={{ flex: 1 }}>Se llama<input placeholder="galleta" value={lUnitName} onChange={(e) => setLUnitName(e.target.value)} /></label>
-                  </div>
-                )}
-                <div className="row">
-                  <label style={{ flex: 1 }}>Calorías<input inputMode="decimal" value={lKcal} onChange={(e) => setLKcal(e.target.value)} /></label>
-                  <label style={{ flex: 1 }}>Proteína (g)<input inputMode="decimal" value={lProtein} onChange={(e) => setLProtein(e.target.value)} /></label>
-                </div>
-                <div className="row">
-                  <label style={{ flex: 1 }}>Carbohidratos (g)<input inputMode="decimal" placeholder="opcional" value={lCarbs} onChange={(e) => setLCarbs(e.target.value)} /></label>
-                  <label style={{ flex: 1 }}>Grasa (g)<input inputMode="decimal" placeholder="opcional" value={lFat} onChange={(e) => setLFat(e.target.value)} /></label>
-                </div>
-                <label className="check-row">
-                  <input type="checkbox" checked={lEstimated} onChange={(e) => setLEstimated(e.target.checked)} />
-                  <span>Valores aproximados (no vienen de una etiqueta)</span>
-                </label>
-                {err && <p className="err">{err}</p>}
-                <button className="primary" disabled={saving} onClick={saveLabelFood}>{similar.length > 0 ? 'Crear de todos modos y usar' : 'Guardar y usar'}</button>
-              </section>
-            )}
+            {mode === 'etiqueta' && <NewFoodForm data={data} initialName={newName} onCreated={useNewFood} onUse={pickFood} />}
 
             {mode === 'rapido' && (
               <section className="card">

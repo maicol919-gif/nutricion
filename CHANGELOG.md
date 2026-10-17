@@ -2,6 +2,11 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.18 · 2026-10-20
+- **Crear una receta desde el registro:** en la pestaña Recetas de "Nuevo registro" hay un botón "+ Crear receta nueva" (con lo que buscaste como nombre). Al guardarla vuelves al registro con esa receta ya elegida.
+- **Crear un ingrediente que falta al crear una receta:** al añadir un ingrediente, "+ Crear alimento nuevo" abre el mismo formulario que Etiqueta; el alimento se guarda y se añade a la receta.
+- El formulario de alimento nuevo es el mismo en todos los sitios (registro, receta y Etiqueta).
+
 ## 1.17 · 2026-10-19
 - **Importar receta desde una foto o PDF** (Alimentación → Recetas → "Importar receta desde foto o PDF"): la app lee los ingredientes, las raciones, el método y los pasos, los enlaza con tus alimentos, convierte las cantidades a tus medidas (huevos, cucharadas…) y abre el editor para que **revises y confirmes** antes de guardar. Lo que no encuentra en tus alimentos o no tiene cantidad se lista aparte.
 - La lectura usa una Edge Function de Supabase (`read-recipe`) con la API de Claude. Requiere el secreto `ANTHROPIC_API_KEY` en Supabase y solo funciona con tu cuenta. El archivo no se guarda.
