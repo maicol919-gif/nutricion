@@ -12,6 +12,7 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 - **Genéricos y etiqueta:** alimentos sin etiqueta (bollería, restaurante, bebidas) con peso típico por unidad y marca de estimado; productos con etiqueta se guardan una vez. Cada día indica cuántas kcal son estimadas.
 - **Día sin registrar:** marca un día como no registrado, sin penalización.
 - **Importar recetas desde foto o PDF:** una Edge Function (`supabase/functions/read-recipe`) lee la receta con la API de Claude, la enlaza con tus alimentos y abre el editor para revisarla. Requiere el secreto `ANTHROPIC_API_KEY` en Supabase y solo funciona con tu cuenta.
+- **Buscar producto:** busca por nombre o código de barras en Open Food Facts (base abierta, datos ODbL) mediante la Edge Function `supabase/functions/find-product` (sin claves); rellena el formulario de alimento nuevo con avisos si los datos no cuadran.
 - **Cuerpo:** peso y cintura con media de 7 días, variación semanal, cintura/altura (meta < 0,5) y veredicto del ritmo de pérdida. Metas diarias editables.
 
 ## Base de datos compartida

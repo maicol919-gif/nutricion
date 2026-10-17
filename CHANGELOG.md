@@ -2,6 +2,12 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.21 · 2026-10-21
+- **Buscar producto:** al crear un alimento nuevo (Etiqueta, registro o receta) puedes buscar por **nombre** (ej. "gotas chocolate hacendado") o por **código de barras** en Open Food Facts, una base de datos abierta con muchos productos de supermercado. Eliges el producto y se rellena el formulario; tú confirmas antes de guardar. Se guarda en tu lista de alimentos.
+- **Escáner de código de barras** con la cámara, en los navegadores que lo permiten; si no, se escribe el número.
+- **Avisos de calidad:** al ser una base colaborativa, la app avisa si faltan datos, si hay valores imposibles (por ejemplo, más de 100 g por 100 g) o si las calorías no cuadran con los macros.
+- La búsqueda pasa por una Edge Function de Supabase (`find-product`), no necesita ninguna clave y solo funciona con tu cuenta. Datos: Open Food Facts (ODbL).
+
 ## 1.20 · 2026-10-21
 - La pantalla de registro queda más corta: **foto y nota** pasan a un enlace plegable "+ Más opciones (foto, nota)" (se abre solo si ya tienen contenido), y se **quita la casilla "Guardar como mi receta"** (para eso están "Repetir algo reciente" y "Crear receta nueva").
 

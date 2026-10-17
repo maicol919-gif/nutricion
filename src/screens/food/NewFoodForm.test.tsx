@@ -17,6 +17,8 @@ describe('NewFoodForm (render)', () => {
     expect(html).toContain('por 100 g')
     expect(html).toContain('Valores aproximados')
     expect(html).toContain('Guardar y usar')
+    expect(html).toContain('Buscar producto') // búsqueda en Open Food Facts por nombre o código
+    expect(html).toContain('Nombre o código de barras')
   })
 
   it('con un nombre parecido avisa y cambia el botón', () => {

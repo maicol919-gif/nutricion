@@ -6,6 +6,8 @@ import { similarFoods } from '../../lib/foods'
 import { labelToPer100 } from '../../lib/nutrition'
 import { parseAmount } from '../../lib/meal'
 import SimilarFoods from './SimilarFoods'
+import ProductSearch from './ProductSearch'
+import { formatField, productIssues, productLabel, type FoundProduct } from '../../lib/product'
 
 interface Props {
   data: FoodData
@@ -31,6 +33,20 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
   const [estimated, setEstimated] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [fromProduct, setFromProduct] = useState<FoundProduct | null>(null)
+
+  /** Rellena el formulario con un producto de Open Food Facts (siempre por 100 g); el usuario revisa y guarda. */
+  function fill(p: FoundProduct) {
+    setFromProduct(p)
+    setName(productLabel(p))
+    setBasis('100g')
+    setKcal(formatField(p.kcal))
+    setProtein(formatField(p.protein))
+    setCarbs(formatField(p.carbs))
+    setFat(formatField(p.fat))
+    setEstimated(false)
+    setErr(null)
+  }
 
   const similar = useMemo(() => similarFoods(name, data.activeFoods), [name, data.activeFoods])
 
@@ -70,6 +86,14 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
 
   return (
     <section className="card">
+      <ProductSearch initialQuery={initialName} onPick={fill} />
+      {fromProduct && (
+        <div className="card warn">
+          <h3>Rellenado desde Open Food Facts</h3>
+          <p className="muted">Comprueba los valores con la etiqueta de tu producto antes de guardar.</p>
+          {productIssues(fromProduct).map((i) => <p key={i} className="est">⚠ {i}</p>)}
+        </div>
+      )}
       <p className="muted">{intro ?? 'Sirve para productos con etiqueta y para crear un alimento nuevo (muslo, plátano…): escribes los valores una sola vez y queda guardado.'}</p>
       <label>Producto<input value={name} onChange={(e) => setName(e.target.value)} placeholder="ej. Galletas de avena" /></label>
       <SimilarFoods similar={similar} onUse={onUse} />
