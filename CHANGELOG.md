@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.22 · 2026-10-22
+- **Medida casera al crear un alimento por 100 g** (por ejemplo, un producto encontrado en Open Food Facts, que solo trae valores por 100 g): campo opcional "¿Cómo lo cuentas?" con cuánto pesa una rebanada, un puñado o una unidad, para poder registrar "2 rebanadas" en vez de gramos.
+
 ## 1.21 · 2026-10-21
 - **Buscar producto:** al crear un alimento nuevo (Etiqueta, registro o receta) puedes buscar por **nombre** (ej. "gotas chocolate hacendado") o por **código de barras** en Open Food Facts, una base de datos abierta con muchos productos de supermercado. Eliges el producto y se rellena el formulario; tú confirmas antes de guardar. Se guarda en tu lista de alimentos.
 - **Escáner de código de barras** con la cámara, en los navegadores que lo permiten; si no, se escribe el número.

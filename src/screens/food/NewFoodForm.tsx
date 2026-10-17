@@ -31,6 +31,9 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
   const [carbs, setCarbs] = useState('')
   const [fat, setFat] = useState('')
   const [estimated, setEstimated] = useState(false)
+  const [mUnitG, setMUnitG] = useState('')
+  const [mName, setMName] = useState('')
+  const [mPlural, setMPlural] = useState('')
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [fromProduct, setFromProduct] = useState<FoundProduct | null>(null)
@@ -57,7 +60,12 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
     const unitGrams = basis === 'unit' ? parseAmount(unitG) : undefined
     const per100 = labelToPer100({ basis, unitGrams, kcal: parseAmount(kcal), protein: parseAmount(protein || '0'), carbs: parseAmount(carbs || '0'), fat: parseAmount(fat || '0') })
     if (!kcal.trim() || !per100) return setErr(basis === 'unit' && !(unitGrams && unitGrams > 0) ? 'Escribe cuánto pesa una unidad (en gramos).' : 'Revisa las calorías y los demás valores.')
-    const label = unitName.trim() || 'unidad'
+    const measureG = basis === '100g' && mUnitG.trim() ? parseAmount(mUnitG) : undefined
+    if (basis === '100g' && mUnitG.trim() && !(measureG && measureG > 0)) return setErr('El peso de la medida debe ser mayor que cero (en gramos).')
+    if (measureG && !mName.trim()) return setErr('Ponle nombre a la medida (por ejemplo rebanada).')
+    const finalUnitG = unitGrams ?? measureG
+    const label = basis === 'unit' ? unitName.trim() || 'unidad' : mName.trim()
+    const plural = basis === 'unit' ? (label === 'unidad' ? 'unidades' : label) : mPlural.trim() || label
     const r1 = (n: number) => Math.round(n * 10) / 10
     setSaving(true)
     const { data: row, error } = await supabase
@@ -68,9 +76,9 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
         protein: r1(per100.protein),
         carbs: r1(per100.carbs),
         fat: r1(per100.fat),
-        unit_g: unitGrams ?? null,
-        unit_label: unitGrams ? label : null,
-        unit_plural: unitGrams ? (label === 'unidad' ? 'unidades' : label) : null,
+        unit_g: finalUnitG ?? null,
+        unit_label: finalUnitG ? label : null,
+        unit_plural: finalUnitG ? plural : null,
         estimated,
       })
       .select('*')
@@ -90,7 +98,7 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
       {fromProduct && (
         <div className="card warn">
           <h3>Rellenado desde Open Food Facts</h3>
-          <p className="muted">Comprueba los valores con la etiqueta de tu producto antes de guardar.</p>
+          <p className="muted">Comprueba los valores con la etiqueta de tu producto antes de guardar. La base solo da valores por 100 g: si lo cuentas en rebanadas o unidades, indica abajo cuánto pesa una.</p>
           {productIssues(fromProduct).map((i) => <p key={i} className="est">⚠ {i}</p>)}
         </div>
       )}
@@ -117,6 +125,17 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
         <label style={{ flex: 1 }}>Carbohidratos (g)<input inputMode="decimal" placeholder="opcional" value={carbs} onChange={(e) => setCarbs(e.target.value)} /></label>
         <label style={{ flex: 1 }}>Grasa (g)<input inputMode="decimal" placeholder="opcional" value={fat} onChange={(e) => setFat(e.target.value)} /></label>
       </div>
+      {basis === '100g' && (
+        <>
+          <h3>¿Cómo lo cuentas? (opcional)</h3>
+          <p className="muted">Si lo comes en rebanadas, puñados o unidades, di cuánto pesa una y podrás registrar "2 rebanadas". Si lo dejas vacío, se registra en gramos.</p>
+          <div className="row">
+            <label style={{ flex: 1 }}>Una pesa (g)<input inputMode="decimal" placeholder="ej. 30" value={mUnitG} onChange={(e) => setMUnitG(e.target.value)} /></label>
+            <label style={{ flex: 1 }}>Se llama<input placeholder="rebanada" value={mName} onChange={(e) => setMName(e.target.value)} /></label>
+            <label style={{ flex: 1 }}>Plural<input placeholder="rebanadas" value={mPlural} onChange={(e) => setMPlural(e.target.value)} /></label>
+          </div>
+        </>
+      )}
       <label className="check-row">
         <input type="checkbox" checked={estimated} onChange={(e) => setEstimated(e.target.checked)} />
         <span>Valores aproximados (no vienen de una etiqueta)</span>

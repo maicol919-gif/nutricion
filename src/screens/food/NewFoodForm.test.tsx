@@ -19,6 +19,8 @@ describe('NewFoodForm (render)', () => {
     expect(html).toContain('Guardar y usar')
     expect(html).toContain('Buscar producto') // búsqueda en Open Food Facts por nombre o código
     expect(html).toContain('Nombre o código de barras')
+    expect(html).toContain('Cómo lo cuentas') // medida casera también en alimentos por 100 g
+    expect(html).toContain('Una pesa (g)')
   })
 
   it('con un nombre parecido avisa y cambia el botón', () => {
