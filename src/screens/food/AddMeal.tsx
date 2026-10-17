@@ -4,6 +4,7 @@ import { uploadMealPhoto } from '../../lib/photo'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food, MealEntry, MealKey, Recipe } from '../../types'
 import { MEALS, recipeMacros, roundMacros } from '../../lib/nutrition'
+import { foodMatchesQuery, matchesQuery } from '../../lib/foods'
 import NewFoodForm from './NewFoodForm'
 import RecipeEditor from './RecipeEditor'
 import IngredientEditor, { type EditorLabels } from './IngredientEditor'
@@ -106,11 +107,11 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const recipes = useMemo(
     () =>
       data.recipes
-        .filter((r) => (!q || r.name.toLowerCase().includes(q)) && (maxMin == null || r.minutes <= maxMin))
+        .filter((r) => matchesQuery(r.name, query) && (maxMin == null || r.minutes <= maxMin))
         .sort((a, b) => a.minutes - b.minutes || a.name.localeCompare(b.name)),
     [data.recipes, q, maxMin],
   )
-  const foods = useMemo(() => data.activeFoods.filter((f) => !q || f.name.toLowerCase().includes(q)), [data.activeFoods, q])
+  const foods = useMemo(() => data.activeFoods.filter((f) => foodMatchesQuery(f, query)), [data.activeFoods, query])
   const recent = useMemo(() => {
     const seen = new Set<string>()
     const out: MealEntry[] = []

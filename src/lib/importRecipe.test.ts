@@ -3,7 +3,7 @@ import { gramsFor, importedMethod, matchFood, rowsFromImported, type ImportedIng
 import { rowGrams } from './meal'
 import type { Food } from '../types'
 
-const f = (name: string, unit_g: number | null = null, unit_label: string | null = null, unit_plural: string | null = null): Food => ({ id: name, name, kcal: 100, protein: 10, carbs: 10, fat: 5, unit_g, unit_label, unit_plural, estimated: false, disabled: false })
+const f = (name: string, unit_g: number | null = null, unit_label: string | null = null, unit_plural: string | null = null): Food => ({ id: name, name, kcal: 100, protein: 10, carbs: 10, fat: 5, unit_g, unit_label, unit_plural, estimated: false, disabled: false, aliases: [] })
 const foods = [
   f('Huevo entero', 55, 'huevo', 'huevos'),
   f('Harina de trigo', 10, 'cucharada', 'cucharadas'),

@@ -3,6 +3,7 @@ import type { FoodData } from '../../lib/useFoodData'
 import type { Food } from '../../types'
 import { foodMacros } from '../../lib/nutrition'
 import { rowGrams, type MealRow } from '../../lib/meal'
+import { foodMatchesQuery } from '../../lib/foods'
 import NewFoodForm from './NewFoodForm'
 
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
@@ -41,8 +42,7 @@ export default function IngredientEditor({ rows, setRows, data, onAdd, hint, lab
   const [creating, setCreating] = useState(false)
 
   const addFoods = useMemo(() => {
-    const s = addQuery.trim().toLowerCase()
-    return data.activeFoods.filter((f) => !s || f.name.toLowerCase().includes(s)).slice(0, 8)
+    return data.activeFoods.filter((f) => foodMatchesQuery(f, addQuery)).slice(0, 8)
   }, [data.activeFoods, addQuery])
 
   function updateRow(key: string, patch: Partial<MealRow>) {

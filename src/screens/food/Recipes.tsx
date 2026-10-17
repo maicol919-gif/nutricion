@@ -3,6 +3,7 @@ import type { FoodData } from '../../lib/useFoodData'
 import { householdLabel, recipeMacros, roundMacros } from '../../lib/nutrition'
 import RecipeEditor, { type RecipeDraft } from './RecipeEditor'
 import RecipeImport from './RecipeImport'
+import { matchesQuery } from '../../lib/foods'
 import { importedMethod, rowsFromImported, type ImportedRecipe } from '../../lib/importRecipe'
 import { methodLabel } from '../../lib/recipes'
 import type { Recipe } from '../../types'
@@ -37,7 +38,7 @@ export default function Recipes({ data, onLog }: { data: FoodData; onLog: (recip
   const list = useMemo(
     () =>
       data.recipes
-        .filter((r) => (!q || r.name.toLowerCase().includes(q) || r.tags.some((t) => t.toLowerCase().includes(q))) && (maxMin == null || r.minutes <= maxMin))
+        .filter((r) => matchesQuery([r.name, ...r.tags].join(' '), query) && (maxMin == null || r.minutes <= maxMin))
         .sort((a, b) => a.minutes - b.minutes || a.name.localeCompare(b.name)),
     [data.recipes, q, maxMin],
   )

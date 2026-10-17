@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { FoodData } from '../../lib/useFoodData'
 import type { Food } from '../../types'
-import { similarFoods } from '../../lib/foods'
+import { foodMatchesQuery, similarFoods } from '../../lib/foods'
 import SimilarFoods from './SimilarFoods'
 
 const parse = (s: string): number => Number(s.replace(',', '.'))
@@ -19,9 +19,10 @@ interface Form {
   unit_label: string
   unit_plural: string
   estimated: boolean
+  aliases: string
 }
 
-const EMPTY: Form = { id: null, name: '', kcal: '', protein: '', carbs: '', fat: '', unit_g: '', unit_label: '', unit_plural: '', estimated: false }
+const EMPTY: Form = { id: null, name: '', kcal: '', protein: '', carbs: '', fat: '', unit_g: '', unit_label: '', unit_plural: '', estimated: false, aliases: '' }
 
 function toForm(f: Food): Form {
   return {
@@ -35,6 +36,7 @@ function toForm(f: Food): Form {
     unit_label: f.unit_label ?? '',
     unit_plural: f.unit_plural ?? '',
     estimated: f.estimated,
+    aliases: f.aliases.join(', '),
   }
 }
 
@@ -77,8 +79,7 @@ export default function Foods({ data }: { data: FoodData }) {
     }
   }, [formId])
 
-  const q = query.trim().toLowerCase()
-  const match = (f: Food) => !q || f.name.toLowerCase().includes(q)
+  const match = (f: Food) => foodMatchesQuery(f, query)
   const list = data.activeFoods.filter(match)
   const disabledList = data.foods.filter((f) => f.disabled && match(f))
   const similar = form && !form.id ? similarFoods(form.name, data.activeFoods) : []
@@ -105,6 +106,7 @@ export default function Foods({ data }: { data: FoodData }) {
       unit_label: unitG != null ? form.unit_label.trim() : null,
       unit_plural: unitG != null ? form.unit_plural.trim() || form.unit_label.trim() : null,
       estimated: form.estimated,
+      aliases: form.aliases.split(',').map((x) => x.trim()).filter(Boolean),
     }
     const { error } = form.id ? await supabase.from('foods').update(row).eq('id', form.id) : await supabase.from('foods').insert(row)
     if (error) return setMsg(error.code === '23505' ? 'Ya existe un alimento con ese nombre (puede estar deshabilitado: míralo abajo en "Deshabilitados").' : error.message)
@@ -142,6 +144,7 @@ export default function Foods({ data }: { data: FoodData }) {
         <p className="muted">Valores por 100 g, tal como salen en la etiqueta.</p>
         {msg && <p className="err">{msg}</p>}
         <label>Nombre<input value={form.name} onChange={set('name')} /></label>
+        <label>Otros nombres (opcional, separados por comas)<input value={form.aliases} onChange={set('aliases')} placeholder="ej. banano, guineo" /></label>
         <SimilarFoods similar={similar} />
         <div className="row">
           <label style={{ flex: 1 }}>Calorías<input inputMode="decimal" value={form.kcal} onChange={set('kcal')} /></label>

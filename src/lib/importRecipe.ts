@@ -1,5 +1,5 @@
 import type { Food, Method } from '../types'
-import { keyWords, normalize } from './foods'
+import { foodKeyWords, keyWords, normalize } from './foods'
 import { rowFromGrams, type MealRow } from './meal'
 
 /** Receta tal como la devuelve la lectura de una foto o PDF (Edge Function read-recipe). */
@@ -38,7 +38,7 @@ export function matchFood(name: string, foods: Food[]): Food | null {
   if (words.size === 0) return null
   let best: { f: Food; score: number } | null = null
   for (const f of foods) {
-    const fw = keyWords(f.name)
+    const fw = foodKeyWords(f)
     const shared = fw.filter((w) => words.has(w)).length
     if (shared === 0) continue
     // más palabras en común, menos palabras sobrantes en cualquiera de los dos y, a igualdad, el nombre más corto

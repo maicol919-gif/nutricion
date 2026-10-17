@@ -12,6 +12,8 @@ export interface Food {
   estimated: boolean
   /** oculto en buscadores; sigue existiendo para el historial y las recetas */
   disabled: boolean
+  /** otros nombres con los que el usuario busca este alimento (ej. banano, guineo) */
+  aliases: string[]
 }
 
 export type Method = 'horno' | 'sarten' | 'microondas' | 'olla' | 'plancha' | 'sin_cocinar'

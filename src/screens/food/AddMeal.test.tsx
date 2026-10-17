@@ -8,7 +8,7 @@ vi.mock('../../lib/supabase', () => ({ supabase: {} }))
 
 const { default: AddMeal } = await import('./AddMeal')
 
-const foods: Food[] = SEED_FOODS.map((f, i) => ({ id: `f${i}`, name: f.name, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat, unit_g: f.unit_g ?? null, unit_label: f.unit_label ?? null, unit_plural: f.unit_plural ?? null, estimated: f.estimated ?? false, disabled: false }))
+const foods: Food[] = SEED_FOODS.map((f, i) => ({ id: `f${i}`, name: f.name, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat, unit_g: f.unit_g ?? null, unit_label: f.unit_label ?? null, unit_plural: f.unit_plural ?? null, estimated: f.estimated ?? false, disabled: false, aliases: [] }))
 const byName = new Map(foods.map((f) => [f.name, f]))
 const recipes: Recipe[] = SEED_RECIPES.map((r, i) => ({ id: `r${i}`, name: r.name, minutes: r.minutes, meal: r.meal, steps: r.steps.join('\n'), tags: r.tags, servings: 1, final_weight_g: null, method: null }))
 const items: RecipeItem[] = SEED_RECIPES.flatMap((r, i) => r.items.map(([n, g], j) => ({ id: `i${i}-${j}`, recipe_id: `r${i}`, food_id: byName.get(n)!.id, grams: g, position: j })))

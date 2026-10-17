@@ -2,6 +2,11 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.19 · 2026-10-20
+- **Sinónimos en la búsqueda:** escribes "banano" y aparece "Plátano"; "papa" encuentra "Patata", "maní" encuentra "Cacahuete", "durazno" el "Melocotón", "frijoles" las "Alubias", "jugo" el "Zumo", "torta" el "Bizcocho", etc. Funciona al buscar alimentos, ingredientes y recetas, y también en el aviso de alimentos parecidos y al importar recetas.
+- **Otros nombres:** en la ficha de cada alimento (Alimentación → Alimentos) hay un campo para añadir los nombres con los que tú lo buscas (por ejemplo "guineo").
+- La búsqueda ignora palabras descriptivas como "maduro": "banano maduro" encuentra el plátano.
+
 ## 1.18 · 2026-10-20
 - **Crear una receta desde el registro:** en la pestaña Recetas de "Nuevo registro" hay un botón "+ Crear receta nueva" (con lo que buscaste como nombre). Al guardarla vuelves al registro con esa receta ya elegida.
 - **Crear un ingrediente que falta al crear una receta:** al añadir un ingrediente, "+ Crear alimento nuevo" abre el mismo formulario que Etiqueta; el alimento se guarda y se añade a la receta.

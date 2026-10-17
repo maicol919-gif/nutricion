@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { keyWords, normalize, similarFoods } from './foods'
+import { equivalents, foodMatchesQuery, keyWords, matchesQuery, normalize, similarFoods } from './foods'
 import type { Food } from '../types'
 
-const food = (name: string): Food => ({ id: name, name, kcal: 100, protein: 10, carbs: 0, fat: 5, unit_g: null, unit_label: null, unit_plural: null, estimated: false, disabled: false })
+const food = (name: string): Food => ({ id: name, name, kcal: 100, protein: 10, carbs: 0, fat: 5, unit_g: null, unit_label: null, unit_plural: null, estimated: false, disabled: false, aliases: [] })
 const foods = [
   'Muslo de pollo crudo (con hueso y piel)',
   'Pechuga de pollo cocinada',
@@ -26,6 +26,12 @@ describe('normalizar y palabras clave', () => {
 
   it('trata el plural simple como el singular', () => {
     expect(keyWords('Tomates cherry')).toEqual(['tomate', 'cherry'])
+  })
+
+  it('unifica los sinónimos: banano, guineo y plátano son la misma palabra clave', () => {
+    expect(keyWords('banano maduro')).toEqual(['platano', 'maduro'])
+    expect(keyWords('Plátano')).toEqual(['platano'])
+    expect(keyWords('guineo')).toEqual(['platano'])
   })
 })
 
@@ -60,3 +66,61 @@ describe('alimentos parecidos', () => {
     expect(similarFoods('pollo', many, 3)).toHaveLength(3)
   })
 })
+
+describe('búsqueda con sinónimos', () => {
+  const platano = { ...food('Plátano'), aliases: [] as string[] }
+  const patata = { ...food('Patata cocida'), aliases: [] as string[] }
+  const cacahuete = { ...food('Crema de cacahuete'), aliases: [] as string[] }
+  const guineo = { ...food('Plátano macho'), aliases: ['guineo verde'] }
+
+  it('banano encuentra plátano, y papa encuentra patata', () => {
+    expect(foodMatchesQuery(platano, 'banano')).toBe(true)
+    expect(foodMatchesQuery(platano, 'BANANO maduro')).toBe(true)
+    expect(foodMatchesQuery(patata, 'papa')).toBe(true)
+    expect(foodMatchesQuery(patata, 'papas')).toBe(true)
+    expect(foodMatchesQuery(cacahuete, 'maní')).toBe(true)
+  })
+
+  it('lo que no es sinónimo no coincide', () => {
+    expect(foodMatchesQuery(platano, 'patata')).toBe(false)
+    expect(foodMatchesQuery(patata, 'banano')).toBe(false)
+  })
+
+  it('coincide al escribir solo una parte de la palabra', () => {
+    expect(foodMatchesQuery(platano, 'plat')).toBe(true)
+    expect(foodMatchesQuery(patata, 'pata')).toBe(true)
+  })
+
+  it('usa también los otros nombres que puso el usuario', () => {
+    expect(foodMatchesQuery(guineo, 'guineo')).toBe(true)
+    expect(foodMatchesQuery({ ...patata, aliases: ['tubérculo'] }, 'tuberculo')).toBe(true)
+  })
+
+  it('una búsqueda vacía coincide con todo; todas las palabras deben coincidir', () => {
+    expect(foodMatchesQuery(platano, '')).toBe(true)
+    expect(matchesQuery('Pollo con arroz', 'pollo arroz')).toBe(true)
+    expect(matchesQuery('Pollo con arroz', 'pollo pasta')).toBe(false)
+  })
+
+  it('torta y bizcocho son lo mismo al buscar recetas', () => {
+    expect(matchesQuery('Bizcocho casero', 'torta')).toBe(true)
+  })
+
+  it('equivalents devuelve el grupo completo', () => {
+    expect(equivalents('banano')).toEqual(expect.arrayContaining(['banano', 'platano', 'guineo']))
+    expect(equivalents('queso')).toEqual(['queso'])
+  })
+})
+
+describe('parecidos con sinónimos', () => {
+  it('"Banano maduro" avisa de que ya existe Plátano', () => {
+    const lista = [{ ...food('Plátano'), aliases: [] as string[] }, { ...food('Arroz cocido'), aliases: [] as string[] }]
+    expect(similarFoods('Banano maduro', lista).map((f) => f.name)).toEqual(['Plátano'])
+  })
+
+  it('los otros nombres cuentan para los parecidos', () => {
+    const lista = [{ ...food('Muslo de pollo crudo'), aliases: ['pernil'] }]
+    expect(similarFoods('pernil', lista)).toHaveLength(1)
+  })
+})
+

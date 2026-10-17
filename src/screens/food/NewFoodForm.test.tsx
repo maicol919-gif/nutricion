@@ -7,7 +7,7 @@ vi.mock('../../lib/supabase', () => ({ supabase: {} }))
 
 const { default: NewFoodForm } = await import('./NewFoodForm')
 
-const muslo: Food = { id: 'm', name: 'Muslo de pollo crudo (con hueso y piel)', kcal: 166, protein: 12.4, carbs: 0.2, fat: 12.5, unit_g: 150, unit_label: 'muslo', unit_plural: 'muslos', estimated: true, disabled: false }
+const muslo: Food = { id: 'm', name: 'Muslo de pollo crudo (con hueso y piel)', kcal: 166, protein: 12.4, carbs: 0.2, fat: 12.5, unit_g: 150, unit_label: 'muslo', unit_plural: 'muslos', estimated: true, disabled: false, aliases: [] }
 const data: FoodData = { foods: [muslo], activeFoods: [muslo], recipes: [], items: [], foodById: new Map([[muslo.id, muslo]]), itemsByRecipe: new Map(), reload: async () => {} }
 
 describe('NewFoodForm (render)', () => {

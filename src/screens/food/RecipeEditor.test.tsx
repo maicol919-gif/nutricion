@@ -11,7 +11,7 @@ const { default: AddMeal } = await import('./AddMeal')
 const { default: RecipeImport } = await import('./RecipeImport')
 const { rowsFromImported } = await import('../../lib/importRecipe')
 
-const foods: Food[] = SEED_FOODS.map((f, i) => ({ id: `f${i}`, name: f.name, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat, unit_g: f.unit_g ?? null, unit_label: f.unit_label ?? null, unit_plural: f.unit_plural ?? null, estimated: f.estimated ?? false, disabled: false }))
+const foods: Food[] = SEED_FOODS.map((f, i) => ({ id: `f${i}`, name: f.name, kcal: f.kcal, protein: f.protein, carbs: f.carbs, fat: f.fat, unit_g: f.unit_g ?? null, unit_label: f.unit_label ?? null, unit_plural: f.unit_plural ?? null, estimated: f.estimated ?? false, disabled: false, aliases: [] }))
 const huevo = foods.find((f) => f.name === 'Huevo entero')!
 
 // pastel de 8 raciones con 8 huevos en total: cada ración lleva 1 huevo

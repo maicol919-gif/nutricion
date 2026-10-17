@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { itemsSummary, parseAmount, rowFromGrams, rowGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from './meal'
 import type { Food } from '../types'
 
-const huevo: Food = { id: 'h', name: 'Huevo entero', kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, unit_g: 55, unit_label: 'huevo', unit_plural: 'huevos', estimated: false, disabled: false }
-const arroz: Food = { id: 'a', name: 'Arroz cocido', kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas', estimated: false, disabled: false }
-const aceite: Food = { id: 'o', name: 'Aceite de oliva', kcal: 884, protein: 0, carbs: 0, fat: 100, unit_g: null, unit_label: null, unit_plural: null, estimated: true, disabled: false }
+const huevo: Food = { id: 'h', name: 'Huevo entero', kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, unit_g: 55, unit_label: 'huevo', unit_plural: 'huevos', estimated: false, disabled: false, aliases: [] }
+const arroz: Food = { id: 'a', name: 'Arroz cocido', kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit_g: 20, unit_label: 'cucharada', unit_plural: 'cucharadas', estimated: false, disabled: false, aliases: [] }
+const aceite: Food = { id: 'o', name: 'Aceite de oliva', kcal: 884, protein: 0, carbs: 0, fat: 100, unit_g: null, unit_label: null, unit_plural: null, estimated: true, disabled: false, aliases: [] }
 const foods = new Map([huevo, arroz, aceite].map((f) => [f.id, f]))
 
 const row = (food_id: string, amount: string, unit: 'g' | 'u'): MealRow => ({ key: food_id, food_id, amount, unit })
