@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.23 · 2026-10-22
+- Al buscar un producto, la app avisa si todos los valores vienen a cero (un dato vacío o mal cargado en la base colaborativa; ocurre, por ejemplo, con el código de barras de una mermelada de Mercadona).
+
 ## 1.22 · 2026-10-22
 - **Medida casera al crear un alimento por 100 g** (por ejemplo, un producto encontrado en Open Food Facts, que solo trae valores por 100 g): campo opcional "¿Cómo lo cuentas?" con cuánto pesa una rebanada, un puñado o una unidad, para poder registrar "2 rebanadas" en vez de gramos.
 

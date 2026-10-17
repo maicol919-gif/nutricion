@@ -36,6 +36,7 @@ export function productIssues(p: FoundProduct): string[] {
   const issues: string[] = []
   const { kcal, protein, carbs, fat, sugars } = p
   if (kcal == null) return ['Faltan las calorías.']
+  if (kcal === 0 && protein === 0 && carbs === 0 && fat === 0) return ['Todos los valores están a cero: lo más probable es que el dato esté vacío o mal cargado. Usa la etiqueta de tu producto.']
   if (protein == null || carbs == null || fat == null) issues.push('Faltan proteína, carbohidratos o grasa: complétalos con la etiqueta.')
   const vals = [protein, carbs, fat, sugars].filter((v): v is number => v != null)
   if (vals.some((v) => v < 0 || v > 100)) issues.push('Hay un valor imposible (más de 100 g por cada 100 g).')

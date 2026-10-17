@@ -50,6 +50,12 @@ describe('avisos de una base colaborativa', () => {
     expect(productIssues({ ...base, protein: 40, carbs: 50, fat: 30 }).some((i) => i.includes('supera'))).toBe(true)
   })
 
+  it('todo a cero (dato vacío, como el código de la mermelada de Mercadona) avisa', () => {
+    const issues = productIssues({ ...base, name: 'Fresa Morango', kcal: 0, protein: 0, carbs: 0, fat: 0, sugars: null, fiber: null })
+    expect(issues).toHaveLength(1)
+    expect(issues[0]).toContain('a cero')
+  })
+
   it('sin calorías avisa y no sigue', () => {
     expect(productIssues({ ...base, kcal: null })).toEqual(['Faltan las calorías.'])
   })
