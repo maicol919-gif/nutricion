@@ -11,7 +11,7 @@ import IngredientEditor, { type EditorLabels } from './IngredientEditor'
 import { servingsForWeight, weightFactor } from '../../lib/recipes'
 import { parseAmount, rowFromGrams, rowsEstimatedKcal, rowsFromItems, rowsMacros, toStoredItems, type MealRow } from '../../lib/meal'
 
-type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
+export type Mode = 'recetas' | 'alimentos' | 'etiqueta' | 'rapido'
 
 interface Props {
   date: string
@@ -19,6 +19,8 @@ interface Props {
   recents: MealEntry[]
   defaultMeal: MealKey
   presetRecipeId: string | null
+  /** pestaña con la que se abre la lista (por defecto, Alimentos) */
+  initialMode?: Mode
   /** comida que se completa (foto pendiente) o se corrige */
   editEntry: MealEntry | null
   onSaved: () => void
@@ -67,14 +69,14 @@ function startRowsFor(entry: MealEntry | null, data: FoodData, recipe: Recipe | 
   return { rows: [], base: [], label: '', recipeId: null }
 }
 
-export default function AddMeal({ date, data, recents, defaultMeal, presetRecipeId, editEntry, onSaved, onClose }: Props) {
+export default function AddMeal({ date, data, recents, defaultMeal, presetRecipeId, initialMode = 'alimentos', editEntry, onSaved, onClose }: Props) {
   const preset = presetRecipeId ? data.recipes.find((r) => r.id === presetRecipeId) : undefined
   const start = useMemo(() => startRowsFor(editEntry, data, preset), [editEntry, data, preset])
   const composing0 = !!editEntry || !!preset
 
   const [composing, setComposing] = useState(composing0)
   const [meal, setMeal] = useState<MealKey>(editEntry?.meal ?? defaultMeal)
-  const [mode, setMode] = useState<Mode>('recetas')
+  const [mode, setMode] = useState<Mode>(initialMode)
   const [query, setQuery] = useState('')
   const [maxMin, setMaxMin] = useState<number | null>(null)
 
@@ -322,7 +324,7 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
             {err && <p className="err">{err}</p>}
 
             <div className="subtabs">
-              {([['recetas', 'Recetas'], ['alimentos', 'Alimentos'], ['etiqueta', 'Etiqueta'], ['rapido', 'Rápido']] as [Mode, string][]).map(([k, lbl]) => (
+              {([['alimentos', 'Alimentos'], ['recetas', 'Recetas'], ['etiqueta', 'Etiqueta'], ['rapido', 'Rápido']] as [Mode, string][]).map(([k, lbl]) => (
                 <button key={k} className={mode === k ? 'active' : ''} onClick={() => setMode(k)}>{lbl}</button>
               ))}
             </div>

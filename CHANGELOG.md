@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.26 · 2026-10-22
+- Al registrar, la lista se abre en **Alimentos** y esa pestaña va primero; **Recetas** pasa a ser la segunda (después, Etiqueta y Rápido).
+
 ## 1.25 · 2026-10-22
 - **Menos ruido en "Ya tienes alimentos parecidos":** las marcas (Hacendado, Mercadona) y "congelado" ya no cuentan, y un nombre largo (por ejemplo, un producto con varias frutas) necesita dos palabras en común. Los nombres cortos (banano, muslo) siguen avisando con una.
 

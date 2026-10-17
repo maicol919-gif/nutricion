@@ -20,7 +20,7 @@ const base = { date: '2026-10-16', data, recents: [] as MealEntry[], defaultMeal
 
 describe('AddMeal (render)', () => {
   it('lista de recetas al abrir', () => {
-    const html = renderToString(<AddMeal {...base} presetRecipeId={null} editEntry={null} />)
+    const html = renderToString(<AddMeal {...base} presetRecipeId={null} editEntry={null} initialMode="recetas" />)
     expect(html).toContain('Foto ahora, detalles después')
     expect(html).toContain('Etiqueta')
     expect(html).toContain('Crear receta nueva') // se puede crear una receta sin salir del registro
@@ -56,4 +56,14 @@ describe('AddMeal (render)', () => {
     expect(html).toContain('value="2"')
     expect(html).toContain('Guardar cambios')
   })
+
+  it('se abre en Alimentos y la pestaña Alimentos va antes que Recetas', () => {
+    const html = renderToString(<AddMeal {...base} presetRecipeId={null} editEntry={null} />)
+    expect(html.indexOf('>Alimentos<')).toBeGreaterThan(-1)
+    expect(html.indexOf('>Alimentos<')).toBeLessThan(html.indexOf('>Recetas<'))
+    expect(html).toContain('Crear un alimento nuevo') // lista de alimentos, no de recetas
+    expect(html).not.toContain('Crear receta nueva')
+    expect(html).toContain('<button class="active">Alimentos</button>')
+  })
 })
+
