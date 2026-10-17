@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.25 · 2026-10-22
+- **Menos ruido en "Ya tienes alimentos parecidos":** las marcas (Hacendado, Mercadona) y "congelado" ya no cuentan, y un nombre largo (por ejemplo, un producto con varias frutas) necesita dos palabras en común. Los nombres cortos (banano, muslo) siguen avisando con una.
+
 ## 1.24 · 2026-10-22
 - **Alimentación → Alimentos → Nuevo** usa ahora el mismo formulario que el resto de la app: con **Buscar producto** (por nombre o código de barras), medida casera y aviso de parecidos. Antes abría un formulario antiguo sin buscador.
 - El formulario de alimento nuevo incluye el campo **Otros nombres**.

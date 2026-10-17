@@ -6,6 +6,8 @@ const STOP = new Set([
   'crudo', 'cruda', 'cocido', 'cocida', 'cocinado', 'cocinada', 'asado', 'asada', 'frito', 'frita',
   'hervido', 'hervida', 'plancha', 'horno', 'entero', 'entera', 'natural', 'escurrido', 'escurrida',
   'hueso', 'piel', 'estimado', 'casero', 'casera', 'mi', 'mis',
+  // marcas y estados de conservación: no identifican el alimento
+  'hacendado', 'mercadona', 'congelado', 'congelada', 'congelados', 'congeladas',
 ])
 
 /** Palabras que al buscar se ignoran (describen, no identifican): "banano maduro" busca banano. */
@@ -102,13 +104,15 @@ export function foodMatchesQuery(f: Pick<Food, 'name'> & { aliases?: string[] },
   return matchesQuery([f.name, ...(f.aliases ?? [])].join(' '), query)
 }
 
-/** Alimentos ya guardados que comparten alguna palabra clave con el nombre que se quiere crear (los más parecidos primero). */
+/** Alimentos ya guardados que comparten palabras clave con el nombre que se quiere crear (los más parecidos primero). */
 export function similarFoods(name: string, foods: Food[], max = 5): Food[] {
   const words = new Set(keyWords(name))
   if (words.size === 0) return []
+  // un nombre corto es específico (basta una palabra en común); uno largo (varios ingredientes) pide dos para no avisar por una palabra suelta
+  const need = words.size <= 2 ? 1 : 2
   return foods
     .map((f) => ({ f, shared: foodKeyWords(f).filter((w) => words.has(w)).length }))
-    .filter((x) => x.shared > 0)
+    .filter((x) => x.shared >= need)
     .sort((a, b) => b.shared - a.shared || a.f.name.localeCompare(b.f.name))
     .slice(0, max)
     .map((x) => x.f)

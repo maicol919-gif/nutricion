@@ -124,3 +124,22 @@ describe('parecidos con sinónimos', () => {
   })
 })
 
+describe('parecidos sin ruido', () => {
+  const lista = ['Fresas', 'Plátano', 'Pan 5 semillas (Hacendado)', 'Verdura variada (congelada o microondas)', 'Proteína whey sabor banano', 'Arroz cocido'].map((n) => ({ ...food(n), aliases: [] as string[] }))
+
+  it('un producto de varias frutas no avisa por una sola palabra suelta', () => {
+    expect(similarFoods('Dúo frutas fresa y plátano congeladas (Hacendado)', lista)).toEqual([])
+  })
+
+  it('la marca y "congelado" no cuentan como parecido', () => {
+    // solo comparte la marca (Hacendado) o el estado (congelado): no es parecido
+    expect(similarFoods('Aceite de girasol (Hacendado)', lista)).toEqual([])
+    expect(similarFoods('Helado congelado', lista)).toEqual([])
+    expect(keyWords('Verdura congelada Hacendado')).toEqual(['verdura'])
+  })
+
+  it('un nombre corto sigue avisando con una sola palabra en común', () => {
+    expect(similarFoods('Banano', lista).map((f) => f.name)).toEqual(['Plátano', 'Proteína whey sabor banano'])
+  })
+})
+
