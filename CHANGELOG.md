@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.24 · 2026-10-22
+- **Alimentación → Alimentos → Nuevo** usa ahora el mismo formulario que el resto de la app: con **Buscar producto** (por nombre o código de barras), medida casera y aviso de parecidos. Antes abría un formulario antiguo sin buscador.
+- El formulario de alimento nuevo incluye el campo **Otros nombres**.
+
 ## 1.23 · 2026-10-22
 - Al buscar un producto, la app avisa si todos los valores vienen a cero (un dato vacío o mal cargado en la base colaborativa; ocurre, por ejemplo, con el código de barras de una mermelada de Mercadona).
 

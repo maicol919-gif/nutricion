@@ -31,6 +31,7 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
   const [carbs, setCarbs] = useState('')
   const [fat, setFat] = useState('')
   const [estimated, setEstimated] = useState(false)
+  const [aliases, setAliases] = useState('')
   const [mUnitG, setMUnitG] = useState('')
   const [mName, setMName] = useState('')
   const [mPlural, setMPlural] = useState('')
@@ -80,6 +81,7 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
         unit_label: finalUnitG ? label : null,
         unit_plural: finalUnitG ? plural : null,
         estimated,
+        aliases: aliases.split(',').map((x) => x.trim()).filter(Boolean),
       })
       .select('*')
       .single()
@@ -89,7 +91,7 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
     }
     await data.reload()
     setSaving(false)
-    onCreated({ ...row, kcal: Number(row.kcal), protein: Number(row.protein), carbs: Number(row.carbs), fat: Number(row.fat), unit_g: row.unit_g == null ? null : Number(row.unit_g) } as Food)
+    onCreated({ ...row, aliases: Array.isArray(row.aliases) ? row.aliases : [], kcal: Number(row.kcal), protein: Number(row.protein), carbs: Number(row.carbs), fat: Number(row.fat), unit_g: row.unit_g == null ? null : Number(row.unit_g) } as Food)
   }
 
   return (
@@ -105,6 +107,7 @@ export default function NewFoodForm({ data, initialName = '', onCreated, onUse, 
       <p className="muted">{intro ?? 'Sirve para productos con etiqueta y para crear un alimento nuevo (muslo, plátano…): escribes los valores una sola vez y queda guardado.'}</p>
       <label>Producto<input value={name} onChange={(e) => setName(e.target.value)} placeholder="ej. Galletas de avena" /></label>
       <SimilarFoods similar={similar} onUse={onUse} />
+      <label>Otros nombres (opcional, separados por comas)<input value={aliases} onChange={(e) => setAliases(e.target.value)} placeholder="ej. banano, guineo" /></label>
       <label>Los valores son
         <select value={basis} onChange={(e) => setBasis(e.target.value as '100g' | 'unit')}>
           <option value="100g">por 100 g</option>

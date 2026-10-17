@@ -4,6 +4,7 @@ import type { FoodData } from '../../lib/useFoodData'
 import type { Food } from '../../types'
 import { foodMatchesQuery, similarFoods } from '../../lib/foods'
 import SimilarFoods from './SimilarFoods'
+import NewFoodForm from './NewFoodForm'
 
 const parse = (s: string): number => Number(s.replace(',', '.'))
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
@@ -21,8 +22,6 @@ interface Form {
   estimated: boolean
   aliases: string
 }
-
-const EMPTY: Form = { id: null, name: '', kcal: '', protein: '', carbs: '', fat: '', unit_g: '', unit_label: '', unit_plural: '', estimated: false, aliases: '' }
 
 function toForm(f: Food): Form {
   return {
@@ -67,6 +66,7 @@ export default function Foods({ data }: { data: FoodData }) {
   const [query, setQuery] = useState('')
   const [form, setForm] = useState<Form | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
+  const [creatingNew, setCreatingNew] = useState(false)
   const [usage, setUsage] = useState<{ recipes: number; meals: number } | null>(null)
 
   const formId = form?.id ?? null
@@ -135,6 +135,18 @@ export default function Foods({ data }: { data: FoodData }) {
 
   const set = (k: Exclude<keyof Form, 'estimated'>) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => (f ? { ...f, [k]: e.target.value } : f))
 
+  if (creatingNew) {
+    return (
+      <NewFoodForm
+        data={data}
+        onCreated={(food) => { setCreatingNew(false); setMsg(`Guardado: ${food.name}.`) }}
+        onUse={(food) => { setCreatingNew(false); setMsg(null); setForm(toForm(food)) }}
+        onCancel={() => setCreatingNew(false)}
+        intro="Busca el producto por nombre o código de barras, o escribe los valores por 100 g de su etiqueta. Al guardar queda en tu lista."
+      />
+    )
+  }
+
   if (form) {
     const unused = usage != null && usage.recipes === 0 && usage.meals === 0
     return (
@@ -189,7 +201,7 @@ export default function Foods({ data }: { data: FoodData }) {
       {msg && <p className={msg.startsWith('No') || msg.startsWith('Ya') ? 'err' : 'ok'}>{msg}</p>}
       <div className="row">
         <input placeholder="Buscar alimento" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <button onClick={() => { setMsg(null); setForm({ ...EMPTY }) }}>Nuevo</button>
+        <button onClick={() => { setMsg(null); setCreatingNew(true) }}>Nuevo</button>
       </div>
       <p className="muted">Toca un alimento para corregir sus valores con la etiqueta de tu marca.</p>
       {list.map((f) => <FoodRow key={f.id} f={f} onOpen={() => { setMsg(null); setForm(toForm(f)) }} />)}
