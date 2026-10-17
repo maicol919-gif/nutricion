@@ -32,7 +32,9 @@ describe('AddMeal (render)', () => {
     const html = renderToString(<AddMeal {...base} presetRecipeId={`r${idx}`} editEntry={null} />)
     expect(html).toContain('Huevo entero')
     expect(html).toContain('value="3"')
-    expect(html).toContain('Guardar como mi receta')
+    expect(html).not.toContain('Guardar como mi receta') // la casilla se quitó: para eso están Repetir y Crear receta nueva
+    expect(html).toContain('Más opciones (foto, nota)')
+    expect(html).toContain('<details>') // plegado por defecto
     expect(html).toContain('⅛') // receta de 1 ración: se puede registrar por fracción
     expect(html).toContain('Qué parte comiste')
     expect(html).toContain('<strong>409<!-- --> kcal</strong>')

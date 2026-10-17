@@ -88,8 +88,6 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
   const [recipeId, setRecipeId] = useState<string | null>(start.recipeId)
   const [note, setNote] = useState(editEntry?.note ?? '')
   const [photo, setPhoto] = useState<File | null>(null)
-  const [saveRecipe, setSaveRecipe] = useState(false)
-  const [recipeName, setRecipeName] = useState('')
 
   const [qLabel, setQLabel] = useState('')
   const [qKcal, setQKcal] = useState('')
@@ -262,25 +260,15 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
     setErr(null)
     if (validRows.length === 0) return setErr('Añade al menos un alimento con cantidad.')
     const name = label.trim() || (validRows.length === 1 ? validRows[0].name : 'Plato')
-    if (saveRecipe && !recipeName.trim()) return setErr('Ponle un nombre a tu receta.')
     setSaving(true)
     try {
       let photoPath = editEntry?.photo_path ?? null
       if (photo) photoPath = await uploadMealPhoto(photo)
 
-      let usedRecipeId = recipeId
-      if (saveRecipe) {
-        const ins = await supabase.from('recipes').insert({ name: recipeName.trim(), minutes: 10, meal, tags: ['mía'], steps: '', servings: 1 }).select('id').single()
-        if (ins.error) throw new Error(ins.error.code === '23505' ? 'Ya tienes una receta con ese nombre.' : ins.error.message)
-        const its = await supabase.from('recipe_items').insert(validRows.map((v, i) => ({ recipe_id: ins.data.id, food_id: v.food_id, grams: v.grams, position: i })))
-        if (its.error) throw its.error
-        usedRecipeId = ins.data.id
-      }
-
       const row = {
         date: editEntry?.date ?? date,
         meal,
-        recipe_id: usedRecipeId,
+        recipe_id: recipeId,
         food_id: null,
         label: name,
         servings: null,
@@ -294,7 +282,6 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
       }
       const res = editEntry ? await supabase.from('meal_log').update(row).eq('id', editEntry.id) : await supabase.from('meal_log').insert(row)
       if (res.error) throw res.error
-      if (saveRecipe) await data.reload()
       onSaved()
     } catch (e) {
       setErr(e instanceof Error ? e.message : String((e as { message?: string }).message ?? e))
@@ -465,18 +452,14 @@ export default function AddMeal({ date, data, recents, defaultMeal, presetRecipe
               {estimatedKcal > 0 && <span className="muted est"> · ≈ {estimatedKcal} kcal estimadas</span>}
             </p>
 
-            <label className="filebtn secondary">
-              📷 {photo ? 'Foto lista (cambiar)' : editEntry?.photo_path ? 'Cambiar foto' : 'Añadir foto'}
-              <input type="file" accept="image/*" capture="environment" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) setPhoto(f) }} />
-            </label>
-
-            <label>Nota (opcional: cómo te sentó, molestias…)<input value={note} onChange={(e) => setNote(e.target.value)} /></label>
-
-            <label className="check-row">
-              <input type="checkbox" checked={saveRecipe} onChange={(e) => { setSaveRecipe(e.target.checked); if (e.target.checked && !recipeName) setRecipeName(label) }} />
-              <span>Guardar como mi receta</span>
-            </label>
-            {saveRecipe && <label>Nombre de la receta<input value={recipeName} onChange={(e) => setRecipeName(e.target.value)} /></label>}
+            <details open={!!note || !!photo || !!editEntry?.photo_path || !!editEntry?.note}>
+              <summary>+ Más opciones (foto, nota)</summary>
+              <label className="filebtn secondary">
+                📷 {photo ? 'Foto lista (cambiar)' : editEntry?.photo_path ? 'Cambiar foto' : 'Añadir foto'}
+                <input type="file" accept="image/*" capture="environment" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) setPhoto(f) }} />
+              </label>
+              <label>Nota (opcional: cómo te sentó, molestias…)<input value={note} onChange={(e) => setNote(e.target.value)} /></label>
+            </details>
 
             {err && <p className="err">{err}</p>}
             <button className="primary" disabled={saving} onClick={save}>{saving ? 'Guardando…' : editEntry && editEntry.status === 'pending' ? 'Completar' : editEntry ? 'Guardar cambios' : 'Registrar'}</button>

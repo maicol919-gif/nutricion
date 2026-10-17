@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.20 · 2026-10-21
+- La pantalla de registro queda más corta: **foto y nota** pasan a un enlace plegable "+ Más opciones (foto, nota)" (se abre solo si ya tienen contenido), y se **quita la casilla "Guardar como mi receta"** (para eso están "Repetir algo reciente" y "Crear receta nueva").
+
 ## 1.19 · 2026-10-20
 - **Sinónimos en la búsqueda:** escribes "banano" y aparece "Plátano"; "papa" encuentra "Patata", "maní" encuentra "Cacahuete", "durazno" el "Melocotón", "frijoles" las "Alubias", "jugo" el "Zumo", "torta" el "Bizcocho", etc. Funciona al buscar alimentos, ingredientes y recetas, y también en el aviso de alimentos parecidos y al importar recetas.
 - **Otros nombres:** en la ficha de cada alimento (Alimentación → Alimentos) hay un campo para añadir los nombres con los que tú lo buscas (por ejemplo "guineo").
