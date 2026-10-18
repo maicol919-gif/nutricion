@@ -10,6 +10,7 @@ import type { MealEntry } from '../types'
 import AddMeal from './food/AddMeal'
 import Recipes from './food/Recipes'
 import Foods from './food/Foods'
+import Fridge from './food/Fridge'
 
 type View = 'hoy' | 'recetas' | 'alimentos'
 
@@ -172,6 +173,8 @@ export default function Food() {
           )}
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
+
+          {isToday && <Fridge />}
 
           {pending.length > 0 && (
             <section className="card warn">
