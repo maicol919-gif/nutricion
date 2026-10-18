@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.28 · 2026-10-18
+- Lo guardado puede estar en la **nevera** (aviso a los 3 días) o en el **congelador** (aviso a los ~2 meses por calidad). El recuadro pasa a llamarse "Nevera y congelador".
+
 ## 1.27 · 2026-10-18
 - **En la nevera** (en Mi día, hoy): anota qué guardaste y desde cuándo. Avisa a los 3 días ("cómelo hoy o congélalo") y al pasar de 4 ("mejor no comerlo"). Botón **Terminado** para quitarlo. Tabla nueva `fridge_items`.
 

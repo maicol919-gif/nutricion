@@ -16,4 +16,10 @@ describe('nevera', () => {
     expect(fridgeText(3)).toContain('cómelo hoy o congélalo')
     expect(fridgeText(5)).toContain('pasó el límite')
   })
+  it('congelador: bien hasta ≈ 2 meses, después aviso de calidad', () => {
+    expect(fridgeState(10, 'congelador')).toBe('ok')
+    expect(fridgeState(60, 'congelador')).toBe('aviso')
+    expect(fridgeText(0, 'congelador')).toBe('congelado hoy · se conserva bien ≈ 2 meses')
+    expect(fridgeText(61, 'congelador')).toContain('pierde calidad')
+  })
 })
