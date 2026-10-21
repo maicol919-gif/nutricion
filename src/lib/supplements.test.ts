@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { caffeineLeftAt, caffeineStatus, caffeineTotal, recentDistinct, type Supp } from './supplements'
+import { caffeineFromMeals, caffeineLeftAt, caffeineStatus, caffeineTotal, recentDistinct, type Supp } from './supplements'
+import type { Food } from '../types'
 
 const supp = (name: string, taken_at: string, caffeine_mg = 0): Supp => ({ id: name + taken_at, date: taken_at.slice(0, 10), taken_at, name, dose: null, caffeine_mg, note: null })
 
@@ -31,3 +32,16 @@ describe('recientes', () => {
     expect(r.map((x) => x.name)).toEqual(['normogrip', 'Pre-entreno'])
   })
 })
+
+describe('cafeína en la comida', () => {
+  const cafe: Food = { id: 'cafe', name: 'Café con leche', kcal: 25, protein: 1.7, carbs: 2.3, fat: 1.2, unit_g: 200, unit_label: 'taza', unit_plural: null, estimated: false, disabled: false, aliases: [], caffeine_mg: 45 }
+  const pan: Food = { ...cafe, id: 'pan', name: 'Pan', caffeine_mg: 0 }
+  const foods = new Map([cafe, pan].map((f) => [f.id, f]))
+
+  it('suma la de los alimentos que llevan y a la hora en que se registró', () => {
+    const out = caffeineFromMeals([{ created_at: '2026-10-21T08:30:00.000Z', items: [{ food_id: 'cafe', grams: 200 }, { food_id: 'pan', grams: 60 }] }, { created_at: '2026-10-21T10:00:00.000Z', items: null }], foods)
+    expect(out).toHaveLength(1)
+    expect(out[0]).toMatchObject({ name: 'Café con leche', caffeine_mg: 90, taken_at: '2026-10-21T08:30:00.000Z', note: 'En tus comidas' })
+  })
+})
+

@@ -38,7 +38,7 @@ Detalle en `README.md`. Historial en `CHANGELOG.md`.
 4. Retirar la página de Claude "Recetas y compra" cuando lo anterior esté en la app (pedir confirmación).
 5. Etiquetas pendientes: tomate frito, tortillas integrales, taquitos de cerdo.
 6. **Botón "Pídele a Claude"** dentro de la app (acordado): Edge Function que llama a la API de Anthropic con lo que hay en casa, lo que falta del día, el historial y los votos Me gusta / No me apetece, y devuelve 2-3 platos con nombre y gramos; los macros los calcula el código y solo se aceptan alimentos de casa. Necesita que el usuario cree la clave `ANTHROPIC_API_KEY` (cuenta de API con saldo) y la ponga él en Supabase. Con la misma clave funcionaría la importación de recetas por foto (`read-recipe`). Sin clave, la app sigue con la versión sin IA.
-7. ~~Suplementos y medicación~~ (hecho en 1.42). Pendiente: hora de dormir editable (hoy fija a las 23:30) y cafeína de los cafés (hoy hay que anotarlos como suplemento si se quieren contar).
+7. ~~Suplementos y medicación~~ (hecho en 1.42). La cafeína de café, cola y chocolate se suma sola (`foods.caffeine_mg`, valores aproximados; el café de máquina ≈ 90 mg por taza de 200 ml). Pendiente: hora de dormir editable (hoy fija a las 23:30) y **control del sueño** en la app (pedido por el usuario).
 8. Seguir añadiendo recetas (el usuario autorizó investigarlas y añadirlas, en tandas pequeñas para revisarlas).
 
 ## Recetas del post (Iona Fit), estimaciones sin cantidades

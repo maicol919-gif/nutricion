@@ -14,6 +14,8 @@ export interface Food {
   disabled: boolean
   /** otros nombres con los que el usuario busca este alimento (ej. banano, guineo) */
   aliases: string[]
+  /** cafeína en mg por 100 g (aproximada); 0 si no lleva */
+  caffeine_mg?: number
 }
 
 export type Method = 'horno' | 'sarten' | 'microondas' | 'olla' | 'plancha' | 'sin_cocinar'

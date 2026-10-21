@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.43 · 2026-10-21
+- **Cafeína de todo:** los alimentos pueden llevar cafeína (`caffeine_mg` por 100 g, aproximada) y la suma del día incluye lo que comes: el café con leche (≈ 45 mg por 100 g, unos 90 mg la taza), la cola, el chocolate. Sale en la tarjeta de Suplementos como "en tus comidas", a la hora en que registraste la comida, sin anotarla dos veces.
+
 ## 1.42 · 2026-10-21
 - **Suplementos y medicación** (Mi día): anota lo que no es comida (pre-entreno, antigripales…) con dosis, **cafeína en mg** y hora. Muestra la cafeína del día frente al límite orientativo de la EFSA (400 mg al día, 200 mg de una vez) y cuánta quedaría a las 23:30 (vida media de 5 h, aproximado). "Repetir" vuelve a anotar con un toque lo último que tomaste. Tabla `supplement_log`.
 

@@ -1,3 +1,5 @@
+import type { Food } from '../types'
+
 export interface Supp {
   id: string
   date: string
@@ -61,5 +63,20 @@ export function recentDistinct(entries: Supp[], max = 4): Supp[] {
     out.push(e)
     if (out.length >= max) break
   }
+  return out
+}
+
+export interface LoggedFood { created_at: string; items: { food_id: string; grams: number }[] | null }
+
+/** La cafeína que viene en lo que comiste (café, cola, chocolate…): una entrada por alimento, a la hora en que se registró la comida. */
+export function caffeineFromMeals(meals: LoggedFood[], foodById: Map<string, Food>): Supp[] {
+  const out: Supp[] = []
+  meals.forEach((m, mi) => {
+    ;(m.items ?? []).forEach((it, ii) => {
+      const food = foodById.get(it.food_id)
+      const mg = food?.caffeine_mg ? (food.caffeine_mg * Number(it.grams)) / 100 : 0
+      if (food && mg > 0) out.push({ id: `meal-${mi}-${ii}`, date: m.created_at.slice(0, 10), taken_at: m.created_at, name: food.name, dose: `${Math.round(Number(it.grams))} g`, caffeine_mg: mg, note: 'En tus comidas' })
+    })
+  })
   return out
 }

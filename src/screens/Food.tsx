@@ -258,7 +258,7 @@ export default function Food() {
               </section>
             )
           })}
-          <Supplements date={date} />
+          <Supplements date={date} data={data} />
 
           {entries.length === 0 && !dayMarked && (
             <>
