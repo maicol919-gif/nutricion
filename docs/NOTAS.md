@@ -13,6 +13,9 @@ Este archivo resume cómo se trabaja con la app y qué está pendiente, para no 
 - Máximo 1-2 huevos al día. Cafeína: antes de las 15:30 si duerme a las 23:30 (el pre-entreno lleva 250 mg).
 - Le gusta el dulce: dejar sitio para postres dentro de las metas.
 
+## Las tres apps
+- **Entreno** (`../app`), **Nutrición** (esta) y **Vértice** (`../vertice`, solo lectura: Hoy y Resumen). Vértice lee vistas `v_*` definidas en `app/supabase/schema.sql`; si cambia una tabla de aquí que usa una vista (meal_log, supplement_log, foods.caffeine_mg, body_weight, settings), hay que revisar la vista.
+
 ## Qué hace cada pestaña
 - **Alimentación**: Mi día, Recetas, Alimentos, En casa.
 - **Compra**: lista del súper de las recetas elegidas, sin lo que ya hay en casa.
