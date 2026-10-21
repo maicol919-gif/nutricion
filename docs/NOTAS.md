@@ -23,15 +23,20 @@ Detalle en `README.md`. Historial en `CHANGELOG.md`.
 - Una sola base de Supabase compartida con Entreno (esquema en `app/supabase/schema.sql`).
 - `fridge_items` guarda lo que hay en casa: `kind` (nevera, congelador, despensa), `made_on` (desde cuándo, opcional), `food_id` (enlace al alimento, opcional), `low`, `note`.
 
-## Pendiente (acordado)
-1. **Plan automático de 2 semanas.** El usuario no quiere elegir recetas en el mercado: quiere que se planifiquen las próximas dos semanas de comidas y, con eso y lo que hay en casa (despensa, nevera, congelador), salga qué comprar. Reglas pedidas: no repetir una misma receta ni una misma combinación de alimentos más de 2 veces en las 2 semanas. Consideraciones:
-   - La compra se divide por caducidad: lo perecedero de la semana 2 se compra en una segunda visita; lo que aguanta (despensa, congelable) se compra de una vez.
-   - Hacen falta más recetas de comida (hay pocas) para poder cumplir la regla de repetición.
-   - El plan debe ser flexible (días de malestar, comer fuera) y recalcularse.
-   - Guardar el plan en una tabla propia y mostrarlo en Mi día ("hoy toca").
-2. **Pasar las recetas del post** (abajo) a la pestaña Recetas como "idea", con cantidades estimadas.
-3. **Retirar la página de Claude "Recetas y compra"** cuando 2 y el plan estén dentro de la app (hasta entonces es la única copia de las recetas del post).
-4. Etiquetas pendientes: tomate frito, tortillas integrales, taquitos de cerdo.
+## Decisiones (2026-10-21)
+- **Sin plan de comidas.** Lo planificado no coincide con lo que apetece o hay ese día. Se decide qué comer en el momento, con lo que hay en casa y los macros restantes del día.
+- **Una sola palabra: "alimento"** (melón, burrata Hacendado, avena). "Ingrediente" solo dentro de una receta. No usar "producto".
+- **En casa** incluye nevera, congelador y despensa. Cada alimento que se usa debería descontarse de lo que hay; al agotarse, desaparece.
+- **Ritmo de compra:** grande cada 15 días (despensa y congelables) y una a los 8 días (carne y proteína, fruta y verdura frescas). La carne y el pescado frescos aguantan 1-2 días en nevera: se congelan en porciones el día de la compra.
+- **Compra:** qué comprar según lo que realmente se consume (historial) menos lo que hay; y "con lo que compraste puedes cocinar…" (qué receta se desbloquea con un alimento más).
+
+## Pendiente
+1. Cantidades solo para lo que se compra en paquete (proteínas, lácteos, fruta); el resto "hay / queda poco / se acabó". Descontar al registrar. (A confirmar con el usuario.)
+2. Botón "¿Qué como ahora?": recetas cocinables con lo que hay, ordenadas por encaje con los macros restantes.
+3. Compra por consumo y ritmo (8 y 15 días) + "desbloquea recetas".
+4. Retirar la página de Claude "Recetas y compra" cuando lo anterior esté en la app (pedir confirmación).
+5. Etiquetas pendientes: tomate frito, tortillas integrales, taquitos de cerdo.
+6. Seguir añadiendo recetas (el usuario autorizó investigarlas y añadirlas, en tandas pequeñas para revisarlas).
 
 ## Recetas del post (Iona Fit), estimaciones sin cantidades
 | Receta | kcal | Proteína | Productos |

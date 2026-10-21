@@ -13,7 +13,6 @@ import Foods from './food/Foods'
 import Fridge from './food/Fridge'
 import Home from './food/Home'
 import StockPrompt, { type UsedStock } from './food/StockPrompt'
-import TodayPlan from './food/TodayPlan'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
 
@@ -186,8 +185,6 @@ export default function Food() {
               <button onClick={toggleMark}>Quitar la marca</button>
             </section>
           )}
-
-          <TodayPlan date={date} data={data} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} />
 
           {usedStock && <StockPrompt items={usedStock} onDone={() => setUsedStock(null)} />}
 

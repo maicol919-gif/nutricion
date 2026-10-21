@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.33 · 2026-10-21
+- Se quita el **plan de comidas** (tabla `meal_plan`, "Hoy toca" y la compra por plan): se decide qué comer en el momento, con lo que hay en casa y los macros del día. **Compra** vuelve a funcionar por recetas elegidas, sin lo que hay en casa y no queda poco.
+- Las recetas del post pasan a la pestaña **Recetas** (marcadas "idea") y las recetas con 3 huevos bajan a 2.
+
 ## 1.32 · 2026-10-21
 - **Plan de comidas** (tabla `meal_plan`): lo que está planificado para el día sale en **Mi día** como "Hoy toca", con un botón para registrarlo en su momento.
 - **Compra** ahora sale del plan de las próximas 2 semanas, en **dos compras** (ahora, y lo fresco de la segunda semana a mitad de ciclo), sin lo que hay en casa y no queda poco. Avisa si una receta se repite más de 2 veces. Se pueden añadir recetas sueltas aparte.
