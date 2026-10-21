@@ -4,14 +4,16 @@ import { supabase } from './lib/supabase'
 import { DataProvider } from './store'
 import Login from './screens/Login'
 import Food from './screens/Food'
+import Compra from './screens/Compra'
 import Body from './screens/Body'
 import SettingsTab from './screens/Settings'
 import UpdateBanner from './UpdateBanner'
 
-type Tab = 'food' | 'body' | 'settings'
+type Tab = 'food' | 'compra' | 'body' | 'settings'
 
 const TABS: [Tab, string][] = [
   ['food', 'Alimentación'],
+  ['compra', 'Compra'],
   ['body', 'Cuerpo'],
   ['settings', 'Ajustes'],
 ]
@@ -39,6 +41,7 @@ export default function App() {
       <UpdateBanner />
       <main>
         {tab === 'food' && <Food />}
+        {tab === 'compra' && <Compra />}
         {tab === 'body' && <Body />}
         {tab === 'settings' && <SettingsTab />}
       </main>

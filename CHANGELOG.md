@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.30 · 2026-10-21
+- **Compra** (pestaña nueva): eliges recetas y sale la lista del súper con los gramos sumados por producto y agrupada por zona. Lo que ya tienes en **En casa** va aparte, en "Ya en casa". Las marcas de comprado se guardan en el móvil.
+
 ## 1.29 · 2026-10-21
 - **Alimentación → En casa:** lo que tienes en nevera, congelador y despensa (sin cantidades). Marca "Queda poco" o "Se acabó" y añade con "Añadir a casa". Usa la misma tabla que "Nevera y congelador" de Mi día, que ahora solo muestra lo que tiene fecha.
 
