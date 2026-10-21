@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.44 · 2026-10-21
+- **Nevera y congelador muestra cuánto queda:** si el producto lleva cantidad, sale junto al nombre (ej. «Arroz cocido · 325 g»). Los nombres ya no llevan cantidades escritas (se limpiaron los existentes).
+
 ## 1.43 · 2026-10-21
 - **Cafeína de todo:** los alimentos pueden llevar cafeína (`caffeine_mg` por 100 g, aproximada) y la suma del día incluye lo que comes: el café con leche (≈ 45 mg por 100 g, unos 90 mg la taza), la cola, el chocolate. Sale en la tarjeta de Suplementos como "en tus comidas", a la hora en que registraste la comida, sin anotarla dos veces.
 

@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { toISODate } from '../../lib/date'
 import { daysSince, fridgeState, fridgeText, type Kind } from '../../lib/fridge'
 
-interface Item { id: string; name: string; made_on: string; kind: Kind }
+interface Item { id: string; name: string; made_on: string; kind: Kind; grams: number | null }
 
 /** Aviso "En la nevera": qué guardaste y desde cuándo, con alerta al llegar a 3 días. */
 export default function Fridge() {
@@ -16,9 +16,9 @@ export default function Fridge() {
   const today = toISODate(new Date())
 
   const load = useCallback(async () => {
-    const { data, error } = await supabase.from('fridge_items').select('id,name,made_on,kind').in('kind', ['nevera', 'congelador']).not('made_on', 'is', null).order('kind').order('made_on')
+    const { data, error } = await supabase.from('fridge_items').select('id,name,made_on,kind,grams').in('kind', ['nevera', 'congelador']).not('made_on', 'is', null).order('kind').order('made_on')
     if (error) return setMsg(error.message)
-    setItems((data ?? []) as Item[])
+    setItems((data ?? []).map((r) => ({ ...r, grams: r.grams == null ? null : Number(r.grams) })) as Item[])
   }, [])
   useEffect(() => {
     void load()
@@ -51,7 +51,7 @@ export default function Fridge() {
         return (
           <div key={i.id} className="entry">
             <div>
-              <strong>{i.kind === 'congelador' ? '❄ ' : ''}{i.name}</strong>
+              <strong>{i.kind === 'congelador' ? '❄ ' : ''}{i.name}{i.grams != null ? ` · ${Math.round(i.grams)} g` : ''}</strong>
               <small className={fridgeState(days, i.kind) === 'ok' ? 'muted' : 'warn-text'}>{fridgeText(days, i.kind)}</small>
             </div>
             <button className="link" onClick={() => finish(i.id)}>Terminado</button>
