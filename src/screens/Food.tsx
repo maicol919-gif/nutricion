@@ -14,6 +14,7 @@ import Fridge from './food/Fridge'
 import Home from './food/Home'
 import StockPrompt, { type UsedStock } from './food/StockPrompt'
 import WhatToEat from './food/WhatToEat'
+import Supplements from './food/Supplements'
 import { applyUsage, type StockRow, type Used } from '../lib/fridge'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
@@ -257,6 +258,8 @@ export default function Food() {
               </section>
             )
           })}
+          <Supplements date={date} />
+
           {entries.length === 0 && !dayMarked && (
             <>
               <p className="muted">Aún no registras nada {isToday ? 'hoy' : 'este día'}.</p>

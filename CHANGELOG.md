@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.42 · 2026-10-21
+- **Suplementos y medicación** (Mi día): anota lo que no es comida (pre-entreno, antigripales…) con dosis, **cafeína en mg** y hora. Muestra la cafeína del día frente al límite orientativo de la EFSA (400 mg al día, 200 mg de una vez) y cuánta quedaría a las 23:30 (vida media de 5 h, aproximado). "Repetir" vuelve a anotar con un toque lo último que tomaste. Tabla `supplement_log`.
+
 ## 1.41 · 2026-10-21
 - **¿Qué como ahora? reparte mejor lo que falta del día:** cada comida tiene un **tope de 800 kcal y 45 g de proteína** (antes la cena podía tocar 67 g si solo quedaba ella), y se cuentan solo las comidas que **aún no has registrado hoy**. Lo que sobra queda para lo siguiente y para los extras.
 - **Extras** ya no propone comidas normales: es para lo que se sale de las comidas (postres, antojos, comer fuera). Enseña **tus extras de siempre** (los que registraste) y cuántas calorías te caben después de lo que te queda por comer.
