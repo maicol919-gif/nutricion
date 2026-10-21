@@ -1,4 +1,5 @@
 import type { Food, Recipe } from '../types'
+import type { Kind } from './fridge'
 import type { Zone } from './shopping'
 import { zoneOf } from './shopping'
 
@@ -81,4 +82,39 @@ export function recipeCoverage(
   }
   const rank: Record<Status, number> = { verde: 0, amarillo: 1, gris: 2 }
   return out.sort((a, b) => rank[a.status] - rank[b.status] || a.missing.length - b.missing.length || a.recipe.name.localeCompare(b.recipe.name, 'es'))
+}
+
+/** Dónde se guarda por defecto lo que se compra, según su zona del súper. */
+export function defaultKind(foodName: string): Kind {
+  const z = zoneOf(foodName)
+  return z === 'Congelados' ? 'congelador' : z === 'Nevera' || z === 'Fruta y verdura' ? 'nevera' : 'despensa'
+}
+
+export interface BoughtLine { food: Food; grams: number | null; kind: Kind }
+export interface StockEntry { id: string; food_id: string | null; kind: Kind; grams: number | null; pack_g: number | null; low: boolean }
+
+export interface BoughtPlan {
+  inserts: { name: string; kind: Kind; made_on: string; food_id: string; grams: number | null; pack_g: number | null }[]
+  updates: { id: string; grams: number | null; pack_g: number | null; low: boolean }[]
+}
+
+/**
+ * Pasa lo comprado a En casa: si ya había ese alimento en ese lugar con cantidad, la suma; si lo había sin cantidad o marcado
+ * "queda poco", lo repone; si no, lo añade.
+ */
+export function planBought(lines: BoughtLine[], stock: StockEntry[], today: string): BoughtPlan {
+  const plan: BoughtPlan = { inserts: [], updates: [] }
+  for (const l of lines) {
+    const g = l.grams != null && l.grams > 0 ? l.grams : null
+    const same = stock.find((s) => s.food_id === l.food.id && s.kind === l.kind)
+    if (!same) {
+      plan.inserts.push({ name: l.food.name, kind: l.kind, made_on: today, food_id: l.food.id, grams: g, pack_g: g })
+    } else if (g != null) {
+      const base = same.grams ?? 0
+      plan.updates.push({ id: same.id, grams: base + g, pack_g: (same.pack_g ?? base) + g, low: false })
+    } else {
+      plan.updates.push({ id: same.id, grams: same.grams, pack_g: same.pack_g, low: false })
+    }
+  }
+  return plan
 }

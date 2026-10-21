@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.37 · 2026-10-21
+- **Guardar la compra en casa** (Compra): con lo que llevas en el carro, pides el peso de lo que viene en paquete y el lugar (nevera, congelador o despensa, con uno por defecto según la zona) y se pasa a **En casa**. Si ya había ese alimento con cantidad, se suma; si quedaba poco o no llevaba cantidad, se repone. Después se vacía el carro.
+
 ## 1.36 · 2026-10-21
 - **¿Qué como ahora?** (Mi día, solo hoy): enseña hasta 5 recetas que puedes hacer con lo que hay en casa (con cantidad: que alcance para una ración), ordenadas por lo que encajan con lo que te falta del día en el momento elegido. El reparto del día es orientativo: desayuno 25 %, comida 35 %, cena 30 %, extras 10 %. Avisa de las que traen mucha caloría de golpe (≥ 800 kcal), poca proteína para una comida principal (< 25 g) o más calorías de las que te tocan. Cada una tiene el botón **Registrar**.
 

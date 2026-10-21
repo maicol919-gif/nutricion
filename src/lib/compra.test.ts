@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dailyUse, recipeCoverage, suggestions } from './compra'
+import { dailyUse, defaultKind, planBought, recipeCoverage, suggestions } from './compra'
 import type { Food, Recipe } from '../types'
 
 const food = (id: string, name: string): Food => ({ id, name, kcal: 0, protein: 0, carbs: 0, fat: 0, unit_g: null, unit_label: null, unit_plural: null, estimated: false, disabled: false, aliases: [] })
@@ -74,3 +74,38 @@ describe('recetas cubiertas', () => {
     expect(cov[0].status).toBe('gris')
   })
 })
+
+describe('guardar la compra en casa', () => {
+  it('lugar por defecto según la zona', () => {
+    expect(defaultKind('Pechuga de pollo')).toBe('nevera')
+    expect(defaultKind('Tomate')).toBe('nevera')
+    expect(defaultKind('Verdura variada (congelada o microondas)')).toBe('congelador')
+    expect(defaultKind('Arroz cocido')).toBe('despensa')
+  })
+
+  it('añade lo nuevo, suma a lo que tiene cantidad y repone lo que quedaba poco', () => {
+    const stock = [
+      { id: 's1', food_id: 'pollo', kind: 'nevera' as const, grams: 100, pack_g: 600, low: true },
+      { id: 's2', food_id: 'arroz', kind: 'despensa' as const, grams: null, pack_g: null, low: true },
+    ]
+    const plan = planBought(
+      [
+        { food: pollo, grams: 600, kind: 'nevera' },
+        { food: arroz, grams: null, kind: 'despensa' },
+        { food: tomate, grams: 500, kind: 'nevera' },
+        { food: atun, grams: null, kind: 'despensa' },
+      ],
+      stock,
+      '2026-10-22',
+    )
+    expect(plan.updates).toEqual([
+      { id: 's1', grams: 700, pack_g: 1200, low: false },
+      { id: 's2', grams: null, pack_g: null, low: false },
+    ])
+    expect(plan.inserts).toEqual([
+      { name: 'Tomate', kind: 'nevera', made_on: '2026-10-22', food_id: 'tomate', grams: 500, pack_g: 500 },
+      { name: 'Atún en aceite', kind: 'despensa', made_on: '2026-10-22', food_id: 'atun', grams: null, pack_g: null },
+    ])
+  })
+})
+
