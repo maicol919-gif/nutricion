@@ -13,6 +13,7 @@ import Foods from './food/Foods'
 import Fridge from './food/Fridge'
 import Home from './food/Home'
 import StockPrompt, { type UsedStock } from './food/StockPrompt'
+import WhatToEat from './food/WhatToEat'
 import { applyUsage, type StockRow, type Used } from '../lib/fridge'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
@@ -202,6 +203,8 @@ export default function Food() {
           {usedStock && <StockPrompt items={usedStock.items} notes={usedStock.notes} onDone={() => setUsedStock(null)} />}
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
+
+          {isToday && <WhatToEat data={data} left={left} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} />}
 
           {isToday && <Fridge />}
 

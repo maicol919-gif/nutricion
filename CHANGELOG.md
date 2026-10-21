@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.36 · 2026-10-21
+- **¿Qué como ahora?** (Mi día, solo hoy): enseña hasta 5 recetas que puedes hacer con lo que hay en casa (con cantidad: que alcance para una ración), ordenadas por lo que encajan con lo que te falta del día en el momento elegido. El reparto del día es orientativo: desayuno 25 %, comida 35 %, cena 30 %, extras 10 %. Avisa de las que traen mucha caloría de golpe (≥ 800 kcal), poca proteína para una comida principal (< 25 g) o más calorías de las que te tocan. Cada una tiene el botón **Registrar**.
+
 ## 1.35 · 2026-10-21
 - **Compra, pensada para el mercado:** eliges **Fresca (8 días)** o **Grande (15 días)** y propone qué comprar según lo que consumes (tus comidas de los últimos 28 días, mínimo 7 días de periodo) menos lo que hay en casa. Marcas lo que metes al **carro** y puedes añadir cualquier otro alimento. Debajo, **Recetas que cubres** con lo que hay en casa y el carro: verde (ya puedes hacerla), amarillo (falta 1 o 2 alimentos, con botón para añadirlos) y gris (faltan varios).
 - Se quita la selección manual de recetas de la versión anterior.
