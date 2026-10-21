@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.39 · 2026-10-21
+- Comidas armadas con más sentido: los **fiambres** (york, pavo, jamón) solo acompañan, **máximo 60 g**, y no hacen de proteína principal si hay otra; la **avena** solo en desayuno o extras (no en comida ni cena) y el desayuno no lleva arroz ni verdura.
+
 ## 1.38 · 2026-10-21
 - **¿Qué como ahora?** ya no depende solo de las recetas: si hay alimentos en casa, **arma comidas** con una proteína, una verdura y un hidrato (por ejemplo, solo arroz y huevo), con cantidades que acercan las calorías y la proteína a lo que te toca en ese momento. Respeta lo que queda en casa y un máximo de 2 huevos. Avisa si pasa de calorías o si le falta proteína. El botón **Registrar** abre el registro con esos alimentos y gramos ya puestos.
 

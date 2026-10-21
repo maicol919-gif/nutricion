@@ -18,6 +18,13 @@ type Role = 'proteina' | 'carbo' | 'verdura' | null
 /** Alimentos que no sirven como base de una comida armada: dulces, grasas de cocina y mezclas de picoteo. */
 const EXCLUDED = /az[uú]car|miel|chocolate|mermelada|\bmix\b|combinado|cocktail|gotas|condensada|aceite|mantequilla|sal\b|salsa|bacon|arroz con leche|pastel|tarta|flan|croissant|whey|prote[ií]na en polvo/i
 
+/** Fiambres: sirven de acompañamiento en poca cantidad, no como la proteína principal. */
+const FIAMBRE = /york|jam[oó]n|pavo|fiambre|chorizo|salchich|embutido|lomo/i
+export const isFiambre = (f: Food) => FIAMBRE.test(f.name)
+
+/** Hidratos de desayuno: no se mezclan con una comida o cena salada. */
+const BREAKFAST_CARB = /avena|cereal|copos|muesli|granola/i
+
 /** Fruta: no se usa como la verdura de una comida armada. */
 const FRUIT = /mel[oó]n|pi[nñ]a|fresa|pl[aá]tano|manzana|naranja|sand[ií]a|uva|ar[aá]ndano|frutos rojos|fruta/i
 
@@ -36,7 +43,7 @@ const EGG_G = 55
 
 /** Tope razonable por alimento en una comida (y lo que quede en casa si lleva cantidad). */
 function cap(f: Food, role: Role, avail: number | null): number {
-  const natural = isEgg(f) ? 2 * EGG_G : role === 'proteina' ? 250 : role === 'carbo' ? (f.kcal > 250 ? 100 : 250) : 200
+  const natural = isEgg(f) ? 2 * EGG_G : isFiambre(f) ? 60 : role === 'proteina' ? 250 : role === 'carbo' ? (f.kcal > 250 ? 100 : 250) : 200
   return avail == null ? natural : Math.min(natural, avail)
 }
 
@@ -62,9 +69,16 @@ export function assemble(meal: MealKey, left: Left, have: Have, foodById: Map<st
     const role = roleOf(food)
     if (role && (avail === null || avail >= 30)) pool.push({ food, role, avail })
   }
-  const proteins = pool.filter((p) => p.role === 'proteina').sort((a, b) => b.food.protein / b.food.kcal - a.food.protein / a.food.kcal)
-  const carbs = pool.filter((p) => p.role === 'carbo').sort((a, b) => a.food.name.localeCompare(b.food.name, 'es'))
-  const veg = pool.filter((p) => p.role === 'verdura').sort((a, b) => a.food.kcal - b.food.kcal)[0]
+  const breakfast = meal === 'desayuno' || meal === 'merienda'
+  const byProtein = (a: { food: Food }, b: { food: Food }) => b.food.protein / b.food.kcal - a.food.protein / a.food.kcal
+  const mains = pool.filter((p) => p.role === 'proteina' && !isFiambre(p.food)).sort(byProtein)
+  const cold = pool.filter((p) => p.role === 'proteina' && isFiambre(p.food)).sort(byProtein)
+  // los fiambres solo hacen de proteína principal si no hay otra cosa, y en poca cantidad
+  const proteins = mains.length > 0 ? mains : cold
+  const carbs = pool
+    .filter((p) => p.role === 'carbo' && (breakfast ? BREAKFAST_CARB.test(p.food.name) || /^pan\b|tortilla/i.test(p.food.name) : !BREAKFAST_CARB.test(p.food.name)))
+    .sort((a, b) => a.food.name.localeCompare(b.food.name, 'es'))
+  const veg = breakfast ? undefined : pool.filter((p) => p.role === 'verdura').sort((a, b) => a.food.kcal - b.food.kcal)[0]
   if (proteins.length === 0 && carbs.length === 0) return []
 
   const out: Assembly[] = []
@@ -80,7 +94,7 @@ export function assemble(meal: MealKey, left: Left, have: Have, foodById: Map<st
     // si la proteína no llega al 80 %, se suma una segunda
     const protSoFar = () => parts.reduce((s, p) => s + protOf(p), 0)
     if (protSoFar() < budget.protein * 0.8) {
-      const second = proteins.find((p) => !parts.some((x) => x.food.id === p.food.id))
+      const second = [...mains, ...cold].find((p) => !parts.some((x) => x.food.id === p.food.id))
       if (second) {
         const need = budget.protein - protSoFar()
         const g = Math.min(cap(second.food, 'proteina', second.avail), need / (second.food.protein / 100))
