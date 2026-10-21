@@ -16,7 +16,7 @@ export default function Fridge() {
   const today = toISODate(new Date())
 
   const load = useCallback(async () => {
-    const { data, error } = await supabase.from('fridge_items').select('id,name,made_on,kind').order('kind').order('made_on')
+    const { data, error } = await supabase.from('fridge_items').select('id,name,made_on,kind').in('kind', ['nevera', 'congelador']).not('made_on', 'is', null).order('kind').order('made_on')
     if (error) return setMsg(error.message)
     setItems((data ?? []) as Item[])
   }, [])

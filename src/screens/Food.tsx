@@ -11,8 +11,9 @@ import AddMeal from './food/AddMeal'
 import Recipes from './food/Recipes'
 import Foods from './food/Foods'
 import Fridge from './food/Fridge'
+import Home from './food/Home'
 
-type View = 'hoy' | 'recetas' | 'alimentos'
+type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
 
 const fmt = (n: number, d = 0) => n.toFixed(d).replace('.', ',')
 
@@ -137,7 +138,7 @@ export default function Food() {
     <div className="screen">
       <h2>Alimentación</h2>
       <div className="subtabs">
-        {([['hoy', 'Mi día'], ['recetas', 'Recetas'], ['alimentos', 'Alimentos']] as [View, string][]).map(([k, label]) => (
+        {([['hoy', 'Mi día'], ['recetas', 'Recetas'], ['alimentos', 'Alimentos'], ['casa', 'En casa']] as [View, string][]).map(([k, label]) => (
           <button key={k} className={view === k ? 'active' : ''} onClick={() => setView(k)}>{label}</button>
         ))}
       </div>
@@ -235,6 +236,8 @@ export default function Food() {
       {view === 'recetas' && <Recipes data={data} onLog={(id) => { setView('hoy'); setAdding({ recipeId: id, entry: null }) }} />}
 
       {view === 'alimentos' && <Foods data={data} />}
+
+      {view === 'casa' && <Home data={data} />}
 
       {adding && (
         <AddMeal

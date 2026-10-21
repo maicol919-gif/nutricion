@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { daysSince, fridgeState, fridgeText } from './fridge'
+import { daysSince, fridgeState, fridgeText, groupStock, sinceText, type StockItem } from './fridge'
 
 describe('nevera', () => {
   it('cuenta días enteros', () => {
@@ -22,4 +22,21 @@ describe('nevera', () => {
     expect(fridgeText(0, 'congelador')).toBe('congelado hoy · se conserva bien ≈ 2 meses')
     expect(fridgeText(61, 'congelador')).toContain('pierde calidad')
   })
+  it('despensa: sin avisos de días', () => {
+    expect(fridgeState(300, 'despensa')).toBe('ok')
+    expect(fridgeText(300, 'despensa')).toBe('')
+  })
+  it('agrupa lo que hay en casa: nevera, congelador, despensa; lo que queda poco, primero', () => {
+    const mk = (name: string, kind: StockItem['kind'], low = false): StockItem => ({ id: name, name, kind, made_on: null, food_id: null, low, note: null })
+    const g = groupStock([mk('Arroz', 'despensa'), mk('Huevos', 'nevera'), mk('Atún', 'despensa', true), mk('Melón', 'congelador'), mk('Burrata', 'nevera')])
+    expect(g.map((x) => x.kind)).toEqual(['nevera', 'congelador', 'despensa'])
+    expect(g[0].items.map((i) => i.name)).toEqual(['Burrata', 'Huevos'])
+    expect(g[2].items.map((i) => i.name)).toEqual(['Atún', 'Arroz'])
+  })
+  it('desde cuándo', () => {
+    expect(sinceText(null, '2026-10-21')).toBe('')
+    expect(sinceText('2026-10-21', '2026-10-21')).toBe('desde hoy')
+    expect(sinceText('2026-10-18', '2026-10-21')).toBe('desde hace 3 días')
+  })
 })
+
