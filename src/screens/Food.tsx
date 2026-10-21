@@ -13,6 +13,7 @@ import Foods from './food/Foods'
 import Fridge from './food/Fridge'
 import Home from './food/Home'
 import StockPrompt, { type UsedStock } from './food/StockPrompt'
+import { applyUsage, type StockRow, type Used } from '../lib/fridge'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
 
@@ -58,7 +59,7 @@ export default function Food() {
   const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null; meal?: MealKey } | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [dayMarked, setDayMarked] = useState(false)
-  const [usedStock, setUsedStock] = useState<UsedStock[] | null>(null)
+  const [usedStock, setUsedStock] = useState<{ items: UsedStock[]; notes: string[] } | null>(null)
 
   const loadMark = useCallback(async () => {
     const { data: m } = await supabase.from('day_marks').select('date').eq('date', date).maybeSingle()
@@ -121,17 +122,29 @@ export default function Food() {
     await Promise.all([loadEntries(), loadRecents()])
   }
 
-  /** Tras guardar: si usaste algo que tienes anotado en casa, pregunta si se acabó. */
-  async function askStock() {
-    const { data: last } = await supabase.from('meal_log').select('items, food_id').order('created_at', { ascending: false }).limit(1)
-    const row = last?.[0] as { items: { food_id: string }[] | null; food_id: string | null } | undefined
-    const ids = new Set<string>([...(row?.items ?? []).map((i) => i.food_id), ...(row?.food_id ? [row.food_id] : [])])
-    if (ids.size === 0) return
-    const { data: stock } = await supabase.from('fridge_items').select('id, name').in('food_id', [...ids])
-    if (stock && stock.length > 0) setUsedStock(stock as UsedStock[])
+  /** Tras guardar una comida nueva: descuenta lo usado de En casa y pregunta por lo que no lleva cantidad. */
+  async function updateStock() {
+    const { data: last } = await supabase.from('meal_log').select('items, food_id, grams').order('created_at', { ascending: false }).limit(1)
+    const row = last?.[0] as { items: { food_id: string; grams: number }[] | null; food_id: string | null; grams: number | null } | undefined
+    const used: Used[] = row?.items?.length ? row.items.map((i) => ({ food_id: i.food_id, grams: Number(i.grams) })) : row?.food_id && row.grams ? [{ food_id: row.food_id, grams: Number(row.grams) }] : []
+    if (used.length === 0) return
+    const { data: stock } = await supabase.from('fridge_items').select('id, name, food_id, grams, pack_g, low').in('food_id', [...new Set(used.map((u) => u.food_id))])
+    if (!stock || stock.length === 0) return
+    const res = applyUsage(stock.map((s) => ({ ...s, grams: s.grams == null ? null : Number(s.grams), pack_g: s.pack_g == null ? null : Number(s.pack_g) })) as StockRow[], used)
+    await Promise.all([
+      ...res.updates.map((u) => supabase.from('fridge_items').update({ grams: u.grams, low: u.low }).eq('id', u.id)),
+      ...res.deletes.map((d) => supabase.from('fridge_items').delete().eq('id', d.id)),
+    ])
+    const lines = [
+      ...res.updates.map((u) => `${u.name}: quedan ${Math.round(u.grams)} g${u.low ? ' (queda poco)' : ''}`),
+      ...res.deletes.map((d) => `${d.name}: se acabó`),
+    ]
+    if (lines.length > 0 || res.untracked.length > 0) setUsedStock({ items: res.untracked, notes: lines })
   }
 
   async function onSaved() {
+    // solo una comida nueva (o una foto pendiente que se completa) descuenta; corregir una ya guardada no
+    const firstTime = !adding?.entry || adding.entry.status === 'pending'
     setAdding(null)
     setMsg(null)
     if (dayMarked) {
@@ -139,7 +152,7 @@ export default function Food() {
       setDayMarked(false)
     }
     await Promise.all([loadEntries(), loadRecents()])
-    await askStock()
+    if (firstTime) await updateStock()
   }
 
   if (error) return <div className="screen"><p className="err">No se pudo cargar la alimentación: {error}</p></div>
@@ -186,7 +199,7 @@ export default function Food() {
             </section>
           )}
 
-          {usedStock && <StockPrompt items={usedStock} onDone={() => setUsedStock(null)} />}
+          {usedStock && <StockPrompt items={usedStock.items} notes={usedStock.notes} onDone={() => setUsedStock(null)} />}
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
 

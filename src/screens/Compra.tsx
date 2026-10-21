@@ -22,11 +22,17 @@ const fmt = (n: number) => String(Math.round(n))
 export default function Compra() {
   const { data, error } = useFoodData()
   const [saved, setSaved] = useState<Saved>(load)
-  const [inHome, setInHome] = useState<Set<string>>(new Set())
+  const [inHome, setInHome] = useState<Map<string, number | null>>(new Map())
 
   useEffect(() => {
-    void supabase.from('fridge_items').select('food_id').not('food_id', 'is', null).eq('low', false).then(({ data: rows }) => {
-      setInHome(new Set((rows ?? []).map((r) => r.food_id as string)))
+    void supabase.from('fridge_items').select('food_id, grams').not('food_id', 'is', null).eq('low', false).then(({ data: rows }) => {
+      const m = new Map<string, number | null>()
+      for (const r of rows ?? []) {
+        const g = r.grams == null ? null : Number(r.grams)
+        const prev = m.get(r.food_id as string)
+        m.set(r.food_id as string, prev === undefined ? g : prev === null || g === null ? null : prev + g)
+      }
+      setInHome(m)
     })
   }, [])
 

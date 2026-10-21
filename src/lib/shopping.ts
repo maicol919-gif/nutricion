@@ -22,15 +22,15 @@ export interface ShoppingLine {
 }
 
 /**
- * Lista de la compra de las recetas elegidas: suma los gramos por alimento y separa lo que ya hay en casa
- * (alimentos enlazados en "En casa") de lo que hay que comprar.
+ * Lista de la compra de las recetas elegidas: suma los gramos por alimento. `inHome` dice cuánto hay en casa de cada alimento
+ * (los gramos que quedan, o null si no se lleva cantidad y se da por suficiente): se compra solo lo que falta.
  */
 export function shoppingList(
   recipeIds: string[],
   recipes: Recipe[],
   itemsByRecipe: Map<string, { food_id: string; grams: number }[]>,
   foodById: Map<string, Food>,
-  inHome: Set<string>,
+  inHome: Map<string, number | null>,
 ): { toBuy: ShoppingLine[]; have: ShoppingLine[] } {
   const lines = new Map<string, ShoppingLine>()
   for (const id of recipeIds) {
@@ -46,5 +46,13 @@ export function shoppingList(
     }
   }
   const all = [...lines.values()].sort((a, b) => a.food.name.localeCompare(b.food.name, 'es'))
-  return { toBuy: all.filter((l) => !inHome.has(l.food.id)), have: all.filter((l) => inHome.has(l.food.id)) }
+  const toBuy: ShoppingLine[] = []
+  const have: ShoppingLine[] = []
+  for (const l of all) {
+    const avail = inHome.get(l.food.id)
+    if (avail === undefined) toBuy.push(l)
+    else if (avail === null || avail >= l.grams) have.push(l)
+    else toBuy.push({ ...l, grams: l.grams - avail })
+  }
+  return { toBuy, have }
 }

@@ -15,20 +15,20 @@ const itemsByRecipe = new Map([
 
 describe('lista de la compra', () => {
   it('suma los gramos por alimento entre las recetas elegidas', () => {
-    const { toBuy } = shoppingList(['r1', 'r2'], recipes, itemsByRecipe, foodById, new Set())
+    const { toBuy } = shoppingList(['r1', 'r2'], recipes, itemsByRecipe, foodById, new Map())
     expect(toBuy.find((l) => l.food.id === 'a')).toMatchObject({ grams: 165, from: ['Bocata', 'Ensalada'] })
     expect(toBuy.find((l) => l.food.id === 't')?.grams).toBe(150)
     expect(toBuy).toHaveLength(3)
   })
 
   it('separa lo que ya hay en casa', () => {
-    const { toBuy, have } = shoppingList(['r1'], recipes, itemsByRecipe, foodById, new Set(['a']))
+    const { toBuy, have } = shoppingList(['r1'], recipes, itemsByRecipe, foodById, new Map([['a', null]]))
     expect(have.map((l) => l.food.name)).toEqual(['Atún en aceite'])
     expect(toBuy.map((l) => l.food.name)).toEqual(['Pan integral', 'Tomate'])
   })
 
   it('sin recetas elegidas no hay nada', () => {
-    expect(shoppingList([], recipes, itemsByRecipe, foodById, new Set())).toEqual({ toBuy: [], have: [] })
+    expect(shoppingList([], recipes, itemsByRecipe, foodById, new Map())).toEqual({ toBuy: [], have: [] })
   })
 
   it('zona del súper por nombre', () => {
@@ -38,4 +38,11 @@ describe('lista de la compra', () => {
     expect(zoneOf('Queso cottage')).toBe('Nevera')
     expect(zoneOf('Atún en aceite de oliva (escurrido)')).toBe('Despensa')
   })
+
+  it('con cantidad en casa solo se compra lo que falta', () => {
+    const { toBuy, have } = shoppingList(['r1', 'r2'], recipes, itemsByRecipe, foodById, new Map([['a', 100], ['t', 500]]))
+    expect(toBuy.find((l) => l.food.id === 'a')?.grams).toBe(65) // necesita 165 y hay 100
+    expect(have.map((l) => l.food.id)).toEqual(['t'])
+  })
 })
+

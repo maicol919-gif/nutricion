@@ -15,4 +15,13 @@ describe('StockPrompt (render)', () => {
     expect(html).toContain('Queda poco')
     expect(html).toContain('No, nada')
   })
+
+  it('muestra lo descontado de En casa', () => {
+    const html = renderToString(<StockPrompt items={[]} notes={['Pollo: quedan 450 g', 'York: se acabó']} onDone={() => {}} />)
+    expect(html).toContain('Descontado de En casa')
+    expect(html).toContain('Pollo: quedan 450 g')
+    expect(html).toContain('York: se acabó')
+    expect(html).not.toContain('¿Se acabó algo?')
+  })
 })
+

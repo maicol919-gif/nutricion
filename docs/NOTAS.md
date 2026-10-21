@@ -31,7 +31,7 @@ Detalle en `README.md`. Historial en `CHANGELOG.md`.
 - **Compra:** qué comprar según lo que realmente se consume (historial) menos lo que hay; y "con lo que compraste puedes cocinar…" (qué receta se desbloquea con un alimento más).
 
 ## Pendiente
-1. Cantidades solo para lo que se compra en paquete (proteínas, lácteos, fruta); el resto "hay / queda poco / se acabó". Descontar al registrar. (A confirmar con el usuario.)
+1. ~~Cantidades en lo que viene en paquete, con descuento al registrar~~ (hecho en 1.34, aceptado por el usuario). Limitación: crudo frente a cocido son alimentos distintos; si se compra pollo crudo y la receta usa pollo cocinado, no se descuenta. Pendiente: leer el peso del paquete al escanear el código de barras.
 2. Botón "¿Qué como ahora?": recetas cocinables con lo que hay, ordenadas por encaje con los macros restantes.
 3. Compra por consumo y ritmo (8 y 15 días) + "desbloquea recetas".
 4. Retirar la página de Claude "Recetas y compra" cuando lo anterior esté en la app (pedir confirmación).

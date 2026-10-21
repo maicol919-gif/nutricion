@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.34 · 2026-10-21
+- **En casa con cantidad:** lo que viene en paquete lleva gramos ("Cantidad en gramos" al añadir; "Me quedan…" para corregir). Al registrar una comida nueva, la app **descuenta** lo usado; cuando queda el 25 % o menos marca "Queda poco" y cuando llega a 0 desaparece. Lo que no lleva cantidad sigue con "Queda poco / Se acabó" y la pregunta "¿Se acabó algo?".
+- **Compra** compra solo lo que falta: si necesitas 165 g y tienes 100 g, la lista pide 65 g.
+
 ## 1.33 · 2026-10-21
 - Se quita el **plan de comidas** (tabla `meal_plan`, "Hoy toca" y la compra por plan): se decide qué comer en el momento, con lo que hay en casa y los macros del día. **Compra** vuelve a funcionar por recetas elegidas, sin lo que hay en casa y no queda poco.
 - Las recetas del post pasan a la pestaña **Recetas** (marcadas "idea") y las recetas con 3 huevos bajan a 2.
