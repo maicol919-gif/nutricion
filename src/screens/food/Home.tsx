@@ -112,7 +112,7 @@ export default function Home({ data }: { data: FoodData }) {
                   {meta && <small className="muted">{meta}</small>}
                   {fixing?.id === i.id && (
                     <div className="row">
-                      <input inputMode="decimal" value={fixing.value} onChange={(e) => setFixing({ id: i.id, value: e.target.value })} aria-label={unit ? `${unit.many} que quedan` : 'Gramos que quedan'} />
+                      <input inputMode="decimal" autoFocus onFocus={(e) => e.target.select()} value={fixing.value} onChange={(e) => setFixing({ id: i.id, value: e.target.value })} aria-label={unit ? `${unit.many} que quedan` : 'Gramos que quedan'} />
                       <button className="primary" onClick={() => fix(i)}>Guardar</button>
                       <button onClick={() => setFixing(null)}>Cancelar</button>
                     </div>
