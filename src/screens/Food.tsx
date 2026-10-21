@@ -12,6 +12,7 @@ import Recipes from './food/Recipes'
 import Foods from './food/Foods'
 import Fridge from './food/Fridge'
 import Home from './food/Home'
+import StockPrompt, { type UsedStock } from './food/StockPrompt'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
 
@@ -57,6 +58,7 @@ export default function Food() {
   const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null } | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [dayMarked, setDayMarked] = useState(false)
+  const [usedStock, setUsedStock] = useState<UsedStock[] | null>(null)
 
   const loadMark = useCallback(async () => {
     const { data: m } = await supabase.from('day_marks').select('date').eq('date', date).maybeSingle()
@@ -119,6 +121,16 @@ export default function Food() {
     await Promise.all([loadEntries(), loadRecents()])
   }
 
+  /** Tras guardar: si usaste algo que tienes anotado en casa, pregunta si se acabó. */
+  async function askStock() {
+    const { data: last } = await supabase.from('meal_log').select('items, food_id').order('created_at', { ascending: false }).limit(1)
+    const row = last?.[0] as { items: { food_id: string }[] | null; food_id: string | null } | undefined
+    const ids = new Set<string>([...(row?.items ?? []).map((i) => i.food_id), ...(row?.food_id ? [row.food_id] : [])])
+    if (ids.size === 0) return
+    const { data: stock } = await supabase.from('fridge_items').select('id, name').in('food_id', [...ids])
+    if (stock && stock.length > 0) setUsedStock(stock as UsedStock[])
+  }
+
   async function onSaved() {
     setAdding(null)
     setMsg(null)
@@ -127,6 +139,7 @@ export default function Food() {
       setDayMarked(false)
     }
     await Promise.all([loadEntries(), loadRecents()])
+    await askStock()
   }
 
   if (error) return <div className="screen"><p className="err">No se pudo cargar la alimentación: {error}</p></div>
@@ -172,6 +185,8 @@ export default function Food() {
               <button onClick={toggleMark}>Quitar la marca</button>
             </section>
           )}
+
+          {usedStock && <StockPrompt items={usedStock} onDone={() => setUsedStock(null)} />}
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
 

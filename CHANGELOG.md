@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.31 · 2026-10-21
+- Al guardar una comida, si usaste algo que tienes anotado en **En casa**, aparece **"¿Se acabó algo?"** con "Queda poco", "Se acabó" y "No, nada".
+
 ## 1.30 · 2026-10-21
 - **Compra** (pestaña nueva): eliges recetas y sale la lista del súper con los gramos sumados por producto y agrupada por zona. Lo que ya tienes en **En casa** va aparte, en "Ya en casa". Las marcas de comprado se guardan en el móvil.
 

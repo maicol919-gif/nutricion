@@ -13,11 +13,13 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 - **Día sin registrar:** marca un día como no registrado, sin penalización.
 - **Importar recetas desde foto o PDF:** una Edge Function (`supabase/functions/read-recipe`) lee la receta con la API de Claude, la enlaza con tus alimentos y abre el editor para revisarla. Requiere el secreto `ANTHROPIC_API_KEY` en Supabase y solo funciona con tu cuenta.
 - **Buscar producto:** busca por nombre o código de barras en Open Food Facts (base abierta, datos ODbL) mediante la Edge Function `supabase/functions/find-product` (sin claves); rellena el formulario de alimento nuevo con avisos si los datos no cuadran.
+- **En casa:** lo que hay en nevera, congelador y despensa, sin cantidades (qué hay, desde cuándo y si queda poco). Cada producto se enlaza con un alimento; al registrar una comida, la app pregunta "¿se acabó algo?". La tabla es `fridge_items` (el nombre viene de la primera versión, "Nevera y congelador"); la tarjeta de **Mi día** muestra solo lo que tiene fecha y avisa a los 3-4 días en nevera y a los ~2 meses en congelador.
+- **Compra:** eliges recetas y sale la lista del súper con los gramos sumados por alimento, agrupada por zona, sin lo que ya tienes en casa (alimentos enlazados en En casa). La selección y las marcas se guardan en el móvil.
 - **Cuerpo:** peso y cintura con media de 7 días, variación semanal, cintura/altura (meta < 0,5) y veredicto del ritmo de pérdida. Metas diarias editables.
 
 ## Base de datos compartida
 
-Usa el mismo proyecto de Supabase que Entreno (tablas `foods`, `recipes`, `recipe_items`, `meal_log`, `body_weight`, `settings`). El esquema completo está en el repositorio de Entreno (`supabase/schema.sql`). Nutrición solo escribe sus propias tablas y las columnas `height_cm`, `kcal_target` y `protein_target` de `settings`.
+Usa el mismo proyecto de Supabase que Entreno (tablas `foods`, `recipes`, `recipe_items`, `meal_log`, `fridge_items`, `day_marks`, `body_weight`, `settings`). El esquema completo está en el repositorio de Entreno (`supabase/schema.sql`). Nutrición solo escribe sus propias tablas y las columnas `height_cm`, `kcal_target` y `protein_target` de `settings`.
 
 ## Stack
 
