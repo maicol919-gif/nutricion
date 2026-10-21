@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.45 · 2026-10-21
+- **En casa cuenta por piezas lo que se cuenta por piezas:** los huevos (y todo alimento con peso de unidad) se muestran, se añaden y se corrigen en unidades («2 huevos (110 g)»); la app lo pasa a gramos por dentro. Antes «Me quedan 4» se tomaba como 4 g y al añadir se sumaba en vez de sustituir.
+
 ## 1.44 · 2026-10-21
 - **Nevera y congelador muestra cuánto queda:** si el producto lleva cantidad, sale junto al nombre (ej. «Arroz cocido · 325 g»). Los nombres ya no llevan cantidades escritas (se limpiaron los existentes).
 
