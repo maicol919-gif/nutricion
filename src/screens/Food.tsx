@@ -15,6 +15,7 @@ import Home from './food/Home'
 import StockPrompt, { type UsedStock } from './food/StockPrompt'
 import WhatToEat from './food/WhatToEat'
 import Supplements from './food/Supplements'
+import Sleep from './food/Sleep'
 import { applyUsage, type StockRow, type Used } from '../lib/fridge'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
@@ -259,6 +260,7 @@ export default function Food() {
             )
           })}
           <Supplements date={date} data={data} />
+          <Sleep date={date} />
 
           {entries.length === 0 && !dayMarked && (
             <>
