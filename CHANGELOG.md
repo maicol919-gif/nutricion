@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.32 · 2026-10-21
+- **Plan de comidas** (tabla `meal_plan`): lo que está planificado para el día sale en **Mi día** como "Hoy toca", con un botón para registrarlo en su momento.
+- **Compra** ahora sale del plan de las próximas 2 semanas, en **dos compras** (ahora, y lo fresco de la segunda semana a mitad de ciclo), sin lo que hay en casa y no queda poco. Avisa si una receta se repite más de 2 veces. Se pueden añadir recetas sueltas aparte.
+
 ## 1.31 · 2026-10-21
 - Al guardar una comida, si usaste algo que tienes anotado en **En casa**, aparece **"¿Se acabó algo?"** con "Queda poco", "Se acabó" y "No, nada".
 

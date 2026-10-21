@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { shoppingList, zoneOf } from './shopping'
+import { planShopping, shoppingList, zoneOf } from './shopping'
+import type { PlanRow } from './plan'
 import type { Food, Recipe } from '../types'
 
 const food = (id: string, name: string): Food => ({ id, name, kcal: 0, protein: 0, carbs: 0, fat: 0, unit_g: null, unit_label: null, unit_plural: null, estimated: false, disabled: false, aliases: [] })
@@ -38,4 +39,22 @@ describe('lista de la compra', () => {
     expect(zoneOf('Queso cottage')).toBe('Nevera')
     expect(zoneOf('Atún en aceite de oliva (escurrido)')).toBe('Despensa')
   })
+
+  it('plan: reparte la compra en dos viajes según la caducidad y resta lo que hay en casa', () => {
+    const fs = [food('pollo', 'Pechuga de pollo'), food('arroz', 'Arroz crudo'), food('tom', 'Tomate'), food('atun', 'Atún en aceite')]
+    const fById = new Map(fs.map((f) => [f.id, f]))
+    const rs = [recipe('r1', 'Pollo con arroz'), recipe('r2', 'Ensalada')]
+    const items = new Map([
+      ['r1', [{ food_id: 'pollo', grams: 150 }, { food_id: 'arroz', grams: 60 }]],
+      ['r2', [{ food_id: 'tom', grams: 100 }, { food_id: 'atun', grams: 55 }, { food_id: 'arroz', grams: 20 }]],
+    ])
+    const row = (date: string, recipe_id: string, servings = 1): PlanRow => ({ id: date + recipe_id, date, meal: 'comida', recipe_id, label: null, servings, note: null })
+    const plan = [row('2026-10-22', 'r1'), row('2026-10-30', 'r1', 2), row('2026-10-31', 'r2')]
+    const out = planShopping(plan, '2026-10-21', items, rs, fById, new Set(['atun']))
+    // semana 1: pollo y arroz. semana 2: el pollo (perecedero) va al segundo viaje; el arroz (despensa) se suma al primero
+    expect(out.trip1.map((l) => [l.food.name, l.grams])).toEqual([['Arroz crudo', 60 + 120 + 20], ['Pechuga de pollo', 150]])
+    expect(out.trip2.map((l) => [l.food.name, l.grams])).toEqual([['Pechuga de pollo', 300], ['Tomate', 100]])
+    expect(out.have.map((l) => l.food.name)).toEqual(['Atún en aceite'])
+  })
 })
+

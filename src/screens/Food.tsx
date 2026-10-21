@@ -6,13 +6,14 @@ import { useFoodData } from '../lib/useFoodData'
 import { MEAL_BUCKET, signedPhotoUrls } from '../lib/photo'
 import { itemsSummary } from '../lib/meal'
 import { MEALS, kcalState, mealForHour, proteinState, remaining, sumMacros } from '../lib/nutrition'
-import type { MealEntry } from '../types'
+import type { MealEntry, MealKey } from '../types'
 import AddMeal from './food/AddMeal'
 import Recipes from './food/Recipes'
 import Foods from './food/Foods'
 import Fridge from './food/Fridge'
 import Home from './food/Home'
 import StockPrompt, { type UsedStock } from './food/StockPrompt'
+import TodayPlan from './food/TodayPlan'
 
 type View = 'hoy' | 'recetas' | 'alimentos' | 'casa'
 
@@ -55,7 +56,7 @@ export default function Food() {
   const [entries, setEntries] = useState<MealEntry[]>([])
   const [recents, setRecents] = useState<MealEntry[]>([])
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
-  const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null } | null>(null)
+  const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null; meal?: MealKey } | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [dayMarked, setDayMarked] = useState(false)
   const [usedStock, setUsedStock] = useState<UsedStock[] | null>(null)
@@ -186,6 +187,8 @@ export default function Food() {
             </section>
           )}
 
+          <TodayPlan date={date} data={data} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} />
+
           {usedStock && <StockPrompt items={usedStock} onDone={() => setUsedStock(null)} />}
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
@@ -259,7 +262,7 @@ export default function Food() {
           date={date}
           data={data}
           recents={recents}
-          defaultMeal={mealForHour(new Date().getHours())}
+          defaultMeal={adding.meal ?? mealForHour(new Date().getHours())}
           presetRecipeId={adding.recipeId}
           editEntry={adding.entry}
           onSaved={onSaved}

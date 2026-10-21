@@ -15,6 +15,7 @@ App web instalable (PWA) para registrar la alimentación, el peso y la cintura. 
 - **Buscar producto:** busca por nombre o código de barras en Open Food Facts (base abierta, datos ODbL) mediante la Edge Function `supabase/functions/find-product` (sin claves); rellena el formulario de alimento nuevo con avisos si los datos no cuadran.
 - **En casa:** lo que hay en nevera, congelador y despensa, sin cantidades (qué hay, desde cuándo y si queda poco). Cada producto se enlaza con un alimento; al registrar una comida, la app pregunta "¿se acabó algo?". La tabla es `fridge_items` (el nombre viene de la primera versión, "Nevera y congelador"); la tarjeta de **Mi día** muestra solo lo que tiene fecha y avisa a los 3-4 días en nevera y a los ~2 meses en congelador.
 - **Compra:** eliges recetas y sale la lista del súper con los gramos sumados por alimento, agrupada por zona, sin lo que ya tienes en casa (alimentos enlazados en En casa). La selección y las marcas se guardan en el móvil.
+- **Plan:** tabla `meal_plan` (día, momento, receta o texto libre, raciones). Mi día muestra "Hoy toca" con un botón para registrar. Compra lo usa para calcular qué comprar en las próximas 2 semanas.
 - **Cuerpo:** peso y cintura con media de 7 días, variación semanal, cintura/altura (meta < 0,5) y veredicto del ritmo de pérdida. Metas diarias editables.
 
 ## Base de datos compartida
