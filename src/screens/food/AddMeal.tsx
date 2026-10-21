@@ -21,6 +21,8 @@ interface Props {
   presetRecipeId: string | null
   /** alimentos con gramos para empezar (una comida armada con lo que hay en casa) */
   presetItems?: { food_id: string; grams: number }[]
+  /** nombre de esa comida (por defecto, "Armado con lo que había en casa") */
+  presetLabel?: string
   /** pestaña con la que se abre la lista (por defecto, Alimentos) */
   initialMode?: Mode
   /** comida que se completa (foto pendiente) o se corrige */
@@ -45,8 +47,8 @@ const newKey = (id: string) => `${id}-n${++rowSeq}`
 /** Base de la composición: ingredientes con gramos (se usan para multiplicar raciones). */
 type Base = { food_id: string; grams: number }[]
 
-function startRowsFor(entry: MealEntry | null, data: FoodData, recipe: Recipe | undefined, presetItems?: Base): { rows: MealRow[]; base: Base; label: string; recipeId: string | null } {
-  if (!entry && !recipe && presetItems && presetItems.length > 0) return { rows: rowsFromItems(presetItems, data.foodById), base: presetItems, label: 'Armado con lo que había en casa', recipeId: null }
+function startRowsFor(entry: MealEntry | null, data: FoodData, recipe: Recipe | undefined, presetItems?: Base, presetLabel?: string): { rows: MealRow[]; base: Base; label: string; recipeId: string | null } {
+  if (!entry && !recipe && presetItems && presetItems.length > 0) return { rows: rowsFromItems(presetItems, data.foodById), base: presetItems, label: presetLabel ?? 'Armado con lo que había en casa', recipeId: null }
   if (entry) {
     if (entry.items && entry.items.length) {
       const base = entry.items.map((i) => ({ food_id: i.food_id, grams: i.grams }))
@@ -72,9 +74,9 @@ function startRowsFor(entry: MealEntry | null, data: FoodData, recipe: Recipe | 
   return { rows: [], base: [], label: '', recipeId: null }
 }
 
-export default function AddMeal({ date, data, recents, defaultMeal, presetRecipeId, presetItems, initialMode = 'alimentos', editEntry, onSaved, onClose }: Props) {
+export default function AddMeal({ date, data, recents, defaultMeal, presetRecipeId, presetItems, presetLabel, initialMode = 'alimentos', editEntry, onSaved, onClose }: Props) {
   const preset = presetRecipeId ? data.recipes.find((r) => r.id === presetRecipeId) : undefined
-  const start = useMemo(() => startRowsFor(editEntry, data, preset, presetItems), [editEntry, data, preset, presetItems])
+  const start = useMemo(() => startRowsFor(editEntry, data, preset, presetItems, presetLabel), [editEntry, data, preset, presetItems, presetLabel])
   const composing0 = !!editEntry || !!preset || !!presetItems?.length
 
   const [composing, setComposing] = useState(composing0)

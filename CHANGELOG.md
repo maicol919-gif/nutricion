@@ -2,6 +2,11 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.40 · 2026-10-21
+- **¿Qué como ahora? con tus platos de siempre:** arriba salen los platos que ya has comido (de tus registros de los últimos 28 días, en un momento parecido), repetibles con lo que hay en casa y escalados a lo que te toca (entre la mitad y una vez y media de la última vez). Después, las recetas y lo armado.
+- **Me gusta / No me apetece** en cada propuesta (tabla `dish_feedback`): lo que no te apetece deja de salir y lo que te gusta sube. Tocar otra vez quita el voto.
+- Al registrar un plato de siempre, se abre con su nombre y gramos ya puestos.
+
 ## 1.39 · 2026-10-21
 - Comidas armadas con más sentido: los **fiambres** (york, pavo, jamón) solo acompañan, **máximo 60 g**, y no hacen de proteína principal si hay otra; la **avena** solo en desayuno o extras (no en comida ni cena) y el desayuno no lleva arroz ni verdura.
 
