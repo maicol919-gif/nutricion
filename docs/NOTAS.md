@@ -32,7 +32,7 @@ Detalle en `README.md`. Historial en `CHANGELOG.md`.
 
 ## Pendiente
 1. ~~Cantidades en lo que viene en paquete, con descuento al registrar~~ (hecho en 1.34, aceptado por el usuario). Limitación: crudo frente a cocido son alimentos distintos; si se compra pollo crudo y la receta usa pollo cocinado, no se descuenta. Pendiente: leer el peso del paquete al escanear el código de barras.
-2. ~~Botón "¿Qué como ahora?"~~ (hecho en 1.36). Pendiente de mejorar: también valorar azúcar (no se registra) y evitar repetir lo comido en los últimos días.
+2. ~~Botón "¿Qué como ahora?"~~ (hecho en 1.36; en 1.38 también arma comidas con los alimentos de casa, sin recetas). Pendiente de mejorar: también valorar azúcar (no se registra) y evitar repetir lo comido en los últimos días.
 3. ~~Compra por consumo y ritmo (8 y 15 días) + recetas que cubres~~ (hecho en 1.35). Limitaciones: el consumo se mide con los alimentos tal como se registran (p. ej. arroz cocido, no crudo); con pocos días de historial las cantidades son aproximadas.
    - Hecho en 1.37: botón "Guardar la compra en casa" (pasa el carro a En casa pidiendo el peso de lo que va en paquete). Pendiente: leer el peso del paquete al escanear el código de barras.
 4. Retirar la página de Claude "Recetas y compra" cuando lo anterior esté en la app (pedir confirmación).

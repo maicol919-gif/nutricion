@@ -57,7 +57,7 @@ export default function Food() {
   const [entries, setEntries] = useState<MealEntry[]>([])
   const [recents, setRecents] = useState<MealEntry[]>([])
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
-  const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null; meal?: MealKey } | null>(null)
+  const [adding, setAdding] = useState<{ recipeId: string | null; entry: MealEntry | null; meal?: MealKey; items?: { food_id: string; grams: number }[] } | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [dayMarked, setDayMarked] = useState(false)
   const [usedStock, setUsedStock] = useState<{ items: UsedStock[]; notes: string[] } | null>(null)
@@ -204,7 +204,7 @@ export default function Food() {
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
 
-          {isToday && <WhatToEat data={data} left={left} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} />}
+          {isToday && <WhatToEat data={data} left={left} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} onRegisterItems={(items, meal) => setAdding({ recipeId: null, entry: null, meal, items })} />}
 
           {isToday && <Fridge />}
 
@@ -277,6 +277,7 @@ export default function Food() {
           recents={recents}
           defaultMeal={adding.meal ?? mealForHour(new Date().getHours())}
           presetRecipeId={adding.recipeId}
+          presetItems={adding.items}
           editEntry={adding.entry}
           onSaved={onSaved}
           onClose={() => setAdding(null)}
