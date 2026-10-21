@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.41 · 2026-10-21
+- **¿Qué como ahora? reparte mejor lo que falta del día:** cada comida tiene un **tope de 800 kcal y 45 g de proteína** (antes la cena podía tocar 67 g si solo quedaba ella), y se cuentan solo las comidas que **aún no has registrado hoy**. Lo que sobra queda para lo siguiente y para los extras.
+- **Extras** ya no propone comidas normales: es para lo que se sale de las comidas (postres, antojos, comer fuera). Enseña **tus extras de siempre** (los que registraste) y cuántas calorías te caben después de lo que te queda por comer.
+
 ## 1.40 · 2026-10-21
 - **¿Qué como ahora? con tus platos de siempre:** arriba salen los platos que ya has comido (de tus registros de los últimos 28 días, en un momento parecido), repetibles con lo que hay en casa y escalados a lo que te toca (entre la mitad y una vez y media de la última vez). Después, las recetas y lo armado.
 - **Me gusta / No me apetece** en cada propuesta (tabla `dish_feedback`): lo que no te apetece deja de salir y lo que te gusta sube. Tocar otra vez quita el voto.

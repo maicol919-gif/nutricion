@@ -59,8 +59,8 @@ const protOf = (p: Part) => (p.food.protein * p.grams) / 100
  * Arma comidas con lo que hay en casa, ajustadas a lo que le toca a este momento: una proteína, una verdura y un hidrato,
  * con cantidades que acercan las calorías y la proteína al presupuesto. Devuelve hasta 3 opciones con proteínas distintas.
  */
-export function assemble(meal: MealKey, left: Left, have: Have, foodById: Map<string, Food>): Assembly[] {
-  const budget = mealBudget(meal, left)
+export function assemble(meal: MealKey, left: Left, have: Have, foodById: Map<string, Food>, pending?: MealKey[]): Assembly[] {
+  const budget = mealBudget(meal, left, pending)
   if (budget.kcal < 80) return []
   const pool: { food: Food; role: Role; avail: number | null }[] = []
   for (const [id, avail] of have) {

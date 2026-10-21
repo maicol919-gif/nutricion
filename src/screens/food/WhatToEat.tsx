@@ -12,6 +12,8 @@ import type { MealKey } from '../../types'
 interface Props {
   data: FoodData
   left: Left
+  /** comidas principales que aún no has registrado hoy */
+  pending: MealKey[]
   onRegister: (recipeId: string, meal: MealKey) => void
   onRegisterItems: (items: { food_id: string; grams: number }[], meal: MealKey, label?: string) => void
 }
@@ -22,7 +24,7 @@ const short = (name: string) => name.replace(/\s*\(.*\)/, '')
  * "¿Qué como ahora?": tus platos de siempre, tus recetas y comidas armadas con lo que hay en casa, ajustados a lo que te falta
  * del día en este momento. Cada propuesta se puede marcar con "Me gusta" o "No me apetece".
  */
-export default function WhatToEat({ data, left, onRegister, onRegisterItems }: Props) {
+export default function WhatToEat({ data, left, pending, onRegister, onRegisterItems }: Props) {
   const [open, setOpen] = useState(false)
   const [meal, setMeal] = useState<MealKey>(() => mealForHour(new Date().getHours()))
   const [have, setHave] = useState<Have | null>(null)
@@ -63,15 +65,16 @@ export default function WhatToEat({ data, left, onRegister, onRegisterItems }: P
     setFeedback(next)
   }
 
-  const budget = useMemo(() => mealBudget(meal, left), [meal, left])
-  const habits = useMemo(() => (have ? suggestHabits(meal, left, habitsFrom(past), have, data.foodById, feedback, today).slice(0, 3) : []), [have, meal, left, past, data, feedback, today])
+  const budget = useMemo(() => mealBudget(meal, left, pending), [meal, left, pending])
+  const extras = meal === 'merienda'
+  const habits = useMemo(() => (have ? suggestHabits(meal, left, habitsFrom(past), have, data.foodById, feedback, today, pending).slice(0, 3) : []), [have, meal, left, past, data, feedback, today, pending])
   const ranked = useMemo(
-    () => (have ? rankRecipes(meal, left, data.recipes, data.itemsByRecipe, data.foodById, have).filter((c) => feedback.get(`recipe:${c.recipe.id}`) !== false).slice(0, 4) : []),
-    [have, meal, left, data, feedback],
+    () => (have && !extras ? rankRecipes(meal, left, data.recipes, data.itemsByRecipe, data.foodById, have, pending).filter((c) => feedback.get(`recipe:${c.recipe.id}`) !== false).slice(0, 4) : []),
+    [have, meal, left, data, feedback, pending, extras],
   )
   const built = useMemo(
-    () => (have ? assemble(meal, left, have, data.foodById).filter((a) => feedback.get(dishKey(null, a.parts.map((p) => ({ food_id: p.food.id, grams: p.grams })))) !== false) : []),
-    [have, meal, left, data, feedback],
+    () => (have && !extras ? assemble(meal, left, have, data.foodById, pending).filter((a) => feedback.get(dishKey(null, a.parts.map((p) => ({ food_id: p.food.id, grams: p.grams })))) !== false) : []),
+    [have, meal, left, data, feedback, pending, extras],
   )
 
   if (!open) return <button onClick={() => setOpen(true)}>¿Qué como ahora?</button>
@@ -94,12 +97,18 @@ export default function WhatToEat({ data, left, onRegister, onRegisterItems }: P
           <button key={m.key} className={meal === m.key ? 'active' : ''} onClick={() => setMeal(m.key)}>{m.label}</button>
         ))}
       </div>
-      <p className="muted">Te faltan {Math.round(left.kcal)} kcal y {Math.round(left.protein)} g de proteína en el día; para este momento, unas {Math.round(budget.kcal)} kcal y {Math.round(budget.protein)} g.</p>
+      <p className="muted">Te faltan {Math.round(left.kcal)} kcal y {Math.round(left.protein)} g de proteína en el día.</p>
+      {extras ? (
+        <p className="muted">Extras es para lo que se sale de las comidas: postres, antojos o comer fuera. Después de lo que te queda por comer, te caben ≈ {Math.round(budget.kcal)} kcal sin pasarte.</p>
+      ) : (
+        <p className="muted">Para este momento te tocan unas {Math.round(budget.kcal)} kcal y {Math.round(budget.protein)} g de proteína (máximo 800 kcal y 45 g por comida). Quedan para lo siguiente ≈ {Math.max(0, Math.round(left.kcal - budget.kcal))} kcal y {Math.max(0, Math.round(left.protein - budget.protein))} g.</p>
+      )}
       {msg && <p className="err">{msg}</p>}
       {!have && <p className="muted">Mirando lo que hay en casa…</p>}
-      {have && habits.length === 0 && ranked.length === 0 && built.length === 0 && <p className="muted">Con lo que hay en casa no puedo armar nada para este momento. Dime qué tienes en el chat y lo armamos, o mira Compra.</p>}
+      {have && extras && habits.length === 0 && <p className="muted">Todavía no tengo extras tuyos registrados que repetir. Cuando anotes postres o antojos en Extras, aparecerán aquí.</p>}
+      {have && !extras && habits.length === 0 && ranked.length === 0 && built.length === 0 && <p className="muted">Con lo que hay en casa no puedo armar nada para este momento. Dime qué tienes en el chat y lo armamos, o mira Compra.</p>}
 
-      {habits.length > 0 && <h4>Tus platos de siempre</h4>}
+      {habits.length > 0 && <h4>{extras ? 'Tus extras de siempre' : 'Tus platos de siempre'}</h4>}
       {habits.map((s) => (
         <div key={s.habit.key} className="entry">
           <div>

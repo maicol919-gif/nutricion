@@ -42,10 +42,10 @@ export function habitsFrom(meals: PastMeal[]): Habit[] {
   return [...byKey.values()]
 }
 
-/** ¿Sirve un plato de otro momento? Desayuno con desayuno; comida y cena entre sí; extras con extras o desayuno. */
+/** ¿Sirve un plato de otro momento? Desayuno con desayuno; comida y cena entre sí; extras solo con extras. */
 function fitsMoment(habit: MealKey, now: MealKey): boolean {
   if (now === 'desayuno') return habit === 'desayuno'
-  if (now === 'merienda') return habit === 'merienda' || habit === 'desayuno'
+  if (now === 'merienda') return habit === 'merienda'
   return habit === 'comida' || habit === 'cena'
 }
 
@@ -75,8 +75,9 @@ export function suggestHabits(
   foodById: Map<string, Food>,
   feedback: Map<string, boolean>,
   today: string,
+  pending?: MealKey[],
 ): HabitSuggestion[] {
-  const budget = mealBudget(meal, left)
+  const budget = mealBudget(meal, left, pending)
   const out: HabitSuggestion[] = []
   for (const h of habits) {
     if (!fitsMoment(h.meal, meal) || feedback.get(h.key) === false) continue

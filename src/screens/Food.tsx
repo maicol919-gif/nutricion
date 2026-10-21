@@ -115,6 +115,8 @@ export default function Food() {
   const estimated = useMemo(() => Math.min(total.kcal, done.reduce((s, e) => s + e.kcal_estimated, 0)), [done, total.kcal])
   const target = { kcal: settings.kcal_target, protein: settings.protein_target }
   const left = remaining(target, total)
+  // comidas principales que aún no has registrado hoy (para repartir lo que falta del día)
+  const pendingMeals = (['desayuno', 'comida', 'cena'] as MealKey[]).filter((k) => !done.some((e) => e.meal === k))
 
   async function removeEntry(e: MealEntry) {
     const { error: err } = await supabase.from('meal_log').delete().eq('id', e.id)
@@ -204,7 +206,7 @@ export default function Food() {
 
           <button className="primary" onClick={() => setAdding({ recipeId: null, entry: null })}>Registrar lo que comí</button>
 
-          {isToday && <WhatToEat data={data} left={left} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} onRegisterItems={(items, meal, label) => setAdding({ recipeId: null, entry: null, meal, items, label })} />}
+          {isToday && <WhatToEat data={data} left={left} pending={pendingMeals} onRegister={(recipeId, meal) => setAdding({ recipeId, entry: null, meal })} onRegisterItems={(items, meal, label) => setAdding({ recipeId: null, entry: null, meal, items, label })} />}
 
           {isToday && <Fridge />}
 

@@ -25,12 +25,28 @@ describe('presupuesto del momento', () => {
     const b = mealBudget('comida', { kcal: 1000, protein: 100 })
     // comida 0,35 de (0,35 + cena 0,30 + extras 0,10) = 0,35/0,75
     expect(Math.round(b.kcal)).toBe(467)
-    expect(Math.round(b.protein)).toBe(47)
+    expect(Math.round(b.protein)).toBe(45) // 47 con tope de 45 g por comida
   })
 
   it('la cena no deja nada para después salvo los extras', () => {
     const b = mealBudget('cena', { kcal: 500, protein: 40 })
     expect(Math.round(b.kcal)).toBe(375) // 0,30 / (0,30 + 0,10)
+  })
+
+  it('una comida no pasa de 800 kcal ni de 45 g de proteína, aunque quede mucho del día', () => {
+    expect(mealBudget('cena', { kcal: 1199, protein: 89 }, ['cena'])).toEqual({ kcal: 800, protein: 45 })
+  })
+
+  it('los extras reciben lo que sobra después de las comidas que quedan', () => {
+    const b = mealBudget('merienda', { kcal: 1199, protein: 89 }, ['cena'])
+    expect(Math.round(b.kcal)).toBe(399)
+    expect(Math.round(b.protein)).toBe(44)
+    expect(mealBudget('merienda', { kcal: 300, protein: 10 }, [])).toEqual({ kcal: 300, protein: 10 }) // sin comidas pendientes
+  })
+
+  it('con la comida ya hecha, la cena cuenta con los extras y nada más', () => {
+    const b = mealBudget('cena', { kcal: 600, protein: 40 }, ['cena'])
+    expect(Math.round(b.kcal)).toBe(450)
   })
 })
 

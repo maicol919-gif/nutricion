@@ -8,12 +8,29 @@ const MAIN: MealKey[] = ['desayuno', 'comida', 'cena']
 
 export interface Left { kcal: number; protein: number }
 
-/** Lo que le toca a este momento: lo que falta del día, repartido entre este momento y los que quedan después (extras incluidos). */
-export function mealBudget(meal: MealKey, left: Left): Left {
-  const later = meal === 'merienda' ? [] : MAIN.slice(MAIN.indexOf(meal) + 1)
-  const w = MEAL_WEIGHT[meal]
-  const den = w + later.reduce((s, m) => s + MEAL_WEIGHT[m], 0) + (meal === 'merienda' ? 0 : MEAL_WEIGHT.merienda)
-  return { kcal: (left.kcal * w) / den, protein: (left.protein * w) / den }
+/** Tope por comida: más de esto de golpe no ayuda (≈ 0,6 g de proteína por kg y la regla de "mucha caloría de golpe"). */
+export const MAX_MEAL: Left = { kcal: 800, protein: 45 }
+
+/** Lo que le toca a una comida principal: lo que falta del día, repartido entre ella, las que quedan después y los extras; con tope. */
+function mainShare(meal: MealKey, left: Left, pending: MealKey[]): Left {
+  const later = pending.filter((m) => MAIN.indexOf(m) > MAIN.indexOf(meal))
+  const den = MEAL_WEIGHT[meal] + later.reduce((s, m) => s + MEAL_WEIGHT[m], 0) + MEAL_WEIGHT.merienda
+  const share = MEAL_WEIGHT[meal] / den
+  return { kcal: Math.min(MAX_MEAL.kcal, left.kcal * share), protein: Math.min(MAX_MEAL.protein, left.protein * share) }
+}
+
+/**
+ * Lo que le toca a este momento. `pending` son las comidas principales que aún no has registrado hoy (por defecto, todas desde
+ * este momento). Para los extras es lo que sobra después de las comidas que te quedan por hacer.
+ */
+export function mealBudget(meal: MealKey, left: Left, pending: MealKey[] = MAIN): Left {
+  if (meal !== 'merienda') return mainShare(meal, left, pending)
+  let rest = { ...left }
+  for (const m of MAIN.filter((x) => pending.includes(x))) {
+    const s = mainShare(m, rest, pending.filter((x) => MAIN.indexOf(x) >= MAIN.indexOf(m)))
+    rest = { kcal: Math.max(0, rest.kcal - s.kcal), protein: Math.max(0, rest.protein - s.protein) }
+  }
+  return rest
 }
 
 export interface Candidate {
@@ -49,8 +66,9 @@ export function rankRecipes(
   itemsByRecipe: Map<string, { food_id: string; grams: number }[]>,
   foodById: Map<string, Food>,
   have: Have,
+  pending?: MealKey[],
 ): Candidate[] {
-  const budget = mealBudget(meal, left)
+  const budget = mealBudget(meal, left, pending)
   const ok = (r: Recipe) => {
     if (r.meal === 'cualquiera') return true
     if (meal === 'desayuno' || meal === 'merienda') return r.meal === meal || (meal === 'merienda' && r.meal === 'desayuno')
