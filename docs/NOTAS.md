@@ -32,8 +32,9 @@ Detalle en `README.md`. Historial en `CHANGELOG.md`.
 
 ## Pendiente
 1. ~~Cantidades en lo que viene en paquete, con descuento al registrar~~ (hecho en 1.34, aceptado por el usuario). Limitación: crudo frente a cocido son alimentos distintos; si se compra pollo crudo y la receta usa pollo cocinado, no se descuenta. Pendiente: leer el peso del paquete al escanear el código de barras.
-2. Botón "¿Qué como ahora?": recetas cocinables con lo que hay, ordenadas por encaje con los macros restantes.
-3. Compra por consumo y ritmo (8 y 15 días) + "desbloquea recetas".
+2. Botón "¿Qué como ahora?" en Mi día (el usuario lo quiere, aclarado el 2026-10-21): recetas cocinables con lo que hay en casa, ordenadas por encaje con lo que falta del día y el momento; la decisión también se puede tomar en el chat.
+3. ~~Compra por consumo y ritmo (8 y 15 días) + recetas que cubres~~ (hecho en 1.35). Limitaciones: el consumo se mide con los alimentos tal como se registran (p. ej. arroz cocido, no crudo); con pocos días de historial las cantidades son aproximadas.
+   - Siguiente: botón "Guardar la compra en casa" (pasa el carro a En casa pidiendo el peso de lo que va en paquete).
 4. Retirar la página de Claude "Recetas y compra" cuando lo anterior esté en la app (pedir confirmación).
 5. Etiquetas pendientes: tomate frito, tortillas integrales, taquitos de cerdo.
 6. Seguir añadiendo recetas (el usuario autorizó investigarlas y añadirlas, en tandas pequeñas para revisarlas).

@@ -2,6 +2,10 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.35 · 2026-10-21
+- **Compra, pensada para el mercado:** eliges **Fresca (8 días)** o **Grande (15 días)** y propone qué comprar según lo que consumes (tus comidas de los últimos 28 días, mínimo 7 días de periodo) menos lo que hay en casa. Marcas lo que metes al **carro** y puedes añadir cualquier otro alimento. Debajo, **Recetas que cubres** con lo que hay en casa y el carro: verde (ya puedes hacerla), amarillo (falta 1 o 2 alimentos, con botón para añadirlos) y gris (faltan varios).
+- Se quita la selección manual de recetas de la versión anterior.
+
 ## 1.34 · 2026-10-21
 - **En casa con cantidad:** lo que viene en paquete lleva gramos ("Cantidad en gramos" al añadir; "Me quedan…" para corregir). Al registrar una comida nueva, la app **descuenta** lo usado; cuando queda el 25 % o menos marca "Queda poco" y cuando llega a 0 desaparece. Lo que no lleva cantidad sigue con "Queda poco / Se acabó" y la pregunta "¿Se acabó algo?".
 - **Compra** compra solo lo que falta: si necesitas 165 g y tienes 100 g, la lista pide 65 g.
