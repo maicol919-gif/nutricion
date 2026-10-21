@@ -53,3 +53,8 @@ Detalle en `README.md`. Historial en `CHANGELOG.md`.
 | Wrap de pavo con havarti light y guacamole | ≈ 330 | ≈ 22 g | tortilla de trigo, pavo, havarti light, guacamole |
 | Bagel con salmón y queso crema light | ≈ 350 | ≈ 20 g | bagel, queso de untar light, salmón ahumado |
 | Porridge de avena con kéfir, fresas y cacahuete | ≈ 370 | ≈ 16 g | copos de avena, kéfir 0 %, crema de cacahuete, fresas |
+
+## Sueño y Vértice (2026-10-21)
+- Sueño: tabla `sleep_log` (kind noche|siesta, start_at, end_at, quality 1-5; `date` = día en que termina) y vista `v_sleep_daily`. Se anota en Nutrición (Mi día → Sueño). Una siesta no cruza la medianoche ni pasa de 4 h.
+- Vértice 0.4: el triángulo mide los últimos 7 días (comida frente a metas, entreno frente a 3 días, sueño de 24 h frente a 7 h). Esas referencias son constantes en `vertice/src/lib/summary.ts` (`WEEKLY_TRAINING_REF`, `SLEEP_REF_MIN`).
+- Pendiente: línea del día (necesita hora real de cada comida), hora de dormir editable para la cafeína (ahora fija a 23:30; ya se podría tomar del sueño real).
