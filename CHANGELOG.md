@@ -2,6 +2,9 @@
 
 Formato: `mayor.menor`. Para publicar una versión: sube `version` en `package.json`, añade una entrada aquí, compila y sube `dist` a `gh-pages`.
 
+## 1.47 · 2026-10-25
+- **Sueño: cómo te despertaste** (opcional, solo para la noche): por tu cuenta, con el despertador o por un ruido. Columna `wake_reason` en `sleep_log`.
+
 ## 1.46 · 2026-10-21
 - **Sueño** (Mi día): anota la **noche** y las **siestas** con hora de dormir, hora de despertar y cómo descansaste (1-5, opcional). Se guarda en el día en que te despiertas; una noche que cruza la medianoche empieza el día anterior. Muestra el total de 24 h (noche más siestas). Tabla `sleep_log` y vista `v_sleep_daily` para Vértice.
 

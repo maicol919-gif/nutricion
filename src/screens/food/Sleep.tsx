@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { hoursText, sleepDay, sleepWindow, type SleepKind, type SleepRow } from '../../lib/sleep'
+import { hoursText, sleepDay, sleepWindow, WAKE_LABEL, type SleepKind, type SleepRow, type WakeReason } from '../../lib/sleep'
 
-const COLUMNS = 'id, date, kind, start_at, end_at, quality'
+const COLUMNS = 'id, date, kind, start_at, end_at, quality, wake_reason'
 const clock = (iso: string) => new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
 const DEFAULTS: Record<SleepKind, { from: string; to: string }> = { noche: { from: '23:30', to: '07:00' }, siesta: { from: '', to: '' } }
 
@@ -14,6 +14,7 @@ export default function Sleep({ date }: { date: string }) {
   const [from, setFrom] = useState(DEFAULTS.noche.from)
   const [to, setTo] = useState(DEFAULTS.noche.to)
   const [quality, setQuality] = useState('')
+  const [wake, setWake] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -37,10 +38,11 @@ export default function Sleep({ date }: { date: string }) {
   async function save() {
     const w = sleepWindow(date, kind, from, to)
     if (typeof w === 'string') return setMsg(w)
-    const { error } = await supabase.from('sleep_log').insert({ date, kind, start_at: w.start.toISOString(), end_at: w.end.toISOString(), quality: quality ? Number(quality) : null })
+    const { error } = await supabase.from('sleep_log').insert({ date, kind, start_at: w.start.toISOString(), end_at: w.end.toISOString(), quality: quality ? Number(quality) : null, wake_reason: wake || null })
     if (error) return setMsg(error.message)
     setMsg(null)
     setQuality('')
+    setWake('')
     setAdding(false)
     await load()
   }
@@ -61,7 +63,7 @@ export default function Sleep({ date }: { date: string }) {
         <div key={r.id} className="entry">
           <div>
             <strong>{r.kind === 'siesta' ? 'Siesta' : 'Noche'}</strong>
-            <small className="muted">{clock(r.start_at)} → {clock(r.end_at)} · {hoursText(Math.round((new Date(r.end_at).getTime() - new Date(r.start_at).getTime()) / 60000))}{r.quality ? ` · descanso ${r.quality}/5` : ''}</small>
+            <small className="muted">{clock(r.start_at)} → {clock(r.end_at)} · {hoursText(Math.round((new Date(r.end_at).getTime() - new Date(r.start_at).getTime()) / 60000))}{r.quality ? ` · descanso ${r.quality}/5` : ''}{r.wake_reason ? ` · ${WAKE_LABEL[r.wake_reason]}` : ''}</small>
           </div>
           <button className="link" onClick={() => remove(r.id)} aria-label={`Quitar ${r.kind}`}>✕</button>
         </div>
@@ -88,6 +90,14 @@ export default function Sleep({ date }: { date: string }) {
                 <option value="3">3 · regular</option>
                 <option value="4">4 · bien</option>
                 <option value="5">5 · muy bien</option>
+              </select>
+            </label>
+          )}
+          {kind === 'noche' && (
+            <label>Cómo te despertaste (opcional)
+              <select value={wake} onChange={(e) => setWake(e.target.value as WakeReason | '')}>
+                <option value="">—</option>
+                {(Object.keys(WAKE_LABEL) as WakeReason[]).map((k) => <option key={k} value={k}>{WAKE_LABEL[k][0].toUpperCase() + WAKE_LABEL[k].slice(1)}</option>)}
               </select>
             </label>
           )}

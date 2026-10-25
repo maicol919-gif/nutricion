@@ -1,5 +1,9 @@
 export type SleepKind = 'noche' | 'siesta'
 
+export type WakeReason = 'solo' | 'despertador' | 'ruido'
+
+export const WAKE_LABEL: Record<WakeReason, string> = { solo: 'me desperté solo', despertador: 'con el despertador', ruido: 'por un ruido' }
+
 export interface SleepRow {
   id: string
   date: string
@@ -7,6 +11,7 @@ export interface SleepRow {
   start_at: string
   end_at: string
   quality: number | null
+  wake_reason?: WakeReason | null
 }
 
 const MAX_NAP_MIN = 4 * 60
